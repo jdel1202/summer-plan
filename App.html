@@ -853,14 +853,15 @@
 
   <div class="modal-sheet">
 
-    <div class="modal-header">
-      <span class="modal-title" id="food-modal-title">Add Food</span>
+    <div class="modal-header" style="gap:10px;">
+      <button id="food-back-btn" style="display:none;background:none;border:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;padding:0;white-space:nowrap;" onclick="backToFoodBrowse()">← Back</button>
+      <span class="modal-title" id="food-modal-title" style="flex:1;">Add Food</span>
       <button class="modal-close" onclick="closeFoodModal()">✕</button>
     </div>
 
-    <div class="modal-tabs-row">
+    <div class="modal-tabs-row" id="food-tabs-row">
       <button class="modal-tab-btn active" id="ftab-quick" onclick="switchFoodModalTab('quick')">My Foods</button>
-      <button class="modal-tab-btn" id="ftab-new" onclick="switchFoodModalTab('new')">Manual Entry</button>
+      <button class="modal-tab-btn" id="ftab-new" onclick="switchFoodModalTab('new')">New Food</button>
     </div>
 
     <div class="modal-body">
@@ -872,18 +873,34 @@
 
       <div id="food-tab-new" style="display:none;">
         <label style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0.07em;display:block;margin-bottom:5px;">FOOD NAME</label>
-        <input type="text" id="f-name" placeholder="e.g. Chicken breast 150g" style="margin-bottom:10px;">
-        <div class="macro-input-grid">
-          <div><span class="mg-lbl">KCAL</span><input type="number" id="f-cal" placeholder="0" min="0"></div>
-          <div><span class="mg-lbl">PROTEIN g</span><input type="number" id="f-p" placeholder="0" min="0"></div>
-          <div><span class="mg-lbl">CARBS g</span><input type="number" id="f-c" placeholder="0" min="0"></div>
-          <div><span class="mg-lbl">FAT g</span><input type="number" id="f-f" placeholder="0" min="0"></div>
+        <input type="text" id="f-name" placeholder="e.g. Chicken breast" style="margin-bottom:10px;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px;text-transform:uppercase;">Nutritional values per 100g</div>
+        <div class="macro-input-grid" style="margin-bottom:10px;">
+          <div><span class="mg-lbl">KCAL</span><input type="number" id="f-cal" placeholder="0" min="0" oninput="updateNewFoodPreview()"></div>
+          <div><span class="mg-lbl">PROTEIN g</span><input type="number" id="f-p" placeholder="0" min="0" oninput="updateNewFoodPreview()"></div>
+          <div><span class="mg-lbl">CARBS g</span><input type="number" id="f-c" placeholder="0" min="0" oninput="updateNewFoodPreview()"></div>
+          <div><span class="mg-lbl">FAT g</span><input type="number" id="f-f" placeholder="0" min="0" oninput="updateNewFoodPreview()"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div><span class="mg-lbl">SERVING SIZE (g) — optional</span><input type="number" id="f-serving" placeholder="e.g. 150" min="1"></div>
+          <div><span class="mg-lbl">AMOUNT TO LOG (g)</span><input type="number" id="f-amount" placeholder="100" min="1" value="100" oninput="updateNewFoodPreview()"></div>
+        </div>
+        <div id="new-food-preview" style="display:none;background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px;">CALCULATED FOR AMOUNT</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;text-align:center;">
+            <div><div id="prev-cal" style="font-family:var(--font-cond);font-size:20px;font-weight:700;color:var(--green);">0</div><div style="font-size:10px;color:var(--muted);">kcal</div></div>
+            <div><div id="prev-p" style="font-family:var(--font-cond);font-size:20px;font-weight:700;">0g</div><div style="font-size:10px;color:var(--muted);">protein</div></div>
+            <div><div id="prev-c" style="font-family:var(--font-cond);font-size:20px;font-weight:700;">0g</div><div style="font-size:10px;color:var(--muted);">carbs</div></div>
+            <div><div id="prev-f" style="font-family:var(--font-cond);font-size:20px;font-weight:700;">0g</div><div style="font-size:10px;color:var(--muted);">fat</div></div>
+          </div>
         </div>
         <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;margin:10px 0;">
-          <input type="checkbox" id="f-save" style="width:auto;"> Save to My Foods for quick access
+          <input type="checkbox" id="f-save" style="width:auto;" checked> Save to My Foods for quick access next time
         </label>
-        <button class="btn" onclick="submitNewFood()" style="margin-top:6px;">Add to meal</button>
+        <button class="btn" onclick="submitNewFood()">Add to meal</button>
       </div>
+
+      <div id="food-amount-mode" style="display:none;"></div>
 
     </div>
 
@@ -1975,7 +1992,25 @@ function getNutriDay(key) { return get('nutri-' + key) || {breakfast:[], lunch:[
 
 function getCustomFoods() { return get('custom-foods') || []; }
 
-let foodModalMeal = null;
+let foodModalMeal = null, foodModalMealLabel = null, foodModalActiveTab = 'quick', foodModalSelectedFood = null;
+
+function calcMacros(food, grams) {
+
+  const r = grams / 100;
+
+  return {
+
+    cal:     Math.round((food.cal_per100     || 0) * r),
+
+    protein: Math.round((food.protein_per100 || 0) * r * 10) / 10,
+
+    carbs:   Math.round((food.carbs_per100   || 0) * r * 10) / 10,
+
+    fat:     Math.round((food.fat_per100     || 0) * r * 10) / 10,
+
+  };
+
+}
 
 function renderFood() {
 
@@ -2083,7 +2118,7 @@ function renderFood() {
 
         <div style="flex:1;">
 
-          <div class="nutri-food-name">${f.name}</div>
+          <div class="nutri-food-name">${f.name}${f.amount_g ? ' <span style="font-size:11px;color:var(--faint);">(' + f.amount_g + 'g)</span>' : ''}</div>
 
           <div style="font-size:11px;color:var(--muted);">P:${f.protein||0}g · C:${f.carbs||0}g · F:${f.fat||0}g</div>
 
@@ -2133,17 +2168,15 @@ function renderFood() {
 
 function openFoodModal(meal, label) {
 
-  foodModalMeal = meal;
+  foodModalMeal = meal; foodModalMealLabel = label;
 
   document.getElementById('food-modal-title').textContent = 'Add to ' + label;
 
   document.getElementById('food-modal').classList.add('show');
 
-  switchFoodModalTab('quick');
+  showFoodBrowseMode('quick');
 
-  const searchEl = document.getElementById('food-search');
-
-  if (searchEl) searchEl.value = '';
+  const s = document.getElementById('food-search'); if (s) s.value = '';
 
   renderFoodLib('');
 
@@ -2153,23 +2186,47 @@ function closeFoodModal() {
 
   document.getElementById('food-modal').classList.remove('show');
 
-  foodModalMeal = null;
+  foodModalMeal = null; foodModalMealLabel = null; foodModalSelectedFood = null;
 
-  ['f-name','f-cal','f-p','f-c','f-f'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['f-name','f-cal','f-p','f-c','f-f','f-serving'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 
-  const cb = document.getElementById('f-save'); if (cb) cb.checked = false;
+  const fa = document.getElementById('f-amount'); if (fa) fa.value = '100';
+
+  const cb = document.getElementById('f-save'); if (cb) cb.checked = true;
+
+  const prev = document.getElementById('new-food-preview'); if (prev) prev.style.display = 'none';
 
 }
 
-function switchFoodModalTab(tab) {
+function showFoodBrowseMode(tab) {
 
-  document.getElementById('food-tab-quick').style.display = tab === 'quick' ? 'block' : 'none';
+  document.getElementById('food-amount-mode').style.display  = 'none';
 
-  document.getElementById('food-tab-new').style.display   = tab === 'new'   ? 'block' : 'none';
+  document.getElementById('food-tabs-row').style.display     = 'flex';
+
+  document.getElementById('food-back-btn').style.display     = 'none';
+
+  document.getElementById('food-tab-quick').style.display    = tab === 'quick' ? 'block' : 'none';
+
+  document.getElementById('food-tab-new').style.display      = tab === 'new'   ? 'block' : 'none';
 
   document.getElementById('ftab-quick').classList.toggle('active', tab === 'quick');
 
   document.getElementById('ftab-new').classList.toggle('active',   tab === 'new');
+
+  foodModalActiveTab = tab;
+
+}
+
+function switchFoodModalTab(tab) { showFoodBrowseMode(tab); }
+
+function backToFoodBrowse() {
+
+  foodModalSelectedFood = null;
+
+  document.getElementById('food-modal-title').textContent = 'Add to ' + (foodModalMealLabel || '');
+
+  showFoodBrowseMode(foodModalActiveTab || 'quick');
 
 }
 
@@ -2185,7 +2242,7 @@ function renderFoodLib(query) {
 
   if (!foods.length) {
 
-    el.innerHTML = '<div class="empty" style="padding:16px 0;"><div class="empty-icon">🍽️</div>No saved foods yet.<br>Switch to Manual Entry, tick "Save to My Foods",<br>and it\'ll appear here next time.</div>';
+    el.innerHTML = '<div class="empty" style="padding:16px 0;"><div class="empty-icon">🍽️</div>No saved foods yet.<br>Tap "New Food", fill in values per 100g,<br>tick Save — appears here next time.</div>';
 
     return;
 
@@ -2203,19 +2260,21 @@ function renderFoodLib(query) {
 
     const idx = foods.indexOf(f);
 
+    const srv = f.serving_g ? ` · serving ${f.serving_g}g` : '';
+
     return `
 
-      <div class="food-lib-item" onclick="addQuickFood(${idx})">
+      <div class="food-lib-item" onclick="openAmountView(${idx})">
 
         <div style="flex:1;">
 
           <div class="food-lib-name">${f.name}</div>
 
-          <div class="food-lib-macro">P:${f.protein||0}g · C:${f.carbs||0}g · F:${f.fat||0}g</div>
+          <div class="food-lib-macro">per 100g: P:${f.protein_per100||0}g · C:${f.carbs_per100||0}g · F:${f.fat_per100||0}g${srv}</div>
 
         </div>
 
-        <div class="food-lib-cal">${f.cal||0} kcal</div>
+        <div class="food-lib-cal">${f.cal_per100||0} kcal</div>
 
       </div>
 
@@ -2225,71 +2284,209 @@ function renderFoodLib(query) {
 
 }
 
-function addQuickFood(idx) {
+function openAmountView(idx) {
 
   const foods = getCustomFoods();
 
   const food = foods[idx];
 
-  if (!food || !foodModalMeal) return;
+  if (!food) return;
+
+  foodModalSelectedFood = food;
+
+  document.getElementById('food-modal-title').textContent = food.name;
+
+  document.getElementById('food-tabs-row').style.display  = 'none';
+
+  document.getElementById('food-tab-quick').style.display = 'none';
+
+  document.getElementById('food-tab-new').style.display   = 'none';
+
+  document.getElementById('food-back-btn').style.display  = 'block';
+
+  const defaultAmt = food.serving_g || 100;
+
+  const m = calcMacros(food, defaultAmt);
+
+  const btn1 = `<button class="timer-preset ${defaultAmt===100?'active':''}" onclick="setAmountInput(100,this)">100g</button>`;
+
+  const btn2 = food.serving_g ? `<button class="timer-preset ${food.serving_g===defaultAmt?'active':''}" onclick="setAmountInput(${food.serving_g},this)">1 serving (${food.serving_g}g)</button>` : '';
+
+  const btn3 = `<button class="timer-preset" onclick="setAmountInput(${food.serving_g ? food.serving_g*2 : 200},this)">${food.serving_g ? '2 servings' : '200g'}</button>`;
+
+  document.getElementById('food-amount-mode').innerHTML = `
+
+    <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:12px;">
+
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);margin-bottom:4px;">PER 100g</div>
+
+      <div style="font-size:12px;">${food.cal_per100||0} kcal · P:${food.protein_per100||0}g · C:${food.carbs_per100||0}g · F:${food.fat_per100||0}g</div>
+
+    </div>
+
+    <label style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0.07em;display:block;margin-bottom:5px;">AMOUNT (g)</label>
+
+    <input type="number" id="amount-input" value="${defaultAmt}" min="1" placeholder="e.g. 150" oninput="updateAmountPreview()" style="margin-bottom:10px;">
+
+    <div class="timer-presets" style="margin-bottom:14px;">${btn1}${btn2}${btn3}</div>
+
+    <div id="amount-preview" style="background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px;">
+
+      <div id="ap-lbl" style="font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px;">FOR ${defaultAmt}g</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;text-align:center;">
+
+        <div><div id="ap-cal" style="font-family:var(--font-cond);font-size:22px;font-weight:700;color:var(--green);">${m.cal}</div><div style="font-size:10px;color:var(--muted);">kcal</div></div>
+
+        <div><div id="ap-p" style="font-family:var(--font-cond);font-size:22px;font-weight:700;">${m.protein}g</div><div style="font-size:10px;color:var(--muted);">protein</div></div>
+
+        <div><div id="ap-c" style="font-family:var(--font-cond);font-size:22px;font-weight:700;">${m.carbs}g</div><div style="font-size:10px;color:var(--muted);">carbs</div></div>
+
+        <div><div id="ap-f" style="font-family:var(--font-cond);font-size:22px;font-weight:700;">${m.fat}g</div><div style="font-size:10px;color:var(--muted);">fat</div></div>
+
+      </div>
+
+    </div>
+
+    <button class="btn" onclick="addFoodWithAmount()">Add to meal</button>
+
+  `;
+
+  document.getElementById('food-amount-mode').style.display = 'block';
+
+}
+
+function setAmountInput(grams, btn) {
+
+  const input = document.getElementById('amount-input');
+
+  if (input) { input.value = grams; updateAmountPreview(); }
+
+  document.querySelectorAll('#food-amount-mode .timer-preset').forEach(b => b.classList.remove('active'));
+
+  if (btn) btn.classList.add('active');
+
+}
+
+function updateAmountPreview() {
+
+  if (!foodModalSelectedFood) return;
+
+  const grams = parseFloat(document.getElementById('amount-input').value) || 0;
+
+  const m = calcMacros(foodModalSelectedFood, grams);
+
+  document.getElementById('ap-cal').textContent = m.cal;
+
+  document.getElementById('ap-p').textContent   = m.protein + 'g';
+
+  document.getElementById('ap-c').textContent   = m.carbs   + 'g';
+
+  document.getElementById('ap-f').textContent   = m.fat     + 'g';
+
+  document.getElementById('ap-lbl').textContent = 'FOR ' + grams + 'g';
+
+}
+
+function addFoodWithAmount() {
+
+  if (!foodModalSelectedFood || !foodModalMeal) return;
+
+  const grams = parseFloat(document.getElementById('amount-input').value) || 0;
+
+  if (!grams) { showToast('Enter an amount'); return; }
+
+  const m = calcMacros(foodModalSelectedFood, grams);
 
   const key = todayKey();
 
   const day = getNutriDay(key);
 
-  day[foodModalMeal].push({...food});
+  day[foodModalMeal].push({name: foodModalSelectedFood.name, amount_g: grams, ...m});
 
   save('nutri-' + key, day);
+
+  const fname = foodModalSelectedFood.name;
 
   closeFoodModal();
 
   renderFood();
 
-  showToast(food.name + ' added!');
+  showToast(fname + ' added!');
+
+}
+
+function updateNewFoodPreview() {
+
+  const cal = parseFloat(document.getElementById('f-cal').value)    || 0;
+
+  const p   = parseFloat(document.getElementById('f-p').value)      || 0;
+
+  const c   = parseFloat(document.getElementById('f-c').value)      || 0;
+
+  const f   = parseFloat(document.getElementById('f-f').value)      || 0;
+
+  const amt = parseFloat(document.getElementById('f-amount').value) || 100;
+
+  const prev = document.getElementById('new-food-preview');
+
+  if (cal || p || c || f) {
+
+    prev.style.display = 'block';
+
+    const r = amt / 100;
+
+    document.getElementById('prev-cal').textContent = Math.round(cal * r);
+
+    document.getElementById('prev-p').textContent   = Math.round(p * r * 10) / 10 + 'g';
+
+    document.getElementById('prev-c').textContent   = Math.round(c * r * 10) / 10 + 'g';
+
+    document.getElementById('prev-f').textContent   = Math.round(f * r * 10) / 10 + 'g';
+
+  } else { prev.style.display = 'none'; }
 
 }
 
 function submitNewFood() {
 
-  const name = document.getElementById('f-name').value.trim();
+  const name    = document.getElementById('f-name').value.trim();
 
-  const cal  = parseInt(document.getElementById('f-cal').value)  || 0;
+  const cal100  = parseFloat(document.getElementById('f-cal').value)     || 0;
 
-  const p    = parseInt(document.getElementById('f-p').value)    || 0;
+  const p100    = parseFloat(document.getElementById('f-p').value)       || 0;
 
-  const c    = parseInt(document.getElementById('f-c').value)    || 0;
+  const c100    = parseFloat(document.getElementById('f-c').value)       || 0;
 
-  const f    = parseInt(document.getElementById('f-f').value)    || 0;
+  const f100    = parseFloat(document.getElementById('f-f').value)       || 0;
 
-  if (!name)        { showToast('Enter a food name');   return; }
+  const serving = parseFloat(document.getElementById('f-serving').value) || null;
 
-  if (!cal && !p)   { showToast('Enter at least calories'); return; }
+  const amt     = parseFloat(document.getElementById('f-amount').value)  || 100;
 
-  const entry = {name, cal, protein:p, carbs:c, fat:f};
+  if (!name)            { showToast('Enter a food name');            return; }
+
+  if (!cal100 && !p100) { showToast('Enter at least kcal per 100g'); return; }
+
+  const foodDef = {name, cal_per100:cal100, protein_per100:p100, carbs_per100:c100, fat_per100:f100};
+
+  if (serving) foodDef.serving_g = serving;
 
   if (document.getElementById('f-save').checked) {
 
-    const foods = getCustomFoods();
-
-    foods.push(entry);
-
-    save('custom-foods', foods);
+    const foods = getCustomFoods(); foods.push(foodDef); save('custom-foods', foods);
 
   }
 
-  const key = todayKey();
+  const m = calcMacros(foodDef, amt);
 
-  const day = getNutriDay(key);
+  const key = todayKey(); const day = getNutriDay(key);
 
-  day[foodModalMeal].push(entry);
+  day[foodModalMeal].push({name, amount_g: amt, ...m});
 
   save('nutri-' + key, day);
 
-  closeFoodModal();
-
-  renderFood();
-
-  showToast(name + ' added!');
+  closeFoodModal(); renderFood(); showToast(name + ' added!');
 
 }
 
@@ -2333,13 +2530,7 @@ function saveGoals() {
 
   };
 
-  save('nutri-goals', goals);
-
-  closeGoalsModal();
-
-  renderFood();
-
-  showToast('Targets saved!');
+  save('nutri-goals', goals); closeGoalsModal(); renderFood(); showToast('Targets saved!');
 
 }
 
