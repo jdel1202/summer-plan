@@ -1,0 +1,17 @@
+{
+  "name": "Summer Plan",
+  "short_name": "Summer Plan",
+  "description": "Summer fitness and meal plan tracker",
+  "start_url": "./App.html",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
