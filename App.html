@@ -262,6 +262,8 @@
 
     .plan-ex-sets { font-family: var(--font-cond); font-size: 13px; font-weight: 600; color: var(--muted); }
 
+    .ex-note { font-size: 11px; color: var(--muted); line-height: 1.45; margin-top: 2px; padding-bottom: 2px; }
+
     /* Weight row */
 
     .wt-row { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -746,7 +748,7 @@
 
     <!-- PLAN sub-tab -->
     <div class="subtab-pane active" id="wsp-plan">
-      <div class="phase-row" style="margin-bottom:14px;">
+      <div class="phase-row" style="margin-bottom:10px;">
         <div class="phase-seg" style="flex:4;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);">
           <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#60a5fa;margin-bottom:2px;">PHASE 1 · WKS 1–4</div>
           <div style="font-size:13px;font-weight:600;">Foundation</div>
@@ -763,15 +765,46 @@
           <div style="font-size:11px;color:var(--muted);margin-top:2px;">Supersets + deficit</div>
         </div>
       </div>
+
+      <!-- Phase detail cards -->
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+        <div style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.18);border-radius:var(--radius-sm);padding:10px 12px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#60a5fa;margin-bottom:4px;">PHASE 1 · WKS 1–4 · FOUNDATION</div>
+          <div style="font-size:12px;color:var(--fg);margin-bottom:4px;line-height:1.5;">Learn movements, nail form, establish baseline weights. Do not chase heavy loads. Log every session.</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5;"><span style="color:#60a5fa;font-weight:600;">Running:</span> Both runs at easy Zone 2 only — conversational pace. 30 min building to 35 min by week 4.</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;"><span style="color:#60a5fa;font-weight:600;">Sauna:</span> 1–2 rounds only while body adapts.</div>
+        </div>
+        <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.18);border-radius:var(--radius-sm);padding:10px 12px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#fbbf24;margin-bottom:4px;">PHASE 2 · WKS 5–9 · BUILD</div>
+          <div style="font-size:12px;color:var(--fg);margin-bottom:4px;line-height:1.5;">Progressive overload. Add 2.5–5 kg to main compounds every 2–3 weeks when hitting top of rep range cleanly.</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5;"><span style="color:#fbbf24;font-weight:600;">Running (Sat):</span> 5 min warm-up jog, 6× (90s hard / 90s easy), 5 min cool-down. Wed stays Zone 2, building to 35–40 min.</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;"><span style="color:#fbbf24;font-weight:600;">Sauna:</span> Full 2-round protocol.</div>
+        </div>
+        <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.18);border-radius:var(--radius-sm);padding:10px 12px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#4ade80;margin-bottom:4px;">PHASE 3 · WKS 10–14 · DEFINE</div>
+          <div style="font-size:12px;color:var(--fg);margin-bottom:4px;line-height:1.5;">Shift accessories to higher rep ranges (12–15). Keep compounds heavy. Introduce slight caloric deficit. Supersets on accessory work.</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5;"><span style="color:#4ade80;font-weight:600;">Running (Sat):</span> 5 min warm-up, 20 min at 7/10 effort, 5 min cool-down. Wed extends to 40–45 min steady.</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;"><span style="color:#4ade80;font-weight:600;">Sauna:</span> Full 2-round protocol.</div>
+        </div>
+      </div>
+
+      <!-- Progressive overload rules -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">PROGRESSIVE OVERLOAD RULES</div>
+      <div style="font-size:12px;margin-bottom:14px;">
+        <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);align-items:flex-start;"><span style="color:var(--green);flex-shrink:0;font-weight:700;">▲</span><span style="color:var(--muted);"><span style="color:var(--fg);font-weight:600;">Compounds:</span> Add 2.5–5 kg when you hit the top of your rep range cleanly for all sets. Never add weight if form breaks down.</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);align-items:flex-start;"><span style="color:var(--green);flex-shrink:0;font-weight:700;">▲</span><span style="color:var(--muted);"><span style="color:var(--fg);font-weight:600;">Isolation:</span> Add 1.25–2.5 kg when you hit the top of rep range with full control.</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);align-items:flex-start;"><span style="color:var(--amber);flex-shrink:0;font-weight:700;">⏱</span><span style="color:var(--muted);"><span style="color:var(--fg);font-weight:600;">Frequency:</span> Every 2–3 weeks in Phase 2 and 3. Do not rush progression in Phase 1.</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;align-items:flex-start;"><span style="color:var(--blue);flex-shrink:0;font-weight:700;">📋</span><span style="color:var(--muted);"><span style="color:var(--fg);font-weight:600;">Logging:</span> Record weight used, sets completed, and reps per set every session. This is mandatory.</span></div>
+      </div>
       <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">WEEKLY SCHEDULE</div>
       <div style="font-size:12px;margin-bottom:14px;">
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;">
           <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">MON</div><div style="font-size:10px;color:var(--muted);">Push</div></div>
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(251,191,36,0.08);"><div style="font-size:9px;font-weight:700;color:var(--amber);">TUE</div><div style="font-size:10px;color:var(--muted);">Run</div></div>
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">WED</div><div style="font-size:10px;color:var(--muted);">Pull</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">TUE</div><div style="font-size:10px;color:var(--muted);">Pull</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(251,191,36,0.08);"><div style="font-size:9px;font-weight:700;color:var(--amber);">WED</div><div style="font-size:10px;color:var(--muted);">Run</div></div>
           <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">THU</div><div style="font-size:10px;color:var(--muted);">Legs</div></div>
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(251,191,36,0.08);"><div style="font-size:9px;font-weight:700;color:var(--amber);">FRI</div><div style="font-size:10px;color:var(--muted);">Run</div></div>
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(74,222,128,0.08);"><div style="font-size:9px;font-weight:700;color:var(--green);">SAT</div><div style="font-size:10px;color:var(--muted);">Swim</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(74,222,128,0.08);"><div style="font-size:9px;font-weight:700;color:var(--green);">FRI</div><div style="font-size:10px;color:var(--muted);">Swim</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(251,191,36,0.08);"><div style="font-size:9px;font-weight:700;color:var(--amber);">SAT</div><div style="font-size:10px;color:var(--muted);">Run</div></div>
           <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.04);"><div style="font-size:9px;font-weight:700;color:var(--muted);">SUN</div><div style="font-size:10px;color:var(--muted);">Rest</div></div>
         </div>
       </div>
@@ -804,15 +837,15 @@
       <div style="font-size:13px;margin-bottom:16px;">
         <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
           <span style="font-size:9px;font-weight:700;background:rgba(96,165,250,0.1);color:#60a5fa;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 1–4</span>
-          <span style="color:var(--muted);">Both runs easy Zone 2. Tue 20–25 min, Fri 25 min. Heart rate under 140 bpm. Conversational pace.</span>
+          <span style="color:var(--muted);">Both runs (Wed + Sat) at easy Zone 2 only — conversational pace. 30 min building to 35 min by week 4. ~118–136 bpm.</span>
         </div>
         <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
           <span style="font-size:9px;font-weight:700;background:rgba(251,191,36,0.1);color:#fbbf24;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 5–9</span>
-          <span style="color:var(--muted);">Tue = 6×90s hard/90s easy intervals. Fri steady 30–35 min. Build to 8–10 interval reps by week 9.</span>
+          <span style="color:var(--muted);">Sat = intervals: 5 min warm-up jog, 6× (90s hard / 90s easy), 5 min cool-down. Wed stays Zone 2, building to 35–40 min.</span>
         </div>
         <div style="display:flex;gap:10px;padding:8px 0;align-items:flex-start;">
           <span style="font-size:9px;font-weight:700;background:rgba(74,222,128,0.1);color:#4ade80;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 10–14</span>
-          <span style="color:var(--muted);">Tue = 20 min tempo at 7/10 effort. Fri extends to 35–40 min. Aim to hold 8/10 RPE for tempo.</span>
+          <span style="color:var(--muted);">Sat = tempo run: 5 min warm-up, 20 min at 7/10 effort (short phrases only), 5 min cool-down. Wed extends to 40–45 min steady.</span>
         </div>
       </div>
       <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;">RUN FORM TIPS</div>
@@ -1111,55 +1144,32 @@
 const WORKOUTS = {
 
   Push: { icon:'💪', focus:'Chest · Shoulders · Triceps', exercises:[
-
-    {name:'Barbell bench press',sets:4,reps:'6–8'},
-
-    {name:'Incline dumbbell press',sets:3,reps:'10–12'},
-
-    {name:'Overhead press',sets:3,reps:'10–12'},
-
-    {name:'Lateral raises',sets:3,reps:'15'},
-
-    {name:'Tricep pushdowns',sets:3,reps:'12–15'},
-
-    {name:'Cable flyes',sets:2,reps:'15'},
-
+    {name:'Barbell bench press',sets:4,reps:'6–8',rest:90,note:'Primary chest and strength builder. Control the descent.'},
+    {name:'Incline dumbbell press',sets:3,reps:'10–12',rest:90,note:'Hits upper chest which flat bench underserves. 30–45 degree incline.'},
+    {name:'Seated dumbbell overhead press',sets:3,reps:'10–12',rest:90,note:'Shoulder mass and strength. Keep core braced, do not arch lower back.'},
+    {name:'Lateral raises',sets:3,reps:'15',rest:45,note:'Shoulder width and definition. Slight forward lean, lead with elbows.'},
+    {name:'Tricep pushdowns',sets:3,reps:'12–15',rest:45,note:'Use rope or bar attachment. Keep elbows pinned to sides.'},
+    {name:'Cable flyes',sets:2,reps:'15',rest:45,note:'Full stretch at the bottom, squeeze at the top. Light weight.'},
   ]},
 
   Pull: { icon:'🏋️', focus:'Back · Biceps · Rear Delts', exercises:[
-
-    {name:'Pull-ups / Lat pulldown',sets:4,reps:'6–10'},
-
-    {name:'Barbell row',sets:3,reps:'10–12'},
-
-    {name:'Single-arm dumbbell row',sets:3,reps:'10–12 each'},
-
-    {name:'Face pulls',sets:3,reps:'15'},
-
-    {name:'Barbell curl',sets:3,reps:'10–12'},
-
-    {name:'Hammer curls',sets:2,reps:'12'},
-
+    {name:'Pull-ups / Lat pulldown',sets:4,reps:'6–10',rest:90,note:'If you cannot do full bodyweight pull-ups, use lat pulldown and build toward them. Pull-ups are the goal.'},
+    {name:'Barbell or cable row',sets:3,reps:'10–12',rest:90,note:'Primary back thickness builder. Chest up, pull to lower chest.'},
+    {name:'Single-arm dumbbell row',sets:3,reps:'10–12 each',rest:60,note:'Full range of motion. Corrects left/right imbalances.'},
+    {name:'Face pulls',sets:3,reps:'15',rest:45,note:'Rear delts and rotator cuff health. Non-negotiable for long-term shoulder health. Rope attachment, pull to face.'},
+    {name:'Barbell curl',sets:3,reps:'10–12',rest:45,note:'Do not swing. Full extension at the bottom.'},
+    {name:'Hammer curls',sets:2,reps:'12',rest:45,note:'Neutral grip. Targets brachialis for arm thickness.'},
   ]},
 
-  Legs: { icon:'🦵', focus:'Quads · Hamstrings · Core', exercises:[
-
-    {name:'Barbell back squat',sets:4,reps:'6–8'},
-
-    {name:'Romanian deadlift',sets:3,reps:'10–12'},
-
-    {name:'Leg press',sets:3,reps:'12–15'},
-
-    {name:'Walking lunges',sets:3,reps:'12 each'},
-
-    {name:'Leg curl',sets:3,reps:'12–15'},
-
-    {name:'Calf raises',sets:4,reps:'20'},
-
-    {name:'Plank',sets:3,reps:'45s'},
-
-    {name:'Hanging knee raises',sets:3,reps:'12'},
-
+  Legs: { icon:'🦵', focus:'Quads · Hamstrings · Glutes · Core', exercises:[
+    {name:'Barbell back squat',sets:4,reps:'6–8',rest:90,note:'The single most effective lower body movement. Go to depth — thighs at minimum parallel. Chest up, knees track over toes.'},
+    {name:'Romanian deadlift',sets:3,reps:'10–12',rest:90,note:'Hamstrings and glutes. Hinge at the hips, slight knee bend, feel the hamstring stretch. Bar stays close to legs.'},
+    {name:'Leg press',sets:3,reps:'12–15',rest:75,note:'Extra quad volume without loading the spine again after squats. Full range — do not lock knees at the top.'},
+    {name:'Walking lunges',sets:3,reps:'12 each',rest:60,note:'Unilateral work catches imbalances early. Keep torso upright. Can hold dumbbells for added load.'},
+    {name:'Leg curl',sets:3,reps:'12–15',rest:45,note:'Direct hamstring isolation. Control the negative (lowering) phase.'},
+    {name:'Calf raises',sets:4,reps:'20',rest:45,note:'Full range — stretch at the bottom, pause at the top. Can use machine or standing with dumbbells.'},
+    {name:'Plank',sets:3,reps:'45–60s',rest:45,note:'Neutral spine. Do not let hips sag or pike. Progress to 60 sec by week 4.'},
+    {name:'Hanging knee raises',sets:3,reps:'12',rest:45,note:'From a pull-up bar. Control the swing. Progress to straight leg raises in Phase 2.'},
   ]},
 
 };
@@ -1167,17 +1177,11 @@ const WORKOUTS = {
 const DAY_SCHEDULE = {
 
   1:{name:'Push',type:'weights',recovery:['Sauna']},
-
-  2:{name:'Run',type:'run',recovery:['Pool']},
-
-  3:{name:'Pull',type:'weights',recovery:['Sauna']},
-
+  2:{name:'Pull',type:'weights',recovery:['Sauna']},
+  3:{name:'Run',type:'run',recovery:['Pool']},
   4:{name:'Legs',type:'weights',recovery:['Sauna']},
-
-  5:{name:'Run',type:'run',recovery:['Pool']},
-
-  6:{name:'Swim',type:'swim',recovery:['Sauna']},
-
+  5:{name:'Swim',type:'swim',recovery:['Sauna']},
+  6:{name:'Run',type:'run',recovery:['Pool']},
   0:{name:'Rest',type:'rest',recovery:[]},
 
 };
@@ -2123,13 +2127,21 @@ function renderToday() {
 
       const hasGuide = !!EXERCISE_GUIDES[ex.name];
 
-      html += `<div class="exercise-item">
+      const restLabel = ex.rest ? `<span style="font-size:10px;color:var(--muted);white-space:nowrap;">Rest ${ex.rest}s</span>` : '';
 
-        <div class="ex-check ${done?'done':''}" onclick="toggleEx('${tk}',${i})"></div>
+      html += `<div class="exercise-item" style="flex-direction:column;align-items:stretch;gap:0;">
 
-        <div class="ex-name ${done?'done':''}" onclick="toggleEx('${tk}',${i})" style="flex:1;">${ex.name}</div>
+        <div style="display:flex;align-items:center;gap:10px;">
 
-        <div style="display:flex;align-items:center;gap:6px;">${hasGuide ? `<button style="background:rgba(96,165,250,0.12);border:none;color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;" onclick="openExGuide('${ex.name.replace(/'/g,"\\'")}')">GUIDE</button>` : ''}<div class="ex-sets">${ex.sets}×${ex.reps}</div></div>
+          <div class="ex-check ${done?'done':''}" onclick="toggleEx('${tk}',${i})"></div>
+
+          <div class="ex-name ${done?'done':''}" onclick="toggleEx('${tk}',${i})" style="flex:1;">${ex.name}</div>
+
+          <div style="display:flex;align-items:center;gap:6px;">${restLabel}${hasGuide ? `<button style="background:rgba(96,165,250,0.12);border:none;color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;" onclick="openExGuide('${ex.name.replace(/'/g,"\\'")}')">GUIDE</button>` : ''}<div class="ex-sets">${ex.sets}×${ex.reps}</div></div>
+
+        </div>
+
+        ${ex.note ? `<div class="ex-note" style="padding-left:34px;">${ex.note}</div>` : ''}
 
       </div>`;
 
@@ -2738,12 +2750,17 @@ function renderWorkouts() {
   document.getElementById('plan-workouts').innerHTML = Object.entries(WORKOUTS).map(([wname, w]) => {
     const rows = w.exercises.map(ex => {
       const hasGuide = !!EXERCISE_GUIDES[ex.name];
-      return `<div class="plan-ex-row">
-        <span style="flex:1;">${ex.name}</span>
-        <div style="display:flex;align-items:center;gap:8px;">
-          ${hasGuide ? `<button style="background:rgba(96,165,250,0.12);border:none;color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;" onclick="openExGuide('${ex.name.replace(/'/g,"\\'")}')">GUIDE</button>` : ''}
-          <span class="plan-ex-sets">${ex.sets}×${ex.reps}</span>
+      const restLabel = ex.rest ? `<span style="font-size:10px;color:var(--muted);white-space:nowrap;">Rest ${ex.rest}s</span>` : '';
+      return `<div class="plan-ex-row" style="flex-direction:column;align-items:flex-start;gap:3px;">
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span style="flex:1;font-size:13px;">${ex.name}</span>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            ${restLabel}
+            ${hasGuide ? `<button style="background:rgba(96,165,250,0.12);border:none;color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;" onclick="openExGuide('${ex.name.replace(/'/g,"\\'")}')">GUIDE</button>` : ''}
+            <span class="plan-ex-sets">${ex.sets}×${ex.reps}</span>
+          </div>
         </div>
+        ${ex.note ? `<div class="ex-note">${ex.note}</div>` : ''}
       </div>`;
     }).join('');
     return `<div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;border:1px solid var(--border);">
@@ -2976,8 +2993,8 @@ function switchFoodSubtab(name) {
 
 const DAY_ORDER   = [1,2,3,4,5,6,0];
 const DAY_LABELS  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const MEAL_SLOTS  = ['breakfast','lunch','dinner','snack'];
-const MEAL_LABELS = {breakfast:'Breakfast',lunch:'Lunch',dinner:'Dinner',snack:'Snack'};
+const MEAL_SLOTS  = ['snack_pre','breakfast','snack_post','lunch','dinner'];
+const MEAL_LABELS = {snack_pre:'Pre-workout',breakfast:'Breakfast',snack_post:'After breakfast',lunch:'Lunch',dinner:'Dinner'};
 
 function getCustomMealPlan() { return get('custom-meal-plan') || {}; }
 function saveCustomMealPlan(p) { save('custom-meal-plan', p); }
@@ -3027,7 +3044,7 @@ function renderFoodMeals() {
 function openMealPicker(day, meal) {
   _pickerDay  = day;
   _pickerMeal = meal;
-  _pickerFilter = meal === 'breakfast' ? 'breakfast' : meal === 'snack' ? 'snack' : 'all';
+  _pickerFilter = meal === 'breakfast' ? 'breakfast' : (meal === 'snack_pre' || meal === 'snack_post') ? 'snack' : 'all';
   document.getElementById('meal-picker-title').textContent = `${DAY_LABELS[DAY_ORDER.indexOf(day)]} — ${MEAL_LABELS[meal]}`;
   document.getElementById('meal-picker-search').value = '';
   setPickerFilter(_pickerFilter);
@@ -3922,7 +3939,20 @@ init();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showToast('Update ready — reloading…');
+            setTimeout(() => window.location.reload(), 1500);
+          }
+        });
+      });
+    }).catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
   });
 }
 
