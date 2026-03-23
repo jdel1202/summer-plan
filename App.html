@@ -371,6 +371,14 @@
     .recipe-row-name { font-size: 13px; font-weight: 500; flex: 1; }
     .recipe-row-time { font-size: 11px; color: var(--muted); }
 
+    /* Meal picker filter buttons */
+    .picker-filter-btn { background:var(--faint); border:none; color:var(--muted); font-size:11px; font-weight:700; padding:5px 12px; border-radius:100px; cursor:pointer; white-space:nowrap; transition:all 0.15s; }
+    .picker-filter-btn.active { background:rgba(74,222,128,0.15); color:var(--green); }
+    .picker-recipe-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); cursor:pointer; }
+    .picker-recipe-row:last-child { border-bottom:none; }
+    .picker-recipe-row:active { opacity:0.7; }
+    .picker-recipe-selected { background:rgba(74,222,128,0.06); border-radius:var(--radius-sm); padding:10px; margin:-2px -2px; }
+
     /* Tab sub-navigation */
     .subtab-bar { display: flex; border-bottom: 1px solid var(--border); margin: -12px -16px 14px; padding: 0 16px; }
     .subtab-btn { flex: 1; background: none; border: none; border-bottom: 2px solid transparent; padding: 11px 0 9px; font-family: var(--font); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); cursor: pointer; text-align: center; margin-bottom: -1px; transition: all 0.15s; }
@@ -971,15 +979,43 @@
 
 </div>
 
+<!-- MEAL PICKER MODAL -->
+<div class="modal-overlay" id="meal-picker-modal" onclick="if(event.target===this)closeMealPicker()">
+  <div class="modal-sheet" style="max-height:88vh;display:flex;flex-direction:column;">
+    <div class="modal-header">
+      <span class="modal-title" id="meal-picker-title">Choose a Meal</span>
+      <button class="modal-close" onclick="closeMealPicker()">✕</button>
+    </div>
+    <div style="padding:0 16px 8px;">
+      <input type="search" id="meal-picker-search" placeholder="Search recipes..." oninput="renderMealPickerList(this.value)" style="width:100%;">
+    </div>
+    <div style="display:flex;gap:6px;padding:0 16px 10px;overflow-x:auto;">
+      <button class="picker-filter-btn active" id="pf-all"       onclick="setPickerFilter('all')">All</button>
+      <button class="picker-filter-btn"        id="pf-breakfast" onclick="setPickerFilter('breakfast')">Breakfast</button>
+      <button class="picker-filter-btn"        id="pf-main"      onclick="setPickerFilter('main')">Mains</button>
+      <button class="picker-filter-btn"        id="pf-snack"     onclick="setPickerFilter('snack')">Snacks</button>
+    </div>
+    <div id="meal-picker-list" style="overflow-y:auto;flex:1;padding:0 16px 8px;"></div>
+  </div>
+</div>
+
 <!-- SHOP -->
 
 <div class="tab" id="tab-shop">
+
+  <div class="card" style="margin-bottom:8px;">
+    <div class="section-row" style="margin-bottom:6px;">
+      <div class="card-label" style="margin:0;">FROM MEAL PLAN 🛒</div>
+      <button class="btn btn-sm btn-secondary" onclick="syncShopFromPlan()">Sync plan</button>
+    </div>
+    <div id="shop-plan-items" style="font-size:13px;color:var(--muted);">Tap "Sync plan" after setting your weekly meal plan.</div>
+  </div>
 
   <div class="card">
 
     <div class="section-row">
 
-      <div class="card-label" style="margin:0;">THIS WEEK'S GROCERIES</div>
+      <div class="card-label" style="margin:0;">MY LIST</div>
 
       <button class="btn btn-sm btn-secondary" onclick="clearShop()">Clear all</button>
 
@@ -1155,7 +1191,7 @@ const MEAL_P = {breakfast:42, lunch:48, dinner:45, snack:18};
 
 const RECIPES = {
   'Spiced egg muffins': {
-    time:'25 min', prep:'10 min',
+    cat:'breakfast', time:'25 min', prep:'10 min',
     ingredients:[
       {qty:'6',item:'large eggs'},{qty:'100g',item:'baby spinach, chopped'},
       {qty:'1',item:'red capsicum, diced'},{qty:'100g',item:'turkey mince or lean beef'},
@@ -1173,7 +1209,7 @@ const RECIPES = {
     note:'Meal-prep: make a batch of 6 on Sunday. Keeps refrigerated up to 4 days.',
   },
   'Protein overnight oats': {
-    time:'5 min + overnight', prep:'Night before',
+    cat:'breakfast', time:'5 min + overnight', prep:'Night before',
     ingredients:[
       {qty:'80g',item:'rolled oats'},{qty:'1 scoop',item:'whey protein (vanilla)'},
       {qty:'200ml',item:'low-fat milk'},{qty:'100g',item:'low-fat Greek yogurt'},
@@ -1191,7 +1227,7 @@ const RECIPES = {
     note:'Prep 2–3 jars on Sunday night to save time on weekday mornings.',
   },
   'Teriyaki chicken bowl': {
-    time:'25 min', prep:'5 min',
+    cat:'main', time:'25 min', prep:'5 min',
     ingredients:[
       {qty:'200g',item:'chicken breast, thinly sliced'},{qty:'150g',item:'jasmine rice (dry weight)'},
       {qty:'3 tbsp',item:'low-sodium soy sauce'},{qty:'1 tbsp',item:'honey'},
@@ -1210,7 +1246,7 @@ const RECIPES = {
     note:'Batch: make 3× the chicken and sauce, portion into containers. Keeps 4 days.',
   },
   'Chipotle burrito bowl': {
-    time:'30 min', prep:'10 min',
+    cat:'main', time:'30 min', prep:'10 min',
     ingredients:[
       {qty:'200g',item:'chicken breast'},{qty:'1 tsp',item:'chipotle chilli powder'},
       {qty:'1 tsp',item:'cumin'},{qty:'½ tsp',item:'garlic powder'},
@@ -1229,7 +1265,7 @@ const RECIPES = {
     note:'Batch: cook 3 chicken breasts at once. Store components separately, assemble fresh each day.',
   },
   'Soy-glazed salmon': {
-    time:'20 min', prep:'5 min',
+    cat:'main', time:'20 min', prep:'5 min',
     ingredients:[
       {qty:'200g',item:'salmon fillet (skin-on)'},{qty:'2 tbsp',item:'low-sodium soy sauce'},
       {qty:'1 tbsp',item:'honey'},{qty:'1 tsp',item:'sesame oil'},
@@ -1248,7 +1284,7 @@ const RECIPES = {
     note:'Salmon is done when it flakes easily but still has slight translucency in the center.',
   },
   'Beef tacos': {
-    time:'25 min', prep:'10 min',
+    cat:'main', time:'25 min', prep:'10 min',
     ingredients:[
       {qty:'250g',item:'lean beef mince (5% fat)'},{qty:'1 tsp',item:'cumin'},
       {qty:'1 tsp',item:'smoked paprika'},{qty:'½ tsp',item:'garlic powder'},
@@ -1268,7 +1304,7 @@ const RECIPES = {
     note:'Keep components separate if prepping ahead — assemble just before eating.',
   },
   'Chicken stir fry + noodles': {
-    time:'20 min', prep:'10 min',
+    cat:'main', time:'20 min', prep:'10 min',
     ingredients:[
       {qty:'200g',item:'chicken breast, thinly sliced'},{qty:'100g',item:'dried egg noodles'},
       {qty:'2 tbsp',item:'low-sodium soy sauce'},{qty:'1 tbsp',item:'oyster sauce'},
@@ -1288,7 +1324,7 @@ const RECIPES = {
     note:'High heat is key — a hot wok prevents sticking and gives the char you want.',
   },
   'Prawn fried rice': {
-    time:'20 min', prep:'5 min',
+    cat:'main', time:'20 min', prep:'5 min',
     ingredients:[
       {qty:'200g',item:'raw prawns, peeled'},{qty:'250g',item:'cooked day-old rice'},
       {qty:'2',item:'eggs'},{qty:'1 cup',item:'frozen peas and corn, thawed'},
@@ -1307,7 +1343,7 @@ const RECIPES = {
     note:'Day-old refrigerated rice fries much better — it\'s drier and won\'t clump.',
   },
   'Lean beef mince chilli': {
-    time:'35 min', prep:'10 min',
+    cat:'main', time:'35 min', prep:'10 min',
     ingredients:[
       {qty:'300g',item:'lean beef mince (5% fat)'},{qty:'400g tin',item:'chopped tomatoes'},
       {qty:'400g tin',item:'kidney beans, drained'},{qty:'1',item:'onion, diced'},
@@ -1327,7 +1363,7 @@ const RECIPES = {
     note:'Chilli tastes even better the next day. Double the batch and freeze portions.',
   },
   'Roast chicken': {
-    time:'1 hr 20 min', prep:'15 min',
+    cat:'main', time:'1 hr 20 min', prep:'15 min',
     ingredients:[
       {qty:'1.5 kg',item:'whole chicken'},{qty:'2 tbsp',item:'olive oil'},
       {qty:'1 tsp',item:'smoked paprika'},{qty:'1 tsp',item:'garlic powder'},
@@ -1345,6 +1381,346 @@ const RECIPES = {
     ],
     note:'Sunday meal prep: carve and divide chicken into 3 portions for Mon/Tue/Wed lunches.',
   },
+
+  // ── OVERNIGHT OATS VARIATIONS ──────────────────────────────
+  'Triple Blueberry Protein Oats': {
+    cat:'breakfast', time:'5 min + overnight', prep:'Night before',
+    macros:{cal:530,protein:43,carbs:54,fat:13},
+    ingredients:[
+      {qty:'80g',item:'rolled oats'},{qty:'200ml',item:'oat milk or regular milk'},
+      {qty:'100ml',item:'water'},{qty:'1 tbsp',item:'chia seeds'},
+      {qty:'100g',item:'blueberries (60g stir in, 40g fresh on top)'},
+      {qty:'1 scoop',item:'vanilla whey protein'},{qty:'1 tbsp',item:'almond butter'},
+      {qty:'1 tsp',item:'honey'},{qty:'pinch',item:'cinnamon'},
+    ],
+    steps:[
+      'Combine oats, milk, water, chia seeds and whey protein in a jar. Stir well.',
+      'Stir in almond butter, 60g blueberries, honey and cinnamon.',
+      'Seal and refrigerate overnight.',
+      'In the morning, top with remaining 40g fresh blueberries.',
+    ],
+    note:'Prep 5 jars Sunday night for Mon–Fri. Keeps 5 days sealed in the fridge.',
+  },
+  'Blueberry Lemon Cheesecake Oats': {
+    cat:'breakfast', time:'5 min + overnight', prep:'Night before',
+    macros:{cal:535,protein:44,carbs:56,fat:12},
+    ingredients:[
+      {qty:'80g',item:'rolled oats'},{qty:'200ml',item:'oat milk or regular milk'},
+      {qty:'100ml',item:'water'},{qty:'1 tbsp',item:'chia seeds'},
+      {qty:'100g',item:'blueberries'},{qty:'80g',item:'non-fat Greek yogurt'},
+      {qty:'1 scoop',item:'vanilla whey protein'},{qty:'½',item:'lemon, zested'},
+      {qty:'1 tsp',item:'vanilla extract'},{qty:'pinch',item:'cinnamon'},
+    ],
+    steps:[
+      'Combine oats, milk, water and chia seeds in a jar.',
+      'Stir in whey protein, Greek yogurt, lemon zest and vanilla extract.',
+      'Fold in blueberries. Seal and refrigerate overnight.',
+      'In the morning, add a pinch of cinnamon on top.',
+    ],
+    note:'The yogurt + lemon combo gives a genuine cheesecake flavour overnight.',
+  },
+  'Blueberry Dark Chocolate Oats': {
+    cat:'breakfast', time:'5 min + overnight', prep:'Night before',
+    macros:{cal:545,protein:43,carbs:55,fat:15},
+    ingredients:[
+      {qty:'80g',item:'rolled oats'},{qty:'200ml',item:'oat milk or regular milk'},
+      {qty:'100ml',item:'water'},{qty:'1 tbsp',item:'chia seeds'},
+      {qty:'80g',item:'blueberries'},{qty:'1 scoop',item:'chocolate whey protein'},
+      {qty:'1 tbsp',item:'cocoa powder'},{qty:'1 tsp',item:'honey'},
+      {qty:'few squares',item:'70%+ dark chocolate, chopped (add in morning)'},
+    ],
+    steps:[
+      'Combine oats, milk, water, chia seeds, chocolate whey and cocoa powder. Stir well.',
+      'Stir in blueberries and honey. Seal and refrigerate overnight.',
+      'In the morning, top with chopped dark chocolate squares.',
+    ],
+    note:'Use at least 70% dark chocolate — lower cocoa content adds too much sugar.',
+  },
+  'Apple Pie Oats': {
+    cat:'breakfast', time:'5 min + overnight', prep:'Night before',
+    macros:{cal:525,protein:41,carbs:58,fat:11},
+    ingredients:[
+      {qty:'80g',item:'rolled oats'},{qty:'200ml',item:'oat milk or regular milk'},
+      {qty:'100ml',item:'water'},{qty:'1 tbsp',item:'chia seeds'},
+      {qty:'1 medium',item:'apple, grated or finely diced'},{qty:'1 scoop',item:'vanilla whey protein'},
+      {qty:'1 tsp',item:'cinnamon'},{qty:'pinch',item:'nutmeg'},
+      {qty:'pinch',item:'mixed spice'},{qty:'1 tsp',item:'maple syrup'},
+      {qty:'10g',item:'walnuts, chopped (add in morning)'},
+    ],
+    steps:[
+      'Combine oats, milk, water and chia seeds in a jar.',
+      'Stir in whey protein, grated apple, cinnamon, nutmeg, mixed spice and maple syrup.',
+      'Seal and refrigerate overnight — the apple softens beautifully.',
+      'In the morning, top with chopped walnuts.',
+    ],
+    note:'Grating the apple (rather than chopping) makes it meld into the oats more.',
+  },
+  'Apple Cinnamon Peanut Butter Oats': {
+    cat:'breakfast', time:'5 min + overnight', prep:'Night before',
+    macros:{cal:550,protein:42,carbs:57,fat:15},
+    ingredients:[
+      {qty:'80g',item:'rolled oats'},{qty:'200ml',item:'oat milk or regular milk'},
+      {qty:'100ml',item:'water'},{qty:'1 tbsp',item:'chia seeds'},
+      {qty:'1 medium',item:'apple, finely diced or grated'},{qty:'1.5 tbsp',item:'natural peanut butter'},
+      {qty:'1 scoop',item:'vanilla whey protein'},{qty:'1.5 tsp',item:'cinnamon'},
+      {qty:'pinch',item:'cardamom'},{qty:'drizzle',item:'honey (morning)'},
+    ],
+    steps:[
+      'Combine oats, milk, water and chia seeds in a jar.',
+      'Stir in peanut butter, whey protein, apple, cinnamon and cardamom.',
+      'Seal and refrigerate overnight.',
+      'In the morning, drizzle honey over the top.',
+    ],
+    note:'Natural peanut butter only — avoid anything with added palm oil or sugar.',
+  },
+  'Apple & Blueberry Crumble Oats': {
+    cat:'breakfast', time:'5 min + overnight', prep:'Night before',
+    macros:{cal:540,protein:42,carbs:59,fat:13},
+    ingredients:[
+      {qty:'80g',item:'rolled oats'},{qty:'200ml',item:'oat milk or regular milk'},
+      {qty:'100ml',item:'water'},{qty:'1 tbsp',item:'chia seeds'},
+      {qty:'1 small',item:'apple, grated'},{qty:'60g',item:'blueberries'},
+      {qty:'1 scoop',item:'vanilla whey protein'},{qty:'1 tsp',item:'cinnamon'},
+      {qty:'1 tsp',item:'brown sugar or maple syrup'},
+      {qty:'15g',item:'flaked almonds (add in morning)'},
+    ],
+    steps:[
+      'Combine oats, milk, water and chia seeds in a jar.',
+      'Stir in whey, grated apple, blueberries, cinnamon and brown sugar.',
+      'Seal and refrigerate overnight.',
+      'In the morning, scatter flaked almonds on top.',
+    ],
+    note:'Optional: crumble a digestive biscuit on top in the morning for texture.',
+  },
+  'Blueberry Coconut Protein Oats': {
+    cat:'breakfast', time:'5 min + overnight', prep:'Night before',
+    macros:{cal:520,protein:41,carbs:55,fat:13},
+    ingredients:[
+      {qty:'80g',item:'rolled oats'},{qty:'200ml',item:'oat milk or regular milk'},
+      {qty:'100ml',item:'water'},{qty:'1 tbsp',item:'chia seeds'},
+      {qty:'100g',item:'blueberries'},{qty:'2 tbsp',item:'coconut yogurt or Greek yogurt'},
+      {qty:'1 scoop',item:'vanilla whey protein'},{qty:'pinch',item:'turmeric'},
+      {qty:'pinch',item:'cinnamon'},{qty:'optional',item:'toasted coconut flakes (morning)'},
+    ],
+    steps:[
+      'Combine oats, milk, water and chia seeds in a jar.',
+      'Stir in whey protein, coconut yogurt, blueberries, turmeric and cinnamon.',
+      'Seal and refrigerate overnight.',
+      'In the morning, top with toasted coconut flakes if using.',
+    ],
+    note:'Turmeric adds subtle warmth and anti-inflammatory benefits without changing the taste much.',
+  },
+
+  // ── ASIAN RECIPES ──────────────────────────────────────────
+  'Korean BBQ Chicken Bowl': {
+    cat:'main', time:'25 min', prep:'30 min marinade',
+    macros:{cal:520,protein:45,carbs:52,fat:13},
+    ingredients:[
+      {qty:'200g',item:'chicken breast, sliced into strips'},
+      {qty:'150g',item:'jasmine rice (cooked weight ~300g)'},
+      {qty:'3 tbsp',item:'soy sauce'},{qty:'1 tbsp',item:'honey'},
+      {qty:'1 tbsp',item:'rice vinegar'},{qty:'2 cloves',item:'garlic, minced'},
+      {qty:'1 tsp',item:'fresh ginger, grated'},{qty:'1 tsp',item:'sesame oil'},
+      {qty:'handful',item:'shredded cabbage'},{qty:'1',item:'carrot, grated'},
+      {qty:'1 tsp',item:'sesame seeds'},{qty:'2',item:'spring onions, sliced'},
+    ],
+    steps:[
+      'Mix soy sauce, honey, rice vinegar, garlic, ginger and sesame oil for the marinade.',
+      'Coat chicken in marinade. Leave 30 min minimum (overnight is best).',
+      'Grill or pan-fry chicken 6–7 min until cooked through.',
+      'Cook rice. Mix shredded cabbage and grated carrot for the slaw.',
+      'Serve chicken over rice, top with raw slaw, sesame seeds and spring onions.',
+    ],
+    note:'Batch the marinade for the full week — store in a jar in the fridge.',
+  },
+  'Honey Soy Crispy Chicken Bowl': {
+    cat:'main', time:'20 min', prep:'5 min',
+    macros:{cal:540,protein:44,carbs:55,fat:12},
+    ingredients:[
+      {qty:'200g',item:'chicken breast, diced'},{qty:'1 tbsp',item:'cornstarch'},
+      {qty:'150g',item:'jasmine rice'},{qty:'3 tbsp',item:'soy sauce'},
+      {qty:'2 tbsp',item:'honey'},{qty:'1 tbsp',item:'lemon juice'},
+      {qty:'1 tsp',item:'sesame oil'},{qty:'2 cloves',item:'garlic, minced'},
+      {qty:'1 tsp',item:'fresh ginger, grated'},
+      {qty:'1',item:'bell pepper, sliced'},{qty:'1',item:'carrot, sliced'},
+      {qty:'1',item:'courgette, sliced'},{qty:'1 tsp',item:'sesame seeds'},
+    ],
+    steps:[
+      'Toss diced chicken in cornstarch until lightly coated.',
+      'Pan-fry in a little oil until golden and cooked through, about 5–6 min.',
+      'Mix soy sauce, honey, lemon juice, sesame oil, garlic and ginger for the sauce.',
+      'Add sauce to the pan and toss chicken to glaze. Cook 1 min.',
+      'Stir-fry bell pepper, carrot and courgette in a separate pan 3–4 min.',
+      'Serve glazed chicken over rice with stir-fried veg. Top with sesame seeds.',
+    ],
+    note:'The cornstarch coating is key — it creates a crispy texture that holds the sauce.',
+  },
+  'Asian Ground Chicken Hoisin Bowl': {
+    cat:'main', time:'20 min', prep:'5 min',
+    macros:{cal:500,protein:42,carbs:50,fat:11},
+    ingredients:[
+      {qty:'200g',item:'lean ground chicken or turkey'},
+      {qty:'2 cloves',item:'garlic, minced'},{qty:'1 tsp',item:'fresh ginger, minced'},
+      {qty:'150g',item:'jasmine rice'},{qty:'2 tbsp',item:'hoisin sauce'},
+      {qty:'2 tbsp',item:'soy sauce'},{qty:'1 tbsp',item:'rice vinegar'},
+      {qty:'1 tsp',item:'sesame oil'},{qty:'1 tsp',item:'brown sugar'},
+      {qty:'½',item:'cucumber, sliced'},{qty:'1',item:'carrot, grated'},
+      {qty:'2',item:'spring onions, sliced'},
+    ],
+    steps:[
+      'Brown ground chicken with garlic and ginger in a pan over medium-high heat.',
+      'Mix hoisin, soy sauce, rice vinegar, sesame oil and brown sugar in a bowl.',
+      'Pour sauce over cooked chicken. Stir and heat 1–2 min until glazed.',
+      'Cook rice. Slice cucumber and grate carrot.',
+      'Serve chicken over rice. Top with cucumber, carrot and spring onions.',
+    ],
+    note:'Ground chicken cooks in under 10 min — great for fast weeknight meals.',
+  },
+
+  // ── MEXICAN RECIPES ────────────────────────────────────────
+  'Chicken Burrito Bowl': {
+    cat:'main', time:'25 min', prep:'5 min',
+    macros:{cal:550,protein:45,carbs:58,fat:12},
+    ingredients:[
+      {qty:'200g',item:'chicken breast'},
+      {qty:'1 tsp each',item:'cumin, smoked paprika, garlic powder, chilli powder'},
+      {qty:'120g',item:'jasmine rice'},{qty:'80g',item:'black beans, drained'},
+      {qty:'handful',item:'corn kernels'},{qty:'2',item:'tomatoes, diced'},
+      {qty:'1',item:'bell pepper, sliced'},{qty:'100g',item:'non-fat Greek yogurt'},
+      {qty:'1',item:'lime'},{qty:'handful',item:'fresh coriander'},
+    ],
+    steps:[
+      'Mix cumin, paprika, garlic powder and chilli powder. Rub all over chicken.',
+      'Grill or pan-sear chicken 6–7 min per side until cooked through. Slice.',
+      'Cook rice. Warm black beans with a pinch of cumin.',
+      'Assemble bowl: rice, beans, sliced chicken, corn, tomatoes, peppers.',
+      'Top with Greek yogurt, fresh coriander and a generous squeeze of lime.',
+    ],
+    note:'Season generously — the spice rub is everything in this bowl.',
+  },
+  'Lean Beef Taco Bowl': {
+    cat:'main', time:'20 min', prep:'5 min',
+    macros:{cal:560,protein:43,carbs:52,fat:14},
+    ingredients:[
+      {qty:'200g',item:'lean ground beef (93/7)'},{qty:'1 packet',item:'taco seasoning'},
+      {qty:'¼',item:'white onion, diced'},{qty:'2 cloves',item:'garlic, minced'},
+      {qty:'1',item:'tomato, diced'},{qty:'120g',item:'rice'},
+      {qty:'80g',item:'black beans, drained'},{qty:'handful',item:'shredded lettuce'},
+      {qty:'handful',item:'corn kernels'},{qty:'100g',item:'non-fat Greek yogurt'},
+      {qty:'1',item:'lime'},
+    ],
+    steps:[
+      'Brown beef with onion and garlic until cooked through.',
+      'Add taco seasoning and diced tomato. Cook 2–3 min more.',
+      'Drain any excess fat.',
+      'Cook rice. Warm black beans.',
+      'Assemble bowl: rice, beans, beef, lettuce, corn. Top with Greek yogurt and lime.',
+    ],
+    note:'Batch cook 1 kg mince at once — use across this bowl and enchiladas.',
+  },
+  'Chicken Enchiladas': {
+    cat:'main', time:'40 min', prep:'15 min',
+    macros:{cal:580,protein:48,carbs:55,fat:14},
+    ingredients:[
+      {qty:'600g',item:'chicken breast, cooked and shredded'},
+      {qty:'150g',item:'refried black beans (canned)'},{qty:'100g',item:'non-fat Greek yogurt'},
+      {qty:'1 packet',item:'taco seasoning'},{qty:'100g',item:'grated cheddar (half in filling)'},
+      {qty:'4–6',item:'whole wheat or low-carb tortillas'},
+      {qty:'400ml can',item:'enchilada sauce'},
+    ],
+    steps:[
+      'Preheat oven to 190°C.',
+      'Mix Greek yogurt, refried beans and taco seasoning. Stir in shredded chicken and half the cheese.',
+      'Lay out tortillas, spoon filling evenly across each, roll up tightly.',
+      'Place rolls seam-down in a greased baking dish. Pour enchilada sauce over top.',
+      'Sprinkle remaining cheese. Bake 25–30 min until bubbling and golden.',
+    ],
+    note:'Keeps in the fridge 4 days. Reheat in the oven at 170°C for 10 min — much better than microwave.',
+  },
+
+  // ── ITALIAN RECIPES ────────────────────────────────────────
+  'Creamy Spicy Chicken Pasta': {
+    cat:'main', time:'30 min', prep:'10 min',
+    macros:{cal:575,protein:53,carbs:63,fat:9},
+    ingredients:[
+      {qty:'650g',item:'chicken breast, diced (serves 4)'},
+      {qty:'1 tsp each',item:'garlic powder, onion powder, cayenne, salt, pepper'},
+      {qty:'300g',item:'penne (dry weight, serves 4)'},{qty:'100g',item:'passata'},
+      {qty:'80g',item:'light cream cheese'},{qty:'200ml',item:'light evaporated milk or low-fat milk'},
+      {qty:'40g',item:'Parmesan, grated'},{qty:'4 cloves',item:'garlic, minced'},
+      {qty:'1 tsp each',item:'chilli flakes, smoked paprika'},
+    ],
+    steps:[
+      'Cook penne al dente. Reserve 80ml pasta water before draining.',
+      'Season chicken and pan-fry in a little oil until golden. Set aside.',
+      'In the same pan, fry garlic 1 min. Add passata, chilli flakes and paprika.',
+      'Add cream cheese, milk and Parmesan. Stir until smooth.',
+      'Add chicken and pasta back in. Loosen with pasta water as needed.',
+      'Simmer 2 min until sauce coats everything.',
+    ],
+    note:'Keeps 5 days refrigerated. Reheat with a damp paper towel in the microwave 3–4 min.',
+  },
+  'Pesto Chicken Pasta': {
+    cat:'main', time:'20 min', prep:'5 min',
+    macros:{cal:530,protein:45,carbs:50,fat:14},
+    ingredients:[
+      {qty:'200g',item:'chicken breast (grilled or batch-cooked)'},
+      {qty:'150g',item:'penne or fusilli'},{qty:'3 tbsp',item:'green pesto'},
+      {qty:'large handful',item:'broccoli florets'},{qty:'30g',item:'Parmesan, grated'},
+      {qty:'½',item:'lemon'},{qty:'cracked black pepper',item:'to taste'},
+    ],
+    steps:[
+      'Cook pasta in salted boiling water.',
+      'Add broccoli to the same pot for the last 3 min of cook time.',
+      'Drain pasta and broccoli together.',
+      'Slice pre-cooked chicken. Toss pasta and broccoli immediately with pesto and chicken.',
+      'Top with Parmesan, a squeeze of lemon and cracked black pepper.',
+    ],
+    note:'Best made with leftover Sunday batch-cooked chicken — under 20 min start to finish.',
+  },
+  'Salmon Tomato Basil Pasta': {
+    cat:'main', time:'25 min', prep:'5 min',
+    macros:{cal:545,protein:42,carbs:48,fat:16},
+    ingredients:[
+      {qty:'180g',item:'salmon fillet'},{qty:'150g',item:'pasta or rice'},
+      {qty:'3',item:'ripe tomatoes, diced (or 200ml passata)'},
+      {qty:'small bunch',item:'fresh basil'},{qty:'2 tbsp',item:'tomato paste'},
+      {qty:'2 cloves',item:'garlic, minced'},{qty:'1 tbsp',item:'olive oil'},
+      {qty:'pinch',item:'chilli flakes'},{qty:'salt & black pepper',item:'to taste'},
+      {qty:'handful',item:'courgette or spinach, as side'},
+    ],
+    steps:[
+      'Season salmon with salt and pepper.',
+      'Sear in olive oil 3 min each side. Remove and set aside.',
+      'In the same pan, cook garlic 1 min. Add tomatoes, tomato paste and chilli flakes.',
+      'Simmer sauce 5 min until thickened. Tear in fresh basil leaves.',
+      'Return salmon to the pan. Spoon sauce generously over the top.',
+      'Serve with cooked pasta and steamed courgette or spinach.',
+    ],
+    note:'Do not batch prep this one — salmon does not reheat well once sauced. Cook fresh.',
+  },
+};
+
+// ============================================================
+// SNACK BANK
+// ============================================================
+
+const SNACKS = {
+  'pre': [
+    {name:'Greek yogurt + blueberries', cal:250, protein:22, note:'Best pre-workout combo', ingredients:[{qty:'200g',item:'Greek yogurt 0% fat'},{qty:'100g',item:'blueberries'}]},
+    {name:'Rice cakes + peanut butter + apple', cal:300, protein:10, note:'Good carb hit', ingredients:[{qty:'3',item:'rice cakes'},{qty:'2 tbsp',item:'peanut butter'},{qty:'1',item:'apple, sliced'}]},
+    {name:'Sweet potato + cottage cheese', cal:240, protein:18, note:'Prep sweet potato Sunday', ingredients:[{qty:'150g',item:'sweet potato, baked'},{qty:'100g',item:'cottage cheese'}]},
+    {name:'Protein shake + oat milk', cal:260, protein:30, note:'Fastest option', ingredients:[{qty:'1 scoop',item:'whey protein'},{qty:'200ml',item:'oat milk'}]},
+    {name:'Oatcakes + tuna', cal:270, protein:28, note:'Pack in container, eat at desk', ingredients:[{qty:'4',item:'oatcakes'},{qty:'100g tin',item:'tuna, drained'}]},
+  ],
+  'evening': [
+    {name:'Cottage cheese + blueberries', cal:210, protein:24, note:'Casein — ideal before bed', ingredients:[{qty:'200g',item:'cottage cheese'},{qty:'100g',item:'blueberries'}]},
+    {name:'Greek yogurt + apple + cinnamon', cal:220, protein:20, note:'Satisfying, not heavy', ingredients:[{qty:'200g',item:'Greek yogurt 0% fat'},{qty:'1',item:'apple, sliced'},{qty:'pinch',item:'cinnamon'}]},
+    {name:'Greek yogurt + dark chocolate chips', cal:230, protein:20, note:'Satisfies sweet cravings', ingredients:[{qty:'200g',item:'Greek yogurt 0% fat'},{qty:'15g',item:'dark chocolate chips'}]},
+    {name:'Tuna + rice cakes', cal:200, protein:28, note:'Keep tins stocked', ingredients:[{qty:'100g tin',item:'tuna, drained'},{qty:'2',item:'rice cakes'}]},
+    {name:'Protein shake + milk', cal:220, protein:35, note:'Best when protein is short', ingredients:[{qty:'1 scoop',item:'whey protein'},{qty:'200ml',item:'milk'}]},
+    {name:'Edamame + soy sauce', cal:190, protein:15, note:'Easy, no prep', ingredients:[{qty:'150g',item:'edamame (frozen, microwaved)'},{qty:'dash',item:'soy sauce'}]},
+  ],
 };
 
 // ============================================================
@@ -2577,30 +2953,169 @@ function switchFoodSubtab(name) {
   if (name === 'recipes') renderFoodRecipes();
 }
 
+// ============================================================
+// MEAL PLANNER
+// ============================================================
+
+const DAY_ORDER   = [1,2,3,4,5,6,0];
+const DAY_LABELS  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const MEAL_SLOTS  = ['breakfast','lunch','dinner','snack'];
+const MEAL_LABELS = {breakfast:'Breakfast',lunch:'Lunch',dinner:'Dinner',snack:'Snack'};
+
+function getCustomMealPlan() { return get('custom-meal-plan') || {}; }
+function saveCustomMealPlan(p) { save('custom-meal-plan', p); }
+
+let _pickerDay = null, _pickerMeal = null, _pickerFilter = 'all';
+
 function renderFoodMeals() {
-  const dayOrder = [1,2,3,4,5,6,0];
-  const dayLabels = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-  document.getElementById('food-meals-content').innerHTML = dayOrder.map((d, i) => {
-    const m = MEALS[d];
-    const dayType = DAY_SCHEDULE[d].type;
-    const typeColors = {weights:'var(--blue)',run:'var(--amber)',swim:'var(--green)',rest:'var(--muted)'};
-    const typeLabels = {weights:'Weights day',run:'Run day',swim:'Swim day',rest:'Rest / meal prep'};
-    return `<div style="margin-bottom:10px;background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;border:1px solid var(--border);">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div style="font-family:var(--font-cond);font-size:14px;font-weight:700;">${dayLabels[i]}</div>
-        <span style="font-size:10px;font-weight:700;color:${typeColors[dayType]};background:${typeColors[dayType]}18;padding:2px 8px;border-radius:100px;">${typeLabels[dayType]}</span>
-      </div>
-      ${['breakfast','lunch','dinner'].map(meal => {
-        const name = m[meal];
-        const recipeKey = Object.keys(RECIPES).find(k => name.toLowerCase().includes(k.toLowerCase()));
-        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--border);">
-          <span style="font-size:11px;font-weight:600;color:var(--muted);text-transform:capitalize;min-width:62px;">${meal}</span>
-          <span style="font-size:12px;flex:1;line-height:1.3;">${name}</span>
-          ${recipeKey ? `<button style="background:rgba(74,222,128,0.1);border:none;color:var(--green);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;white-space:nowrap;flex-shrink:0;" onclick="openRecipe('${recipeKey.replace(/'/g,"\\'")}')">RECIPE</button>` : ''}
+  const plan = getCustomMealPlan();
+  const typeColors = {weights:'var(--blue)',run:'var(--amber)',swim:'var(--green)',rest:'var(--muted)'};
+  const typeLabels  = {weights:'Weights',run:'Run',swim:'Swim',rest:'Rest'};
+
+  document.getElementById('food-meals-content').innerHTML =
+    `<div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Tap any meal slot to choose from your recipe library. Selections auto-populate your shopping list.</div>` +
+    DAY_ORDER.map((d, i) => {
+      const dayType  = DAY_SCHEDULE[d].type;
+      const dayPlan  = plan[d] || {};
+      const slotsHtml = MEAL_SLOTS.map(slot => {
+        const chosen = dayPlan[slot];
+        return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--border);">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:62px;text-transform:uppercase;">${MEAL_LABELS[slot]}</span>
+          <div style="flex:1;overflow:hidden;">
+            ${chosen
+              ? `<div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${chosen}</div>`
+              : `<div style="font-size:12px;color:var(--faint);font-style:italic;">Not set</div>`}
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            ${chosen ? `<button style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0 2px;" onclick="clearMealSlot(${d},'${slot}')">✕</button>` : ''}
+            <button style="background:rgba(74,222,128,0.12);border:none;color:var(--green);font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;cursor:pointer;" onclick="openMealPicker(${d},'${slot}')">
+              ${chosen ? 'Change' : '+ Set'}
+            </button>
+          </div>
         </div>`;
-      }).join('')}
-    </div>`;
-  }).join('');
+      }).join('');
+      return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+          <div style="font-family:var(--font-cond);font-size:14px;font-weight:700;">${DAY_LABELS[i]}</div>
+          <span style="font-size:10px;font-weight:700;color:${typeColors[dayType]};background:${typeColors[dayType]}18;padding:2px 8px;border-radius:100px;">${typeLabels[dayType]}</span>
+        </div>
+        ${slotsHtml}
+      </div>`;
+    }).join('') +
+    `<button class="btn" style="margin-top:4px;width:100%;" onclick="syncShopFromPlan();switchTab('shop',document.querySelector('[onclick*=shop]'));showToast('Shopping list updated!')">
+      🛒 Generate Shopping List
+    </button>`;
+}
+
+function openMealPicker(day, meal) {
+  _pickerDay  = day;
+  _pickerMeal = meal;
+  _pickerFilter = meal === 'breakfast' ? 'breakfast' : meal === 'snack' ? 'snack' : 'all';
+  document.getElementById('meal-picker-title').textContent = `${DAY_LABELS[DAY_ORDER.indexOf(day)]} — ${MEAL_LABELS[meal]}`;
+  document.getElementById('meal-picker-search').value = '';
+  setPickerFilter(_pickerFilter);
+  document.getElementById('meal-picker-modal').classList.add('show');
+}
+
+function closeMealPicker() {
+  document.getElementById('meal-picker-modal').classList.remove('show');
+}
+
+function setPickerFilter(f) {
+  _pickerFilter = f;
+  ['all','breakfast','main','snack'].forEach(id =>
+    document.getElementById('pf-' + id).classList.toggle('active', id === f)
+  );
+  renderMealPickerList(document.getElementById('meal-picker-search').value);
+}
+
+function renderMealPickerList(query) {
+  const q = (query || '').toLowerCase();
+  const plan = getCustomMealPlan();
+  const currentChoice = (plan[_pickerDay] || {})[_pickerMeal];
+  let html = '';
+
+  if (_pickerFilter !== 'snack') {
+    const filtered = Object.entries(RECIPES).filter(([name, rec]) => {
+      const catMatch = _pickerFilter === 'all' || rec.cat === _pickerFilter;
+      const qMatch   = !q || name.toLowerCase().includes(q);
+      return catMatch && qMatch;
+    });
+    filtered.forEach(([name, rec]) => {
+      const selected = name === currentChoice;
+      const macros = rec.macros ? `${rec.macros.cal} kcal · ${rec.macros.protein}g P` : '';
+      html += `<div class="picker-recipe-row${selected?' picker-recipe-selected':''}" onclick="selectMealRecipe('${name.replace(/'/g,"\\'")}')">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">${name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px;">⏱ ${rec.time}${macros ? ' · ' + macros : ''}</div>
+        </div>
+        ${selected ? '<span style="color:var(--green);font-size:16px;">✓</span>' : '<span style="color:var(--faint);font-size:16px;">›</span>'}
+      </div>`;
+    });
+  }
+
+  if (_pickerFilter === 'all' || _pickerFilter === 'snack') {
+    const allSnacks = [...SNACKS.pre, ...SNACKS.evening];
+    const filtered = allSnacks.filter(s => !q || s.name.toLowerCase().includes(q));
+    if (filtered.length) {
+      html += `<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--muted);padding:10px 0 4px;">SNACK BANK</div>`;
+      filtered.forEach(s => {
+        const selected = s.name === currentChoice;
+        html += `<div class="picker-recipe-row${selected?' picker-recipe-selected':''}" onclick="selectMealRecipe('${s.name.replace(/'/g,"\\'")}')">
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;">${s.name}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:1px;">${s.cal} kcal · ${s.protein}g protein · ${s.note}</div>
+          </div>
+          ${selected ? '<span style="color:var(--green);font-size:16px;">✓</span>' : '<span style="color:var(--faint);font-size:16px;">›</span>'}
+        </div>`;
+      });
+    }
+  }
+
+  if (!html) html = `<div style="padding:20px 0;text-align:center;color:var(--muted);font-size:13px;">No recipes match "${query}"</div>`;
+  document.getElementById('meal-picker-list').innerHTML = html;
+}
+
+function selectMealRecipe(name) {
+  const plan = getCustomMealPlan();
+  if (!plan[_pickerDay]) plan[_pickerDay] = {};
+  plan[_pickerDay][_pickerMeal] = name;
+  saveCustomMealPlan(plan);
+  closeMealPicker();
+  renderFoodMeals();
+  showToast('Meal updated!');
+}
+
+function clearMealSlot(day, meal) {
+  const plan = getCustomMealPlan();
+  if (plan[day]) { delete plan[day][meal]; saveCustomMealPlan(plan); }
+  renderFoodMeals();
+}
+
+function syncShopFromPlan() {
+  const plan = getCustomMealPlan();
+  const seen = new Set();
+  const lines = [];
+
+  DAY_ORDER.forEach(d => {
+    const dayPlan = plan[d] || {};
+    MEAL_SLOTS.forEach(slot => {
+      const name = dayPlan[slot];
+      if (!name || seen.has(name)) return;
+      seen.add(name);
+      const rec = RECIPES[name];
+      if (rec && rec.ingredients) {
+        rec.ingredients.forEach(ing => lines.push(`${ing.qty} ${ing.item}`));
+      } else {
+        // snack
+        const snack = [...SNACKS.pre, ...SNACKS.evening].find(s => s.name === name);
+        if (snack) snack.ingredients.forEach(ing => lines.push(`${ing.qty} ${ing.item}`));
+      }
+    });
+  });
+
+  save('shop-plan-items', lines);
+  renderShop();
 }
 
 function renderFoodRecipes() {
@@ -3227,6 +3742,32 @@ function renderShop() {
 
   `).join('');
 
+  // Meal plan generated items
+  const planItems = get('shop-plan-items') || [];
+  const planChecked = get('shop-plan-checked') || {};
+  const planEl = document.getElementById('shop-plan-items');
+  if (planItems.length === 0) {
+    planEl.innerHTML = `<div style="font-size:13px;color:var(--faint);font-style:italic;">Set your meal plan in Food → Meal Plan, then tap "Generate Shopping List".</div>`;
+  } else {
+    const planDone = planItems.filter((_,i) => planChecked[i]).length;
+    planEl.innerHTML =
+      `<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">${planDone} of ${planItems.length} ticked off</div>` +
+      planItems.map((item, i) => {
+        const done = !!planChecked[i];
+        return `<div class="shop-item" onclick="togglePlanShopItem(${i})">
+          <div class="ex-check ${done?'done':''}"></div>
+          <div class="shop-name ${done?'checked':''}">${item}</div>
+        </div>`;
+      }).join('');
+  }
+
+}
+
+function togglePlanShopItem(i) {
+  const c = get('shop-plan-checked') || {};
+  c[i] = !c[i];
+  save('shop-plan-checked', c);
+  renderShop();
 }
 
 // ============================================================

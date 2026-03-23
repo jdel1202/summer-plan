@@ -1,4 +1,4 @@
-const CACHE = 'summer-plan-v6';
+const CACHE = 'summer-plan-v7';
 
 const ASSETS = [
   './App.html',
