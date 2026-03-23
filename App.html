@@ -3162,10 +3162,45 @@ function clearMealSlot(day, meal) {
   renderFoodMeals();
 }
 
+function _parseIngQty(str) {
+  if (!str) return { n: null, unit: str || '' };
+  let s = str.trim().replace(/¼/g,'0.25').replace(/½/g,'0.5').replace(/¾/g,'0.75');
+  const m = s.match(/^([\d.]+)\s*(g|kg|ml|l|tbsp|tsp|cups?|scoops?|cloves?|packets?|medium|small)\b/i);
+  if (m) {
+    let n = parseFloat(m[1]);
+    let u = m[2].toLowerCase().replace(/cups$/,'cup').replace(/cloves$/,'clove').replace(/scoops$/,'scoop').replace(/packets$/,'packet');
+    if (u === 'kg') { n *= 1000; u = 'g'; }
+    if (u === 'l')  { n *= 1000; u = 'ml'; }
+    return { n, unit: u };
+  }
+  const numOnly = s.match(/^([\d.]+)$/);
+  if (numOnly) return { n: parseFloat(numOnly[1]), unit: '' };
+  return { n: null, unit: str.trim() };
+}
+
+function _fmtQty(n, unit) {
+  let display = n === Math.floor(n) ? String(n) : String(Math.round(n * 10) / 10);
+  if (unit === 'g' && n >= 1000) { display = String(Math.round(n / 100) / 10); unit = 'kg'; }
+  if (unit === 'ml' && n >= 1000) { display = String(Math.round(n / 100) / 10); unit = 'l'; }
+  if (!unit) return display;
+  return (unit === 'g' || unit === 'ml' || unit === 'kg' || unit === 'l') ? `${display}${unit}` : `${display} ${unit}`;
+}
+
 function syncShopFromPlan() {
   const plan = getCustomMealPlan();
   const seen = new Set();
-  const lines = [];
+  const ingMap = {}; // key: normalised item name → { display, numeric: {unit→total}, desc: Set }
+
+  const addIng = (qty, item) => {
+    const key = item.trim().toLowerCase().replace(/\s+/g,' ');
+    if (!ingMap[key]) ingMap[key] = { display: item.trim(), numeric: {}, desc: new Set() };
+    const { n, unit } = _parseIngQty(qty);
+    if (n !== null) {
+      ingMap[key].numeric[unit] = (ingMap[key].numeric[unit] || 0) + n;
+    } else {
+      ingMap[key].desc.add(unit);
+    }
+  };
 
   DAY_ORDER.forEach(d => {
     const dayPlan = plan[d] || {};
@@ -3175,16 +3210,24 @@ function syncShopFromPlan() {
       seen.add(name);
       const rec = RECIPES[name];
       if (rec && rec.ingredients) {
-        rec.ingredients.forEach(ing => lines.push(`${ing.qty} ${ing.item}`));
+        rec.ingredients.forEach(ing => addIng(ing.qty, ing.item));
       } else {
-        // snack
         const snack = [...SNACKS.pre, ...SNACKS.evening].find(s => s.name === name);
-        if (snack) snack.ingredients.forEach(ing => lines.push(`${ing.qty} ${ing.item}`));
+        if (snack && snack.ingredients) snack.ingredients.forEach(ing => addIng(ing.qty, ing.item));
       }
     });
   });
 
+  const lines = Object.values(ingMap).map(({ display, numeric, desc }) => {
+    const parts = [
+      ...Object.entries(numeric).map(([u, n]) => _fmtQty(n, u)),
+      ...desc,
+    ];
+    return parts.length ? `${parts.join(' + ')} ${display}` : display;
+  }).sort((a, b) => a.localeCompare(b));
+
   save('shop-plan-items', lines);
+  save('shop-plan-checked', {});
   renderShop();
 }
 
