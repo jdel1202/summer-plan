@@ -347,6 +347,43 @@
     .food-lib-cal { font-family: var(--font-cond); font-size: 14px; font-weight: 600; color: var(--amber); }
     .food-lib-macro { font-size: 11px; color: var(--muted); }
 
+    /* Recipe & Guide modals */
+    .recipe-meta { font-size: 11px; color: var(--muted); margin-bottom: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .recipe-badge { background: rgba(74,222,128,0.1); color: var(--green); font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 100px; letter-spacing: 0.06em; }
+    .recipe-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+    .recipe-ingredient { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .recipe-ingredient:last-child { border-bottom: none; }
+    .recipe-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 5px; }
+    .recipe-step { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.5; }
+    .recipe-step:last-child { border-bottom: none; }
+    .recipe-step-num { font-family: var(--font-cond); font-size: 15px; font-weight: 700; color: var(--green); flex-shrink: 0; min-width: 18px; }
+    .recipe-note-box { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); border-radius: var(--radius-sm); padding: 10px 12px; margin-top: 14px; font-size: 12px; color: var(--amber); line-height: 1.5; }
+    .guide-muscles { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+    .guide-muscle-tag { background: rgba(96,165,250,0.1); color: var(--blue); font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 100px; letter-spacing: 0.05em; }
+    .guide-tips { background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.15); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 12px; }
+    .guide-tip { display: flex; gap: 8px; padding: 4px 0; font-size: 13px; line-height: 1.4; }
+    .guide-tip-icon { color: var(--green); flex-shrink: 0; }
+    .guide-section { margin-bottom: 10px; }
+    .guide-section-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .guide-section-body { font-size: 13px; color: var(--text); line-height: 1.5; }
+    .recipe-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; gap: 10px; }
+    .recipe-row:last-child { border-bottom: none; }
+    .recipe-row-name { font-size: 13px; font-weight: 500; flex: 1; }
+    .recipe-row-time { font-size: 11px; color: var(--muted); }
+
+    /* Tab sub-navigation */
+    .subtab-bar { display: flex; border-bottom: 1px solid var(--border); margin: -12px -16px 14px; padding: 0 16px; }
+    .subtab-btn { flex: 1; background: none; border: none; border-bottom: 2px solid transparent; padding: 11px 0 9px; font-family: var(--font); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); cursor: pointer; text-align: center; margin-bottom: -1px; transition: all 0.15s; }
+    .subtab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+    .subtab-pane { display: none; }
+    .subtab-pane.active { display: block; }
+
+    /* Exercise guide card */
+    .guide-ex-card { background: var(--card); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; cursor: pointer; border: 1px solid var(--border); transition: border-color 0.15s; }
+    .guide-ex-card:active { border-color: var(--blue); }
+    .guide-ex-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .guide-ex-meta { font-size: 11px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+
   </style>
 
 </head>
@@ -671,179 +708,179 @@
 
 </div>
 
-<!-- PLAN -->
+<!-- WORKOUTS -->
 
-<div class="tab" id="tab-plan">
-
-  <div class="phase-row">
-
-    <div class="phase-seg" style="flex:4;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);">
-
-      <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#60a5fa;margin-bottom:2px;">PHASE 1 · WKS 1–4</div>
-
-      <div style="font-size:13px;font-weight:600;">Foundation</div>
-
-      <div style="font-size:11px;color:var(--muted);margin-top:2px;">Form + habit</div>
-
-    </div>
-
-    <div class="phase-seg" style="flex:5;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);">
-
-      <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#fbbf24;margin-bottom:2px;">PHASE 2 · WKS 5–9</div>
-
-      <div style="font-size:13px;font-weight:600;">Build</div>
-
-      <div style="font-size:11px;color:var(--muted);margin-top:2px;">Overload + intervals</div>
-
-    </div>
-
-    <div class="phase-seg" style="flex:5;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);">
-
-      <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#4ade80;margin-bottom:2px;">PHASE 3 · WKS 10–14</div>
-
-      <div style="font-size:13px;font-weight:600;">Define</div>
-
-      <div style="font-size:11px;color:var(--muted);margin-top:2px;">Supersets + deficit</div>
-
-    </div>
-
-  </div>
-
-  <div id="plan-workouts"></div>
+<div class="tab" id="tab-workouts">
 
   <div class="card">
-
-    <div class="card-label">75-MIN MORNING SPLIT</div>
-
-    <div style="font-size:12px;color:var(--muted);line-height:1;">
-
-      <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;">
-
-        <span style="color:var(--blue);font-weight:600;min-width:55px;">Weights</span>
-
-        <span>5 warm-up · 48 lift · 10 sauna · 12 change</span>
-
-      </div>
-
-      <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;">
-
-        <span style="color:var(--amber);font-weight:600;min-width:55px;">Run</span>
-
-        <span>5 walk · 35 run · 10 pool · 10 sauna · 15 change</span>
-
-      </div>
-
-      <div style="padding:8px 0;display:flex;justify-content:space-between;gap:8px;">
-
-        <span style="color:var(--green);font-weight:600;min-width:55px;">Swim</span>
-
-        <span>5 mobility · 35 swim · 15 sauna · 10 cold · 10 change</span>
-
-      </div>
-
+    <div class="subtab-bar">
+      <button class="subtab-btn active" id="wst-plan"   onclick="switchWorkoutSubtab('plan')">Plan</button>
+      <button class="subtab-btn"        id="wst-guides" onclick="switchWorkoutSubtab('guides')">Exercise Guides</button>
+      <button class="subtab-btn"        id="wst-cardio" onclick="switchWorkoutSubtab('cardio')">Cardio</button>
     </div>
 
-  </div>
-
-  <div class="card">
-
-    <div class="card-label">DAILY NUTRITION TARGETS</div>
-
-    <div style="font-size:13px;line-height:1;">
-
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-
-        <span style="color:var(--muted);">Protein</span>
-
-        <span style="font-family:var(--font-cond);font-size:16px;color:var(--green);font-weight:700;">160g+</span>
-
+    <!-- PLAN sub-tab -->
+    <div class="subtab-pane active" id="wsp-plan">
+      <div class="phase-row" style="margin-bottom:14px;">
+        <div class="phase-seg" style="flex:4;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#60a5fa;margin-bottom:2px;">PHASE 1 · WKS 1–4</div>
+          <div style="font-size:13px;font-weight:600;">Foundation</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Form + habit</div>
+        </div>
+        <div class="phase-seg" style="flex:5;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#fbbf24;margin-bottom:2px;">PHASE 2 · WKS 5–9</div>
+          <div style="font-size:13px;font-weight:600;">Build</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Overload + intervals</div>
+        </div>
+        <div class="phase-seg" style="flex:5;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#4ade80;margin-bottom:2px;">PHASE 3 · WKS 10–14</div>
+          <div style="font-size:13px;font-weight:600;">Define</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Supersets + deficit</div>
+        </div>
       </div>
-
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-
-        <span style="color:var(--muted);">Calories (Phase 1–2)</span>
-
-        <span style="font-family:var(--font-cond);font-size:16px;font-weight:700;">~2,400 kcal</span>
-
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">WEEKLY SCHEDULE</div>
+      <div style="font-size:12px;margin-bottom:14px;">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;">
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">MON</div><div style="font-size:10px;color:var(--muted);">Push</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(251,191,36,0.08);"><div style="font-size:9px;font-weight:700;color:var(--amber);">TUE</div><div style="font-size:10px;color:var(--muted);">Run</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">WED</div><div style="font-size:10px;color:var(--muted);">Pull</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">THU</div><div style="font-size:10px;color:var(--muted);">Legs</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(251,191,36,0.08);"><div style="font-size:9px;font-weight:700;color:var(--amber);">FRI</div><div style="font-size:10px;color:var(--muted);">Run</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(74,222,128,0.08);"><div style="font-size:9px;font-weight:700;color:var(--green);">SAT</div><div style="font-size:10px;color:var(--muted);">Swim</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.04);"><div style="font-size:9px;font-weight:700;color:var(--muted);">SUN</div><div style="font-size:10px;color:var(--muted);">Rest</div></div>
+        </div>
       </div>
-
-      <div style="display:flex;justify-content:space-between;padding:8px 0;">
-
-        <span style="color:var(--muted);">Calories (Phase 3)</span>
-
-        <span style="font-family:var(--font-cond);font-size:16px;font-weight:700;">~2,100 kcal</span>
-
+      <div id="plan-workouts"></div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px;margin-top:4px;">75-MIN MORNING SPLIT</div>
+      <div style="font-size:12px;color:var(--muted);">
+        <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;">
+          <span style="color:var(--blue);font-weight:600;min-width:55px;">Weights</span>
+          <span>5 warm-up · 48 lift · 10 sauna · 12 change</span>
+        </div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;">
+          <span style="color:var(--amber);font-weight:600;min-width:55px;">Run</span>
+          <span>5 walk · 35 run · 10 pool · 10 sauna · 15 change</span>
+        </div>
+        <div style="padding:6px 0;display:flex;justify-content:space-between;gap:8px;">
+          <span style="color:var(--green);font-weight:600;min-width:55px;">Swim</span>
+          <span>5 mobility · 35 swim · 15 sauna · 10 cold · 10 change</span>
+        </div>
       </div>
-
     </div>
 
-  </div>
-
-  <div class="card">
-
-    <div class="card-label">RUN PROGRESSION</div>
-
-    <div style="font-size:13px;">
-
-      <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
-
-        <span style="font-size:9px;font-weight:700;background:rgba(96,165,250,0.1);color:#60a5fa;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 1–4</span>
-
-        <span style="color:var(--muted);">Both runs easy Zone 2. Tue 20–25 min, Fri 25 min.</span>
-
-      </div>
-
-      <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
-
-        <span style="font-size:9px;font-weight:700;background:rgba(251,191,36,0.1);color:#fbbf24;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 5–9</span>
-
-        <span style="color:var(--muted);">Tue = 6×90s hard/90s easy intervals. Fri steady 30–35 min.</span>
-
-      </div>
-
-      <div style="display:flex;gap:10px;padding:8px 0;align-items:flex-start;">
-
-        <span style="font-size:9px;font-weight:700;background:rgba(74,222,128,0.1);color:#4ade80;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 10–14</span>
-
-        <span style="color:var(--muted);">Tue = 20 min tempo at 7/10 effort. Fri extends to 35–40 min.</span>
-
-      </div>
-
+    <!-- GUIDES sub-tab -->
+    <div class="subtab-pane" id="wsp-guides">
+      <div id="wo-guides-list"></div>
     </div>
 
-  </div>
-
-  <div class="card">
-
-    <div class="card-label">WEEKLY MEAL PLAN</div>
-
-    <div style="font-size:12px;">
-
-      <div style="display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);">
-
-        <span style="color:var(--muted);font-size:10px;font-weight:600;letter-spacing:0.06em;">DAY</span>
-
-        <span style="color:var(--muted);font-size:10px;font-weight:600;letter-spacing:0.06em;">BREAKFAST</span>
-
-        <span style="color:var(--muted);font-size:10px;font-weight:600;letter-spacing:0.06em;">LUNCH</span>
-
+    <!-- CARDIO sub-tab -->
+    <div class="subtab-pane" id="wsp-cardio">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;">RUN PROGRESSION</div>
+      <div style="font-size:13px;margin-bottom:16px;">
+        <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
+          <span style="font-size:9px;font-weight:700;background:rgba(96,165,250,0.1);color:#60a5fa;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 1–4</span>
+          <span style="color:var(--muted);">Both runs easy Zone 2. Tue 20–25 min, Fri 25 min. Heart rate under 140 bpm. Conversational pace.</span>
+        </div>
+        <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
+          <span style="font-size:9px;font-weight:700;background:rgba(251,191,36,0.1);color:#fbbf24;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 5–9</span>
+          <span style="color:var(--muted);">Tue = 6×90s hard/90s easy intervals. Fri steady 30–35 min. Build to 8–10 interval reps by week 9.</span>
+        </div>
+        <div style="display:flex;gap:10px;padding:8px 0;align-items:flex-start;">
+          <span style="font-size:9px;font-weight:700;background:rgba(74,222,128,0.1);color:#4ade80;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 10–14</span>
+          <span style="color:var(--muted);">Tue = 20 min tempo at 7/10 effort. Fri extends to 35–40 min. Aim to hold 8/10 RPE for tempo.</span>
+        </div>
       </div>
-
-      ${[['Mon','Egg muffins + shake','Teriyaki bowl'],['Tue','Overnight oats','Teriyaki bowl'],['Wed','Egg muffins + shake','Teriyaki bowl'],['Thu','Overnight oats','Burrito bowl'],['Fri','Egg muffins + shake','Burrito bowl'],['Sat','Overnight oats','Burrito bowl'],['Sun','Overnight oats','Flexible']].map(([d,b,l]) => `<div style="display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;padding:7px 0;border-bottom:1px solid var(--border);"><span style="font-weight:600;">${d}</span><span style="color:var(--muted);">${b}</span><span style="color:var(--muted);">${l}</span></div>`).join('')}
-
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;">RUN FORM TIPS</div>
+      <div style="font-size:13px;margin-bottom:16px;">
+        <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--green);flex-shrink:0;">✓</span><span style="color:var(--muted);">Cadence ~170–180 steps/min — avoid overstriding.</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--green);flex-shrink:0;">✓</span><span style="color:var(--muted);">Land midfoot, not on heel. Foot strikes under your hip.</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--green);flex-shrink:0;">✓</span><span style="color:var(--muted);">Arms swing forward/backward, not across the body.</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;"><span style="color:var(--green);flex-shrink:0;">✓</span><span style="color:var(--muted);">Relax shoulders and hands — fists like you're holding a crisp.</span></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;">SWIM SESSION</div>
+      <div style="font-size:13px;margin-bottom:16px;">
+        <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--blue);font-weight:700;min-width:70px;">Warm-up</span><span style="color:var(--muted);">5 min mobility + light stretching</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--blue);font-weight:700;min-width:70px;">Main set</span><span style="color:var(--muted);">35 min continuous laps. Mix freestyle and backstroke. Focus on breathing rhythm.</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--blue);font-weight:700;min-width:70px;">Recovery</span><span style="color:var(--muted);">15 min sauna + 5 min cold pool</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;"><span style="color:var(--blue);font-weight:700;min-width:70px;">Cool-down</span><span style="color:var(--muted);">10 min full body stretch</span></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;">ZONE 2 TRAINING GUIDE</div>
+      <div style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15);border-radius:var(--radius-sm);padding:12px;font-size:13px;color:var(--muted);line-height:1.6;">
+        Zone 2 is 60–70% of max heart rate (~140 bpm for most people). You should be able to hold a full conversation. This builds your aerobic base, improves fat oxidation, and accelerates recovery. Don't skip it for harder sessions — it's the foundation everything else is built on.
+      </div>
     </div>
-
   </div>
 
+</div>
+
+<!-- RECIPE MODAL -->
+<div class="modal-overlay" id="recipe-modal" onclick="if(event.target===this)closeRecipeModal()">
+  <div class="modal-sheet" style="max-height:85vh;overflow-y:auto;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
+      <div id="recipe-name" style="font-family:var(--font-cond);font-size:22px;font-weight:700;line-height:1.2;"></div>
+      <button style="background:var(--faint);border:none;color:var(--muted);font-size:13px;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;flex-shrink:0;" onclick="closeRecipeModal()">Close</button>
+    </div>
+    <div id="recipe-badges" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;"></div>
+    <div class="card-label">INGREDIENTS</div>
+    <div id="recipe-ingredients" style="margin-bottom:4px;"></div>
+    <div class="card-label" style="margin-top:14px;">METHOD</div>
+    <div id="recipe-steps" style="margin-bottom:4px;"></div>
+    <div id="recipe-note"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);"></div>
+  </div>
+</div>
+
+<!-- GUIDE MODAL -->
+<div class="modal-overlay" id="guide-modal" onclick="if(event.target===this)closeGuideModal()">
+  <div class="modal-sheet" style="max-height:85vh;overflow-y:auto;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
+      <div id="guide-name" style="font-family:var(--font-cond);font-size:22px;font-weight:700;line-height:1.2;"></div>
+      <button style="background:var(--faint);border:none;color:var(--muted);font-size:13px;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;flex-shrink:0;" onclick="closeGuideModal()">Close</button>
+    </div>
+    <div id="guide-muscles" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;"></div>
+    <div class="guide-tips" id="guide-tips-box">
+      <div class="card-label" style="margin-bottom:8px;">FORM TIPS</div>
+      <div id="guide-tips-list"></div>
+    </div>
+    <div class="card-label">SETUP</div>
+    <div id="guide-setup" style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;padding:0 2px;"></div>
+    <div class="card-label">EXECUTION</div>
+    <div id="guide-exec" style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;padding:0 2px;"></div>
+    <div class="card-label">COMMON MISTAKES</div>
+    <div id="guide-mistakes" style="margin-bottom:12px;"></div>
+    <div class="card-label">PHASE NOTES</div>
+    <div id="guide-phases" style="margin-bottom:4px;"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);"></div>
+  </div>
 </div>
 
 <!-- FOOD -->
 
 <div class="tab" id="tab-food">
 
-  <div class="card" id="nutri-summary-card"></div>
+  <div class="card" id="food-subtab-card">
+    <div class="subtab-bar">
+      <button class="subtab-btn active" id="fst-diary"   onclick="switchFoodSubtab('diary')">Diary</button>
+      <button class="subtab-btn"        id="fst-meals"   onclick="switchFoodSubtab('meals')">Meal Plan</button>
+      <button class="subtab-btn"        id="fst-recipes" onclick="switchFoodSubtab('recipes')">Recipes</button>
+    </div>
 
-  <div id="nutri-meals"></div>
+    <!-- DIARY sub-tab -->
+    <div class="subtab-pane active" id="fsp-diary">
+      <div id="nutri-summary-card"></div>
+      <div id="nutri-meals"></div>
+    </div>
+
+    <!-- MEALS sub-tab -->
+    <div class="subtab-pane" id="fsp-meals">
+      <div id="food-meals-content"></div>
+    </div>
+
+    <!-- RECIPES sub-tab -->
+    <div class="subtab-pane" id="fsp-recipes">
+      <div id="food-recipes-content"></div>
+    </div>
+  </div>
 
 </div>
 
@@ -984,19 +1021,19 @@
 
   </button>
 
-  <button class="nav-btn" onclick="switchTab('plan',this)">
-
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>
-
-    <span class="nav-label">Plan</span>
-
-  </button>
-
   <button class="nav-btn" onclick="switchTab('food',this)">
 
     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="8"/><line x1="10" y1="2" x2="10" y2="8"/><line x1="14" y1="2" x2="14" y2="8"/></svg>
 
     <span class="nav-label">Food</span>
+
+  </button>
+
+  <button class="nav-btn" onclick="switchTab('workouts',this)">
+
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M6.5 6.5h11M6.5 17.5h11M3 12h18M6 8.5v7M18 8.5v7"/></svg>
+
+    <span class="nav-label">Workouts</span>
 
   </button>
 
@@ -1111,6 +1148,371 @@ const MEALS = {
 };
 
 const MEAL_P = {breakfast:42, lunch:48, dinner:45, snack:18};
+
+// ============================================================
+// RECIPES
+// ============================================================
+
+const RECIPES = {
+  'Spiced egg muffins': {
+    time:'25 min', prep:'10 min',
+    ingredients:[
+      {qty:'6',item:'large eggs'},{qty:'100g',item:'baby spinach, chopped'},
+      {qty:'1',item:'red capsicum, diced'},{qty:'100g',item:'turkey mince or lean beef'},
+      {qty:'½ tsp',item:'smoked paprika'},{qty:'½ tsp',item:'cumin'},
+      {qty:'Salt & pepper',item:'to taste'},
+    ],
+    steps:[
+      'Preheat oven to 180°C fan. Lightly spray a 6-cup muffin tin.',
+      'Brown turkey/beef in a pan with capsicum 3–4 min. Season with paprika, cumin, salt and pepper.',
+      'Whisk eggs in a bowl. Stir in spinach and the cooked meat mixture.',
+      'Divide evenly into muffin cups (about ¾ full).',
+      'Bake 18–20 min until set and lightly golden on top.',
+      'Cool 5 min before removing. Eat 2–3 muffins; refrigerate the rest for next day.',
+    ],
+    note:'Meal-prep: make a batch of 6 on Sunday. Keeps refrigerated up to 4 days.',
+  },
+  'Protein overnight oats': {
+    time:'5 min + overnight', prep:'Night before',
+    ingredients:[
+      {qty:'80g',item:'rolled oats'},{qty:'1 scoop',item:'whey protein (vanilla)'},
+      {qty:'200ml',item:'low-fat milk'},{qty:'100g',item:'low-fat Greek yogurt'},
+      {qty:'1 tbsp',item:'chia seeds'},{qty:'1 tsp',item:'honey'},
+      {qty:'½ tsp',item:'cinnamon'},{qty:'Handful',item:'fresh berries — to top'},
+    ],
+    steps:[
+      'Add oats, protein powder, chia seeds, cinnamon and honey to a jar.',
+      'Pour in milk and stir well until protein powder is fully mixed.',
+      'Stir in Greek yogurt.',
+      'Seal and refrigerate overnight (at least 6 hours).',
+      'In the morning, stir and add a splash of milk if too thick.',
+      'Top with fresh berries. Eat cold or microwave 1 min.',
+    ],
+    note:'Prep 2–3 jars on Sunday night to save time on weekday mornings.',
+  },
+  'Teriyaki chicken bowl': {
+    time:'25 min', prep:'5 min',
+    ingredients:[
+      {qty:'200g',item:'chicken breast, thinly sliced'},{qty:'150g',item:'jasmine rice (dry weight)'},
+      {qty:'3 tbsp',item:'low-sodium soy sauce'},{qty:'1 tbsp',item:'honey'},
+      {qty:'1 tsp',item:'sesame oil'},{qty:'1 tsp',item:'fresh ginger, grated'},
+      {qty:'1 clove',item:'garlic, minced'},{qty:'1 tsp',item:'cornstarch + 2 tbsp water (slurry)'},
+      {qty:'2 cups',item:'broccoli and snap peas'},{qty:'1 tsp',item:'sesame seeds'},
+    ],
+    steps:[
+      'Cook rice according to packet instructions.',
+      'Mix soy sauce, honey, sesame oil, ginger and garlic in a small bowl.',
+      'Cook chicken in a hot non-stick pan 4–5 min until cooked through.',
+      'Pour sauce over chicken, add cornstarch slurry, stir 1 min until sauce thickens.',
+      'Steam or microwave vegetables until just tender (3 min).',
+      'Serve chicken and sauce over rice with vegetables. Sprinkle sesame seeds.',
+    ],
+    note:'Batch: make 3× the chicken and sauce, portion into containers. Keeps 4 days.',
+  },
+  'Chipotle burrito bowl': {
+    time:'30 min', prep:'10 min',
+    ingredients:[
+      {qty:'200g',item:'chicken breast'},{qty:'1 tsp',item:'chipotle chilli powder'},
+      {qty:'1 tsp',item:'cumin'},{qty:'½ tsp',item:'garlic powder'},
+      {qty:'½ tsp',item:'oregano'},{qty:'150g',item:'long-grain rice (dry weight)'},
+      {qty:'400g tin',item:'black beans, drained'},{qty:'2',item:'tomatoes, diced'},
+      {qty:'½',item:'red onion, diced'},{qty:'Juice of 1',item:'lime'},
+      {qty:'Handful',item:'fresh coriander'},{qty:'100g',item:'Greek yogurt'},
+    ],
+    steps:[
+      'Mix chipotle, cumin, garlic powder and oregano. Coat chicken thoroughly.',
+      'Cook rice. Warm beans with a pinch of salt and cumin.',
+      'Grill or pan-fry chicken 5–6 min per side until cooked through. Rest 3 min, then slice.',
+      'Make salsa: combine tomatoes, red onion, lime juice, coriander and salt.',
+      'Assemble: rice, beans, sliced chicken, fresh salsa, dollop of Greek yogurt.',
+    ],
+    note:'Batch: cook 3 chicken breasts at once. Store components separately, assemble fresh each day.',
+  },
+  'Soy-glazed salmon': {
+    time:'20 min', prep:'5 min',
+    ingredients:[
+      {qty:'200g',item:'salmon fillet (skin-on)'},{qty:'2 tbsp',item:'low-sodium soy sauce'},
+      {qty:'1 tbsp',item:'honey'},{qty:'1 tsp',item:'sesame oil'},
+      {qty:'1 tsp',item:'fresh ginger, grated'},{qty:'1 clove',item:'garlic, minced'},
+      {qty:'200g',item:'tenderstem broccoli'},{qty:'100g',item:'edamame (frozen, thawed)'},
+      {qty:'1 tsp',item:'sesame seeds'},
+    ],
+    steps:[
+      'Mix soy sauce, honey, sesame oil, ginger and garlic to make the glaze.',
+      'Pat salmon dry. Brush generously with glaze on the flesh side.',
+      'Heat an oven-safe pan over medium-high. Cook salmon skin-side down 3 min until crisp.',
+      'Flip, brush with more glaze, cook 2 more min. Transfer to oven at 200°C for 4–5 min.',
+      'Steam broccoli and warm edamame. Season with a splash of soy sauce.',
+      'Plate salmon on top of vegetables. Drizzle remaining glaze, sprinkle sesame seeds.',
+    ],
+    note:'Salmon is done when it flakes easily but still has slight translucency in the center.',
+  },
+  'Beef tacos': {
+    time:'25 min', prep:'10 min',
+    ingredients:[
+      {qty:'250g',item:'lean beef mince (5% fat)'},{qty:'1 tsp',item:'cumin'},
+      {qty:'1 tsp',item:'smoked paprika'},{qty:'½ tsp',item:'garlic powder'},
+      {qty:'½ tsp',item:'onion powder'},{qty:'½ tsp',item:'dried oregano'},
+      {qty:'2 tbsp',item:'tomato paste'},{qty:'4',item:'small corn tortillas'},
+      {qty:'2',item:'tomatoes, diced'},{qty:'½',item:'red onion, diced'},
+      {qty:'Juice of 1',item:'lime'},{qty:'Handful',item:'fresh coriander'},
+      {qty:'1',item:'avocado, sliced'},
+    ],
+    steps:[
+      'Make salsa: combine diced tomatoes, red onion, lime juice, coriander and salt. Set aside.',
+      'Brown beef mince over high heat, breaking it up, 4–5 min.',
+      'Add all spices and tomato paste. Stir well. Cook 2 more min until fragrant.',
+      'Warm tortillas in a dry pan 30 sec each side.',
+      'Assemble: beef mince, fresh salsa, sliced avocado. Squeeze extra lime to finish.',
+    ],
+    note:'Keep components separate if prepping ahead — assemble just before eating.',
+  },
+  'Chicken stir fry + noodles': {
+    time:'20 min', prep:'10 min',
+    ingredients:[
+      {qty:'200g',item:'chicken breast, thinly sliced'},{qty:'100g',item:'dried egg noodles'},
+      {qty:'2 tbsp',item:'low-sodium soy sauce'},{qty:'1 tbsp',item:'oyster sauce'},
+      {qty:'1 tsp',item:'sesame oil'},{qty:'1 tsp',item:'fresh ginger, grated'},
+      {qty:'2 cloves',item:'garlic, minced'},{qty:'1',item:'red capsicum, sliced'},
+      {qty:'1 cup',item:'snap peas'},{qty:'2',item:'spring onions, sliced'},
+      {qty:'1',item:'egg (optional)'},
+    ],
+    steps:[
+      'Cook noodles 2 min less than packet says. Drain and toss with a little sesame oil.',
+      'Mix soy sauce, oyster sauce and a splash of water for the sauce.',
+      'Heat wok until smoking. Stir-fry chicken 3–4 min until cooked. Remove.',
+      'In the same wok, stir-fry garlic and ginger 30 sec. Add capsicum and snap peas 2 min.',
+      'If using egg, push veg aside and scramble in the pan.',
+      'Add chicken back, then noodles and sauce. Toss 1–2 min. Top with spring onions.',
+    ],
+    note:'High heat is key — a hot wok prevents sticking and gives the char you want.',
+  },
+  'Prawn fried rice': {
+    time:'20 min', prep:'5 min',
+    ingredients:[
+      {qty:'200g',item:'raw prawns, peeled'},{qty:'250g',item:'cooked day-old rice'},
+      {qty:'2',item:'eggs'},{qty:'1 cup',item:'frozen peas and corn, thawed'},
+      {qty:'2 tbsp',item:'low-sodium soy sauce'},{qty:'1 tsp',item:'sesame oil'},
+      {qty:'2 cloves',item:'garlic, minced'},{qty:'1 tsp',item:'fresh ginger, grated'},
+      {qty:'2',item:'spring onions, sliced'},
+    ],
+    steps:[
+      'Heat wok on high. Cook prawns 2–3 min until pink. Remove and set aside.',
+      'Add garlic and ginger. Stir-fry 30 sec.',
+      'Push to side, crack in eggs and scramble until just set. Mix into aromatics.',
+      'Add rice, break up any clumps, pressing against hot wok. Fry 3–4 min.',
+      'Add peas and corn, soy sauce and sesame oil. Toss everything together.',
+      'Return prawns, toss once more. Top with spring onions.',
+    ],
+    note:'Day-old refrigerated rice fries much better — it\'s drier and won\'t clump.',
+  },
+  'Lean beef mince chilli': {
+    time:'35 min', prep:'10 min',
+    ingredients:[
+      {qty:'300g',item:'lean beef mince (5% fat)'},{qty:'400g tin',item:'chopped tomatoes'},
+      {qty:'400g tin',item:'kidney beans, drained'},{qty:'1',item:'onion, diced'},
+      {qty:'3 cloves',item:'garlic, minced'},{qty:'1',item:'red capsicum, diced'},
+      {qty:'1 tsp',item:'chipotle chilli powder'},{qty:'1 tsp',item:'cumin'},
+      {qty:'1 tsp',item:'smoked paprika'},{qty:'200ml',item:'beef stock'},
+      {qty:'150g',item:'long-grain rice (dry weight)'},
+    ],
+    steps:[
+      'Brown mince over high heat until no pink remains. Drain excess fat.',
+      'Add onion and capsicum. Cook 3–4 min until softened.',
+      'Add garlic and all spices. Stir 1 min.',
+      'Add chopped tomatoes, kidney beans and beef stock. Stir well.',
+      'Simmer uncovered on medium-low 20 min until sauce thickens.',
+      'Cook rice. Serve chilli over rice with Greek yogurt if desired.',
+    ],
+    note:'Chilli tastes even better the next day. Double the batch and freeze portions.',
+  },
+  'Roast chicken': {
+    time:'1 hr 20 min', prep:'15 min',
+    ingredients:[
+      {qty:'1.5 kg',item:'whole chicken'},{qty:'2 tbsp',item:'olive oil'},
+      {qty:'1 tsp',item:'smoked paprika'},{qty:'1 tsp',item:'garlic powder'},
+      {qty:'1 tsp',item:'dried thyme'},{qty:'Salt & pepper',item:'to taste'},
+      {qty:'1',item:'lemon, halved'},{qty:'4 cloves',item:'garlic, unpeeled'},
+      {qty:'500g',item:'baby potatoes, halved'},{qty:'300g',item:'tenderstem broccoli'},
+    ],
+    steps:[
+      'Preheat oven to 200°C fan. Pat chicken completely dry with paper towel.',
+      'Mix olive oil, paprika, garlic powder, thyme, salt and pepper. Rub all over chicken and under the skin.',
+      'Place lemon halves and garlic inside the cavity.',
+      'Add potatoes around the chicken. Roast 1 hour 10 min (juices run clear when thigh is pierced).',
+      'Rest chicken 10 min. Steam broccoli.',
+      'Carve and serve with potatoes and broccoli. Use leftover chicken for next-day lunches.',
+    ],
+    note:'Sunday meal prep: carve and divide chicken into 3 portions for Mon/Tue/Wed lunches.',
+  },
+};
+
+// ============================================================
+// EXERCISE GUIDES
+// ============================================================
+
+const EXERCISE_GUIDES = {
+  'Barbell bench press':{
+    muscles:['Chest','Anterior Delt','Triceps'],
+    tips:['Retract shoulder blades and keep them pinned to the bench throughout.','Bar path arcs slightly — lower chest at bottom, over sternum at top.','Drive feet into the floor to create full-body tension.'],
+    setup:'Lie with eyes under the bar. Grip just outside shoulder-width. Slight lower back arch, shoulder blades retracted and depressed.',
+    exec:'Unrack and bring bar to starting position. Lower with control to lower chest (2–3 sec). Touch lightly, press explosively. Lock out at the top.',
+    mistakes:['Bouncing bar off chest (reduces time under tension, risks injury).','Flared elbows (45° tuck is stronger and safer for shoulders).','Losing shoulder blade retraction mid-set.'],
+    phases:{p1:'Master form at 60% 1RM — 3×10. Focus on chest stretch.',p2:'Linear progression — add 2.5 kg per session while maintaining 4×6–8.',p3:'Wave loading: heavy week (4×5) alternating with volume week (4×10).'},
+  },
+  'Incline dumbbell press':{
+    muscles:['Upper Chest','Anterior Delt','Triceps'],
+    tips:['Set bench to 30–45° — higher angle kills upper chest activation.','Elbows at 45–60° from torso, palms facing forward.','Let dumbbells arc slightly inward on the way up.'],
+    setup:'Set bench to 30–45°. Sit with dumbbells on thighs, kick up as you lean back. Retract shoulder blades.',
+    exec:'Lower dumbbells to chest level (deep stretch, ~2 sec). Press up and slightly inward. Full lockout at top.',
+    mistakes:['Bench angle too high (turns it into a shoulder press).','Rushing the eccentric — take 2–3 sec lowering.','Not achieving full stretch at the bottom.'],
+    phases:{p1:'Start lighter than flat bench — dumbbells amplify instability at incline.',p2:'Aim for 2.5–5 kg increase every 2 weeks. Drop to 8–10 reps if form breaks.',p3:'Add a 1-sec pause at the bottom for increased stretch and time under tension.'},
+  },
+  'Overhead press':{
+    muscles:['Shoulders','Triceps','Upper Traps'],
+    tips:['Brace core hard — imagine someone is about to punch your stomach.','Bar travels in a straight line; move head back as bar clears face.','Squeeze glutes to prevent lumbar hyperextension.'],
+    setup:'Standing or seated. Grip just outside shoulder-width. Bar rests on upper chest/front delts. Elbows slightly in front of bar.',
+    exec:'Brace and press vertically. Move head back as bar clears face, forward at top. Lock out overhead. Lower with control.',
+    mistakes:['Flaring elbows too wide (risky for AC joint).','Hyperextending lower back (over-arching).','Pressing in front of body instead of directly overhead.'],
+    phases:{p1:'Seated version first to isolate shoulders and reduce lower back demand.',p2:'Standing increases core demand — progress weight once seated form is solid.',p3:'Push-press (leg drive) allows overload in heavier phases.'},
+  },
+  'Lateral raises':{
+    muscles:['Medial Delt'],
+    tips:['Slight forward tilt of torso (10–15°) better targets the lateral head.','Lead with your elbows, not your hands.','Control the lowering — 2–3 sec down is where gains happen.'],
+    setup:'Stand with slight lean forward. Dumbbells at sides, palms facing in. Soft bend in elbows.',
+    exec:'Raise arms to shoulder height, elbows leading and slightly ahead of hands. Brief pause at top. Slow controlled lower.',
+    mistakes:['Using momentum (swinging torso).','Raising hands above shoulders (traps take over).','Rotating wrists — not needed and increases impingement risk.'],
+    phases:{p1:'Light weight, high reps (15–20) to build mind-muscle connection first.',p2:'Increase slowly — even 0.5–1 kg increments matter here.',p3:'Try cable lateral raises for constant tension throughout the range.'},
+  },
+  'Tricep pushdowns':{
+    muscles:['Triceps (Lateral + Medial Head)'],
+    tips:['Lock elbows into your sides — they should not flare or move.','Full extension at the bottom — squeeze hard for 1 sec.','Keep torso slightly forward and still throughout the set.'],
+    setup:'Rope or bar attachment. Stand close to cable. Grip attachment, elbows tucked at sides, forearms parallel to floor at start.',
+    exec:'Push down until arms fully extended. Squeeze at bottom. Return with control until forearms parallel again.',
+    mistakes:['Elbows drifting forward or flaring out (becomes a shoulder movement).','Not reaching full extension.','Excessive body lean or rocking.'],
+    phases:{p1:'Rope attachment lets wrists pronate at bottom — better mind-muscle connection.',p2:'Progress in 2.5–5 kg increments. Sets of 12–15 with good form first.',p3:'Pair with overhead tricep extension (trains the long head) for complete development.'},
+  },
+  'Cable flyes':{
+    muscles:['Chest (Sternal Head)','Anterior Delt'],
+    tips:['Slight forward lean in torso. Imagine hugging a tree.','Maintain slight elbow bend throughout — never fully extend.','Feel the stretch at full extension — that\'s where chest is maximally loaded.'],
+    setup:'Set cables to shoulder height. Stand in split stance in the center. Grip handles, arms wide, slight elbow bend.',
+    exec:'Bring hands together in front of chest in a wide arc. Hold 1 sec. Open slowly back to full stretch.',
+    mistakes:['Bending elbows too much (becomes a press).','Moving too fast through the eccentric.','Setting cables too low or too high (changes muscle activation).'],
+    phases:{p1:'Mid-cable height targets mid-chest. High-to-low: lower chest. Low-to-high: upper chest — rotate over weeks.',p2:'Priority: feel the contraction, not lifting heavy weight.',p3:'Add a 2-sec squeeze at peak contraction for intensity without extra load.'},
+  },
+  'Pull-ups / Lat pulldown':{
+    muscles:['Lats','Biceps','Rear Delt','Rhomboids'],
+    tips:['Initiate every rep by depressing shoulder blades (pull them down first).','Drive elbows DOWN and BACK — not just back.','Lean back slightly (15–20°) to maximize lat engagement.'],
+    setup:'Pull-ups: dead hang, overhand grip just outside shoulder-width. Pulldown: same grip, thighs braced under pad, slight lean back.',
+    exec:'Depress scapula. Pull bar/body to upper chest. Hold 1 sec with blades together. Lower with full control to full extension/dead hang.',
+    mistakes:['Chin tucked forward (turns into a bicep curl).','Shrugging shoulders UP as you fatigue.','Partial reps — not reaching full extension at the bottom.'],
+    phases:{p1:'If pull-ups not possible yet: use assisted machine or band. Lat pulldown is a direct substitute.',p2:'Progress to unassisted pull-ups when pulldown reaches bodyweight.',p3:'Weighted pull-ups with belt when you can hit 10 clean reps.'},
+  },
+  'Barbell row':{
+    muscles:['Mid/Lower Traps','Rhomboids','Lats','Biceps'],
+    tips:['Hinge to 45° (not parallel to floor) for best lower trap activation.','Pull to your lower abdomen — not upper chest.','Squeeze shoulder blades together at the top, hold 1 sec.'],
+    setup:'Hinge at hips to 45°. Overhand grip just outside shoulder-width. Neutral spine — big chest, flat back.',
+    exec:'Drive elbows back and up, pulling bar to lower abdomen. Squeeze at top. Lower with 2–3 sec control.',
+    mistakes:['Rounding the lower back under load.','Using too much leg drive / momentum.','Pulling to chest instead of abdomen.'],
+    phases:{p1:'Start light to master hip hinge and flat back. 3×10 at 50–60% 1RM.',p2:'Progressive overload in 2.5–5 kg increments. Form over weight always.',p3:'Pendlay row variation (bar returns to floor each rep) for explosive power.'},
+  },
+  'Single-arm dumbbell row':{
+    muscles:['Lats','Rhomboids','Mid Traps','Biceps'],
+    tips:['Keep the working side shoulder level throughout — no rotation.','Full stretch at the bottom — let the lat elongate completely.','Elbow drives UP and BACK in an arc, not straight back.'],
+    setup:'Hand and same-side knee on bench. Opposite foot on floor. Dumbbell hanging. Flat back.',
+    exec:'Pull dumbbell to hip level in a backward arc. Hold 1 sec at top. Lower slowly to full arm extension.',
+    mistakes:['Rotating torso to get the weight up (momentum cheat).','Not reaching full extension at the bottom.','Elbow flaring out to the side.'],
+    phases:{p1:'Build connection: pause 2 sec at top of every rep to feel the lat contract.',p2:'Increase dumbbell every 2 weeks once all reps hit with clean form.',p3:'Progress to chest-supported row for stricter form.'},
+  },
+  'Face pulls':{
+    muscles:['Rear Delt','External Rotators','Mid/Lower Traps'],
+    tips:['Set cable to eye height or slightly above.','Pull to your FACE — hands finish either side of your head.','Externally rotate at the top — think "double biceps pose".'],
+    setup:'Rope attachment, cable at eye level. Grip both ends of rope, palms down. Step back 2 steps.',
+    exec:'Pull rope toward face, elbows flaring out at ear height. At peak, rotate hands so palms face forward. Return slowly.',
+    mistakes:['Pulling too low (turns into a row — misses rear delts).','Using too much weight and losing external rotation.','Rushing the eccentric.'],
+    phases:{p1:'Don\'t ego lift — 15–20 reps with full ROM is the goal.',p2:'Increase weight slowly. If you can\'t externally rotate at the top, drop the weight.',p3:'Do these consistently — they\'re as much injury prevention as muscle building.'},
+  },
+  'Barbell curl':{
+    muscles:['Biceps','Brachialis'],
+    tips:['Pin elbows at your sides — they should not drift forward.','Full extension at the bottom — don\'t shortchange the eccentric.','Squeeze hard at peak contraction before lowering.'],
+    setup:'Stand, underhand grip shoulder-width. Elbows at sides.',
+    exec:'Curl bar in a smooth arc. Squeeze at top (bar near chin height). Lower with 2–3 sec control to full extension.',
+    mistakes:['Swinging torso to initiate the rep.','Elbows drifting forward as you curl.','Not lowering to full extension (partial reps).'],
+    phases:{p1:'Control the negative (lowering phase) — 3 sec down gives 2× the muscle stimulus.',p2:'EZ bar reduces wrist stress if straight bar is uncomfortable.',p3:'Supinate the wrist at the top of each rep for a stronger peak contraction.'},
+  },
+  'Hammer curls':{
+    muscles:['Brachialis','Brachioradialis','Biceps (Long Head)'],
+    tips:['Neutral grip throughout — palms facing each other.','Keep upper arms vertical and stationary.','Alternate arms for more control, or both together.'],
+    setup:'Stand with dumbbells at sides, neutral grip (palms facing body). Soft bend in knees.',
+    exec:'Curl one or both dumbbells up maintaining neutral grip. Squeeze at top. Lower with control.',
+    mistakes:['Rotating the wrist (defeats the purpose — becomes a regular curl).','Swinging elbows forward on the way up.','Only going to 90° instead of full curl.'],
+    phases:{p1:'Great finisher after barbell curls — keeps elbow fatigue manageable.',p2:'Incline dumbbell hammer curl increases stretch and isolates better.',p3:'Cross-body hammer curl for brachialis emphasis.'},
+  },
+  'Barbell back squat':{
+    muscles:['Quads','Glutes','Hamstrings','Core','Spinal Erectors'],
+    tips:['Sit BACK and DOWN — initiate with hips, not knees.','Drive knees out over toes throughout the entire movement.','Chest up, eyes forward or slightly up — avoid looking down.'],
+    setup:'Bar on traps (not neck). Feet shoulder-width, toes 15–30° out. Brace core with a big breath. Unrack by standing tall.',
+    exec:'Descend until thighs are parallel (or below). Keep chest tall. Drive through full foot to stand. Lock out at top.',
+    mistakes:['Butt wink (lumbar flexion at bottom — reduce depth or improve hip mobility).','Heels rising (weight too far forward — elevate heels or work ankle mobility).','Knees caving in (weak glutes — cue to push out).'],
+    phases:{p1:'High-bar back squat for learning phase. Focus on depth and knee tracking.',p2:'Add 2.5–5 kg per session while maintaining depth and neutral spine.',p3:'Low-bar squat in later phases for more hip hinge and greater load potential.'},
+  },
+  'Romanian deadlift':{
+    muscles:['Hamstrings','Glutes','Spinal Erectors'],
+    tips:['Keep the bar in contact with your legs the entire way down.','Push your hips BACK, not just bend forward.','Feel a deep hamstring stretch at the bottom — stop there, not at the floor.'],
+    setup:'Stand with bar at hip height. Overhand grip just outside hips. Soft knee bend. Chest tall, shoulder blades retracted.',
+    exec:'Hinge at hips pushing them back, lowering bar along legs to mid-shin. Feel the stretch. Drive hips forward to stand.',
+    mistakes:['Rounding the lower back under load.','Bending knees too much (becomes a regular deadlift).','Bar drifting away from the body.'],
+    phases:{p1:'Master the hip hinge with a broomstick before loading. Bar must stay close to body.',p2:'3×10–12 builds hypertrophy. Progress weight when form is consistent.',p3:'Single-leg RDL for unilateral work — exposes strength imbalances.'},
+  },
+  'Leg press':{
+    muscles:['Quads','Glutes','Hamstrings'],
+    tips:['Feet shoulder-width, mid-platform. Higher placement = more glutes. Lower = more quads.','Never fully lock out knees — maintain slight bend at the top.','Lower until hips just start to tuck — that\'s your range.'],
+    setup:'Sit with lower back and tailbone against pad. Feet shoulder-width on platform. Unlock safety and straighten legs.',
+    exec:'Lower sled with control until knees at ~90° or hips start to tuck. Press back through full foot without locking out.',
+    mistakes:['Hips/lower back lifting off pad (butt wink under load — risky).','Feet too low (excessive knee stress).','Half reps — not reaching adequate depth.'],
+    phases:{p1:'Safe machine to overload quads — volume phases work well (3×15–20).',p2:'Increase every session if form holds. Load can progress faster than free weights.',p3:'Single-leg press for unilateral strength and injury prevention.'},
+  },
+  'Walking lunges':{
+    muscles:['Quads','Glutes','Hamstrings','Balance'],
+    tips:['Long stride — back knee should nearly brush the floor.','Torso stays upright — avoid leaning forward excessively.','Drive through the heel of the front foot to stand.'],
+    setup:'Stand tall with dumbbells at sides. Take a large step forward.',
+    exec:'Lower back knee to just above the floor. Front thigh parallel to floor. Drive through front heel to bring back foot forward into the next step.',
+    mistakes:['Short strides (over-stresses the front knee).','Front knee caving inward.','Leaning torso forward significantly.'],
+    phases:{p1:'Bodyweight first to nail the gait and balance. 3×12 each leg.',p2:'Add dumbbells progressively. Barbell adds trunk stability demand.',p3:'Pause 1 sec at the bottom of each rep to remove momentum and increase difficulty.'},
+  },
+  'Leg curl':{
+    muscles:['Hamstrings (Biceps Femoris)'],
+    tips:['Full extension at the start — don\'t begin from a bent position.','Curl all the way up — full shortening of the hamstring.','Slow 2–3 sec lowering phase for maximum stimulus.'],
+    setup:'Lie face down on leg curl machine. Pad just above heels. Hips flat on pad. Hold handles.',
+    exec:'Curl legs up until hamstrings fully shortened (pad near glutes). Hold 1 sec. Lower with 3 sec control to full extension.',
+    mistakes:['Hips lifting off pad (reduces hamstring isolation).','Partial range of motion.','Rushing the eccentric — most growth happens on the way down.'],
+    phases:{p1:'3×12–15 is the sweet spot for hamstring hypertrophy.',p2:'Nordic hamstring curl (partner holds ankles) is one of the most effective exercises — add later.',p3:'Seated leg curl trains the long head with hip flexion for added stretch.'},
+  },
+  'Calf raises':{
+    muscles:['Gastrocnemius','Soleus'],
+    tips:['Full range — deep stretch at the bottom, full tiptoe rise at the top.','Pause 1 sec at the top and squeeze hard.','Slow eccentric — 3 sec lowering for maximum stimulus.'],
+    setup:'Stand on edge of a step with heels hanging off. Straight-leg targets gastrocnemius. Bent-knee targets soleus.',
+    exec:'Lower heels below the step for full stretch. Rise onto tiptoes. Pause and squeeze at top. Lower with control.',
+    mistakes:['Bouncing at the bottom (no stretch under tension).','Not reaching full plantarflexion at the top.','Using speed instead of slow control.'],
+    phases:{p1:'High reps (15–25) and high frequency (3× per week) works best for stubborn calves.',p2:'Seated calf raise trains the soleus — often neglected, include both variations.',p3:'Single-leg calf raises double the load without any equipment.'},
+  },
+  'Plank':{
+    muscles:['Transverse Abdominis','Rectus Abdominis','Obliques','Glutes'],
+    tips:['Squeeze EVERYTHING — glutes, quads, abs. A plank is a full-body brace.','Neutral spine — no sagging hips or piked hips.','Breathe steadily — don\'t hold your breath.'],
+    setup:'Forearms on floor, elbows under shoulders. Toes on floor. Body in a straight line from ankles to crown.',
+    exec:'Brace core as if about to be punched. Squeeze glutes and quads. Hold position. Breathe through the hold.',
+    mistakes:['Hips sagging down (end the set if you can\'t correct).','Hips piked up (too easy — lower them).','Looking up or forward — keep neck neutral.'],
+    phases:{p1:'3×20–30 sec. Build to 45 sec holds first.',p2:'Progress to 3×60 sec. Then add a weight plate on back.',p3:'RKC plank (max contraction) or plank with shoulder taps for a harder variant.'},
+  },
+  'Hanging knee raises':{
+    muscles:['Lower Abs','Hip Flexors','Grip'],
+    tips:['Tilt pelvis BACKWARD (posterior tilt) before lifting knees — this is the key.','Control the lowering — no swinging or momentum.','Dead hang fully between each rep.'],
+    setup:'Hang from pull-up bar with overhand grip. Arms fully extended. Body still.',
+    exec:'Tilt pelvis back. Bring knees toward chest. Hold 1 sec at the top. Lower with full control to dead hang.',
+    mistakes:['Swinging the body for momentum.','Not achieving posterior pelvic tilt (becomes a hip flexor exercise).','Partial range — not bringing knees above hip height.'],
+    phases:{p1:'Bent-knee raises target lower abs without extreme hip flexor strength demands.',p2:'Progress to straight leg raises when knee raises feel easy.',p3:'Windshield wipers (rotating legs side to side) for oblique work at advanced level.'},
+  },
+};
 
 const DAY_ICONS = {weights:'💪', run:'🏃', swim:'🏊', rest:'😴'};
 
@@ -1232,7 +1634,7 @@ function switchTab(name, btn) {
 
   if (name === 'progress') renderProgress();
 
-  if (name === 'plan') renderPlan();
+  if (name === 'workouts') renderWorkouts();
 
   if (name === 'food') renderFood();
 
@@ -1326,13 +1728,15 @@ function renderToday() {
 
       const done = !!dayChecked[i];
 
-      html += `<div class="exercise-item" onclick="toggleEx('${tk}',${i})">
+      const hasGuide = !!EXERCISE_GUIDES[ex.name];
 
-        <div class="ex-check ${done?'done':''}"></div>
+      html += `<div class="exercise-item">
 
-        <div class="ex-name ${done?'done':''}">${ex.name}</div>
+        <div class="ex-check ${done?'done':''}" onclick="toggleEx('${tk}',${i})"></div>
 
-        <div class="ex-sets">${ex.sets}×${ex.reps}</div>
+        <div class="ex-name ${done?'done':''}" onclick="toggleEx('${tk}',${i})" style="flex:1;">${ex.name}</div>
+
+        <div style="display:flex;align-items:center;gap:6px;">${hasGuide ? `<button style="background:rgba(96,165,250,0.12);border:none;color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;" onclick="openExGuide('${ex.name.replace(/'/g,"\\'")}')">GUIDE</button>` : ''}<div class="ex-sets">${ex.sets}×${ex.reps}</div></div>
 
       </div>`;
 
@@ -1442,8 +1846,53 @@ function renderToday() {
 
   </div>`;
 
+  // Water tracker
+  const water = getWater(tk);
+  const waterGoal = 8;
+  const waterPct = Math.min((water/waterGoal)*100, 100);
+  html += `<div class="card">
+
+    <div class="section-row">
+
+      <div class="card-label" style="margin:0;">WATER INTAKE 💧</div>
+
+      <span style="font-size:11px;color:var(--muted);">goal: ${waterGoal} cups</span>
+
+    </div>
+
+    <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px;">
+
+      <div style="font-family:var(--font-cond);font-size:32px;font-weight:700;color:var(--blue);line-height:1;">${water}</div>
+
+      <div style="font-size:14px;color:var(--muted);">/ ${waterGoal} cups</div>
+
+    </div>
+
+    <div class="pbar-bg"><div class="pbar-fill" style="width:${waterPct}%;background:var(--blue);"></div></div>
+
+    <div style="display:flex;gap:8px;margin-top:10px;">
+
+      <button style="flex:1;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.2);color:var(--blue);font-size:13px;font-weight:600;padding:8px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',1)">+ Cup</button>
+
+      <button style="flex:1;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.2);color:var(--blue);font-size:13px;font-weight:600;padding:8px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',2)">+ 2 Cups</button>
+
+      ${water > 0 ? `<button style="background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:600;padding:8px 12px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',-1)">–</button>` : ''}
+
+    </div>
+
+  </div>`;
+
   document.getElementById('today-content').innerHTML = html;
 
+}
+
+function getWater(tk) { return (get('water-log') || {})[tk] || 0; }
+
+function logWater(tk, delta) {
+  const log = get('water-log') || {};
+  log[tk] = Math.max(0, (log[tk] || 0) + delta);
+  save('water-log', log);
+  renderToday();
 }
 
 function toggleEx(key, idx) {
@@ -1876,20 +2325,120 @@ function logWeight() {
 
 // ============================================================
 
-function renderPlan() {
+// ============================================================
+// WORKOUTS TAB
+// ============================================================
 
-  document.getElementById('plan-workouts').innerHTML = Object.entries(WORKOUTS).map(([name,w]) => `
+let activeWorkoutSubtab = 'plan';
 
-    <div class="card" style="margin-bottom:8px;">
+function switchWorkoutSubtab(name) {
+  activeWorkoutSubtab = name;
+  ['plan','guides','cardio'].forEach(t => {
+    document.getElementById('wst-' + t).classList.toggle('active', t === name);
+    document.getElementById('wsp-' + t).classList.toggle('active', t === name);
+  });
+  if (name === 'guides') renderExGuidesList();
+}
 
-      <div class="card-label">${w.icon} ${name.toUpperCase()} · ${w.focus}</div>
+function renderWorkouts() {
+  // Render workout cards into #plan-workouts
+  document.getElementById('plan-workouts').innerHTML = Object.entries(WORKOUTS).map(([wname, w]) => {
+    const rows = w.exercises.map(ex => {
+      const hasGuide = !!EXERCISE_GUIDES[ex.name];
+      return `<div class="plan-ex-row">
+        <span style="flex:1;">${ex.name}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${hasGuide ? `<button style="background:rgba(96,165,250,0.12);border:none;color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;" onclick="openExGuide('${ex.name.replace(/'/g,"\\'")}')">GUIDE</button>` : ''}
+          <span class="plan-ex-sets">${ex.sets}×${ex.reps}</span>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;border:1px solid var(--border);">
+      <div class="card-label" style="margin-bottom:8px;">${w.icon} ${wname.toUpperCase()} · ${w.focus}</div>
+      ${rows}
+    </div>`;
+  }).join('');
 
-      ${w.exercises.map(ex=>`<div class="plan-ex-row"><span>${ex.name}</span><span class="plan-ex-sets">${ex.sets}×${ex.reps}</span></div>`).join('')}
+  // Re-render active sub-tab if guides
+  if (activeWorkoutSubtab === 'guides') renderExGuidesList();
+}
 
-    </div>
+function renderExGuidesList() {
+  const groups = {
+    'Push (Chest · Shoulders · Triceps)': WORKOUTS.Push.exercises.map(e => e.name),
+    'Pull (Back · Biceps · Rear Delts)':  WORKOUTS.Pull.exercises.map(e => e.name),
+    'Legs (Quads · Hamstrings · Core)':   WORKOUTS.Legs.exercises.map(e => e.name),
+  };
+  document.getElementById('wo-guides-list').innerHTML = Object.entries(groups).map(([group, exercises]) => {
+    const cards = exercises.map(name => {
+      const g = EXERCISE_GUIDES[name];
+      if (!g) return '';
+      return `<div class="guide-ex-card" onclick="openExGuide('${name.replace(/'/g,"\\'")}')">
+        <div class="guide-ex-title">${name}</div>
+        <div class="guide-ex-meta">
+          ${g.muscles.map(m => `<span style="background:rgba(96,165,250,0.1);color:var(--blue);padding:2px 7px;border-radius:100px;font-weight:600;">${m}</span>`).join('')}
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4;">${g.tips[0]}</div>
+      </div>`;
+    }).join('');
+    return `<div style="margin-bottom:6px;"><div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">${group.toUpperCase()}</div>${cards}</div>`;
+  }).join('');
+}
 
-  `).join('');
+// ============================================================
 
+// RECIPE & GUIDE MODALS
+
+// ============================================================
+
+function openRecipe(name) {
+  const rec = RECIPES[name];
+  if (!rec) return;
+  document.getElementById('recipe-name').textContent = name;
+  document.getElementById('recipe-badges').innerHTML =
+    `<span style="background:rgba(74,222,128,0.1);color:var(--green);font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;">⏱ ${rec.time}</span>` +
+    `<span style="background:rgba(96,165,250,0.1);color:var(--blue);font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;">📋 Prep: ${rec.prep}</span>`;
+  document.getElementById('recipe-ingredients').innerHTML = rec.ingredients.map(ing =>
+    `<div class="recipe-ingredient"><span style="font-weight:600;color:var(--green);min-width:60px;">${ing.qty}</span><span>${ing.item}</span></div>`
+  ).join('');
+  document.getElementById('recipe-steps').innerHTML = rec.steps.map((s,i) =>
+    `<div class="recipe-step"><span class="recipe-step-num">${i+1}</span><span>${s}</span></div>`
+  ).join('');
+  document.getElementById('recipe-note').innerHTML = rec.note ?
+    `<div class="recipe-note-box">💡 ${rec.note}</div>` : '';
+  document.getElementById('recipe-modal').classList.add('show');
+}
+
+function closeRecipeModal() {
+  document.getElementById('recipe-modal').classList.remove('show');
+}
+
+function openExGuide(name) {
+  const g = EXERCISE_GUIDES[name];
+  if (!g) return;
+  document.getElementById('guide-name').textContent = name;
+  document.getElementById('guide-muscles').innerHTML = g.muscles.map(m =>
+    `<span class="guide-muscle-tag">${m}</span>`
+  ).join('');
+  document.getElementById('guide-tips-list').innerHTML = g.tips.map(t =>
+    `<div class="guide-tip"><span style="color:var(--green);flex-shrink:0;">✓</span><span>${t}</span></div>`
+  ).join('');
+  document.getElementById('guide-setup').textContent = g.setup;
+  document.getElementById('guide-exec').textContent = g.exec;
+  document.getElementById('guide-mistakes').innerHTML = g.mistakes.map(m =>
+    `<div style="display:flex;gap:8px;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border);"><span style="color:var(--red);flex-shrink:0;">✕</span><span style="color:var(--muted);">${m}</span></div>`
+  ).join('');
+  document.getElementById('guide-phases').innerHTML =
+    `<div style="font-size:12px;color:var(--muted);line-height:1.6;">` +
+    `<div><span style="color:var(--blue);font-weight:700;">Phase 1</span> — ${g.phases.p1}</div>` +
+    `<div><span style="color:var(--amber);font-weight:700;">Phase 2</span> — ${g.phases.p2}</div>` +
+    `<div><span style="color:var(--green);font-weight:700;">Phase 3</span> — ${g.phases.p3}</div>` +
+    `</div>`;
+  document.getElementById('guide-modal').classList.add('show');
+}
+
+function closeGuideModal() {
+  document.getElementById('guide-modal').classList.remove('show');
 }
 
 // ============================================================
@@ -2010,6 +2559,68 @@ function calcMacros(food, grams) {
 
   };
 
+}
+
+// ============================================================
+// FOOD TAB SUB-TABS
+// ============================================================
+
+let activeFoodSubtab = 'diary';
+
+function switchFoodSubtab(name) {
+  activeFoodSubtab = name;
+  ['diary','meals','recipes'].forEach(t => {
+    document.getElementById('fst-' + t).classList.toggle('active', t === name);
+    document.getElementById('fsp-' + t).classList.toggle('active', t === name);
+  });
+  if (name === 'meals') renderFoodMeals();
+  if (name === 'recipes') renderFoodRecipes();
+}
+
+function renderFoodMeals() {
+  const dayOrder = [1,2,3,4,5,6,0];
+  const dayLabels = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  document.getElementById('food-meals-content').innerHTML = dayOrder.map((d, i) => {
+    const m = MEALS[d];
+    const dayType = DAY_SCHEDULE[d].type;
+    const typeColors = {weights:'var(--blue)',run:'var(--amber)',swim:'var(--green)',rest:'var(--muted)'};
+    const typeLabels = {weights:'Weights day',run:'Run day',swim:'Swim day',rest:'Rest / meal prep'};
+    return `<div style="margin-bottom:10px;background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;border:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-family:var(--font-cond);font-size:14px;font-weight:700;">${dayLabels[i]}</div>
+        <span style="font-size:10px;font-weight:700;color:${typeColors[dayType]};background:${typeColors[dayType]}18;padding:2px 8px;border-radius:100px;">${typeLabels[dayType]}</span>
+      </div>
+      ${['breakfast','lunch','dinner'].map(meal => {
+        const name = m[meal];
+        const recipeKey = Object.keys(RECIPES).find(k => name.toLowerCase().includes(k.toLowerCase()));
+        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--border);">
+          <span style="font-size:11px;font-weight:600;color:var(--muted);text-transform:capitalize;min-width:62px;">${meal}</span>
+          <span style="font-size:12px;flex:1;line-height:1.3;">${name}</span>
+          ${recipeKey ? `<button style="background:rgba(74,222,128,0.1);border:none;color:var(--green);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;white-space:nowrap;flex-shrink:0;" onclick="openRecipe('${recipeKey.replace(/'/g,"\\'")}')">RECIPE</button>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function renderFoodRecipes() {
+  document.getElementById('food-recipes-content').innerHTML = Object.keys(RECIPES).map(r => {
+    const rec = RECIPES[r];
+    return `<div class="guide-ex-card" onclick="openRecipe('${r.replace(/'/g,"\\'")}')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+        <div>
+          <div class="guide-ex-title">${r}</div>
+          <div class="guide-ex-meta" style="margin-top:4px;">
+            <span>⏱ ${rec.time}</span>
+            <span>📋 Prep: ${rec.prep}</span>
+            <span>🥦 ${rec.ingredients.length} ingredients</span>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:20px;flex-shrink:0;">›</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4;">${rec.steps[0]}</div>
+    </div>`;
+  }).join('');
 }
 
 function renderFood() {
@@ -2644,11 +3255,61 @@ function showToast(msg) {
 
 // ============================================================
 
+// ============================================================
+
+// PUSH NOTIFICATIONS
+
+// ============================================================
+
+function requestNotifPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    Notification.requestPermission().then(p => {
+      if (p === 'granted') {
+        scheduleWorkoutReminder();
+        showToast('Notifications enabled! 🔔');
+      }
+    });
+  }
+}
+
+function scheduleWorkoutReminder() {
+  if (!('serviceWorker' in navigator) || Notification.permission !== 'granted') return;
+  // Calculate ms until 7:00 AM tomorrow (or today if it hasn't happened yet)
+  const now = new Date();
+  const target = new Date(now);
+  target.setHours(7, 0, 0, 0);
+  if (now >= target) target.setDate(target.getDate() + 1);
+  const delay = target - now;
+  setTimeout(() => {
+    sendWorkoutNotif();
+    setInterval(sendWorkoutNotif, 24 * 60 * 60 * 1000);
+  }, delay);
+}
+
+function sendWorkoutNotif() {
+  if (Notification.permission !== 'granted') return;
+  const dow = new Date().getDay();
+  const day = DAY_SCHEDULE[dow];
+  let body;
+  if (day.type === 'weights') body = `💪 ${day.name} day — ${WORKOUTS[day.name].focus}. Time to lift!`;
+  else if (day.type === 'run') body = '🏃 Run day — lace up and get out there!';
+  else if (day.type === 'swim') body = '🏊 Swim day — pool session + sauna. Let\'s go!';
+  else body = '😴 Rest day — eat well, recover, meal prep.';
+  new Notification('Summer Plan 🌞', { body, icon: './icon.png' });
+}
+
 function init() {
 
   checkSetup();
 
   renderToday();
+
+  // Request notification permission after a short delay (non-intrusive)
+  setTimeout(requestNotifPermission, 3000);
+
+  // Resume notification schedule if already granted
+  if (Notification.permission === 'granted') scheduleWorkoutReminder();
 
 }
 
