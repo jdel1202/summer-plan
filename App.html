@@ -714,6 +714,23 @@
 
   </div>
 
+  <div class="card" style="margin-top:8px;">
+
+    <div class="card-label">DATA BACKUP</div>
+
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Export all your saved data to a file. Keep it safe — you can restore it here if you ever need to reinstall.</div>
+
+    <button class="btn" style="width:100%;margin-bottom:8px;" onclick="exportData()">Export all data</button>
+
+    <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;cursor:pointer;">
+      <span class="btn btn-secondary" style="width:100%;text-align:center;">Import backup file</span>
+      <input type="file" accept=".json" onchange="importData(event)" style="display:none;">
+    </label>
+
+    <div id="import-status" style="font-size:12px;margin-top:8px;text-align:center;"></div>
+
+  </div>
+
 </div>
 
 <!-- WORKOUTS -->
@@ -3788,6 +3805,53 @@ function showToast(msg) {
 
   toastTmr = setTimeout(() => t.classList.remove('show'), 2200);
 
+}
+
+// ============================================================
+
+// DATA EXPORT / IMPORT
+
+// ============================================================
+
+function exportData() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    try { data[key] = JSON.parse(localStorage.getItem(key)); }
+    catch { data[key] = localStorage.getItem(key); }
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href     = url;
+  a.download = `summer-plan-backup-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported!');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      Object.entries(data).forEach(([key, val]) => {
+        localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val));
+      });
+      document.getElementById('import-status').innerHTML =
+        `<span style="color:var(--green);">✓ Restored ${Object.keys(data).length} items. Reload to see your data.</span>`;
+      showToast('Backup restored!');
+      setTimeout(() => location.reload(), 1500);
+    } catch {
+      document.getElementById('import-status').innerHTML =
+        `<span style="color:var(--red);">Invalid backup file.</span>`;
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
 }
 
 // ============================================================
