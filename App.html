@@ -481,34 +481,28 @@
 
   <div class="stype-grid">
 
-    <button class="stype-btn" data-stype="Push" onclick="selectSType(this)">
-
+    <button class="stype-btn" data-stype="UpperA" onclick="selectSType(this)">
       <div class="stype-icon">💪</div>
-
-      <div class="stype-name">Push</div>
-
-      <div class="stype-sub">Chest · Shoulders · Tris</div>
-
+      <div class="stype-name">Upper A</div>
+      <div class="stype-sub">Push dominant</div>
     </button>
 
-    <button class="stype-btn" data-stype="Pull" onclick="selectSType(this)">
-
-      <div class="stype-icon">🏋️</div>
-
-      <div class="stype-name">Pull</div>
-
-      <div class="stype-sub">Back · Biceps · Delts</div>
-
-    </button>
-
-    <button class="stype-btn" data-stype="Legs" onclick="selectSType(this)">
-
+    <button class="stype-btn" data-stype="LowerA" onclick="selectSType(this)">
       <div class="stype-icon">🦵</div>
+      <div class="stype-name">Lower A</div>
+      <div class="stype-sub">Squat dominant</div>
+    </button>
 
-      <div class="stype-name">Legs</div>
+    <button class="stype-btn" data-stype="UpperB" onclick="selectSType(this)">
+      <div class="stype-icon">🏋️</div>
+      <div class="stype-name">Upper B</div>
+      <div class="stype-sub">Pull dominant</div>
+    </button>
 
-      <div class="stype-sub">Quads · Hams · Core</div>
-
+    <button class="stype-btn" data-stype="LowerB" onclick="selectSType(this)">
+      <div class="stype-icon">🔥</div>
+      <div class="stype-name">Lower B</div>
+      <div class="stype-sub">Hinge dominant</div>
     </button>
 
     <button class="stype-btn" data-stype="Run" onclick="selectSType(this)">
@@ -773,20 +767,21 @@
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
         <div style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.18);border-radius:var(--radius-sm);padding:10px 12px;">
           <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#60a5fa;margin-bottom:4px;">PHASE 1 · WKS 1–4 · FOUNDATION</div>
-          <div style="font-size:12px;color:var(--fg);margin-bottom:4px;line-height:1.5;">Learn movements, nail form, establish baseline weights. Do not chase heavy loads. Log every session.</div>
-          <div style="font-size:11px;color:var(--muted);line-height:1.5;"><span style="color:#60a5fa;font-weight:600;">Running:</span> Both runs at easy Zone 2 only — conversational pace. 30 min building to 35 min by week 4.</div>
+          <div style="font-size:12px;color:var(--fg);margin-bottom:4px;line-height:1.5;">Learn every movement, nail form, establish baseline weights. Do not chase heavy loads. Log every session. Dumbbells preferred — focus on movement quality.</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5;"><span style="color:#60a5fa;font-weight:600;">Running (Mon):</span> Easy Zone 2 only — conversational pace. 30 min building to 35 min by week 4. ~118–136 bpm.</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;"><span style="color:#60a5fa;font-weight:600;">Goals:</span> Attempt barbell back squat with empty bar by week 4. Attempt first bodyweight pull-up.</div>
           <div style="font-size:11px;color:var(--muted);margin-top:2px;"><span style="color:#60a5fa;font-weight:600;">Sauna:</span> 1–2 rounds only while body adapts.</div>
         </div>
         <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.18);border-radius:var(--radius-sm);padding:10px 12px;">
           <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#fbbf24;margin-bottom:4px;">PHASE 2 · WKS 5–9 · BUILD</div>
-          <div style="font-size:12px;color:var(--fg);margin-bottom:4px;line-height:1.5;">Progressive overload. Add 2.5–5 kg to main compounds every 2–3 weeks when hitting top of rep range cleanly.</div>
-          <div style="font-size:11px;color:var(--muted);line-height:1.5;"><span style="color:#fbbf24;font-weight:600;">Running (Sat):</span> 5 min warm-up jog, 6× (90s hard / 90s easy), 5 min cool-down. Wed stays Zone 2, building to 35–40 min.</div>
+          <div style="font-size:12px;color:var(--fg);margin-bottom:4px;line-height:1.5;">Progressive overload. Add 2.5–5 kg to main lifts every 2–3 weeks when hitting top of rep range cleanly. Transition goblet squat → barbell back squat. Begin bodyweight pull-ups if ready.</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5;"><span style="color:#fbbf24;font-weight:600;">Running (Mon):</span> Intervals — 5 min warm-up jog, 6× (90s hard / 90s easy), 5 min cool-down.</div>
           <div style="font-size:11px;color:var(--muted);margin-top:2px;"><span style="color:#fbbf24;font-weight:600;">Sauna:</span> Full 2-round protocol.</div>
         </div>
         <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.18);border-radius:var(--radius-sm);padding:10px 12px;">
           <div style="font-size:9px;font-weight:700;letter-spacing:0.09em;color:#4ade80;margin-bottom:4px;">PHASE 3 · WKS 10–14 · DEFINE</div>
-          <div style="font-size:12px;color:var(--fg);margin-bottom:4px;line-height:1.5;">Shift accessories to higher rep ranges (12–15). Keep compounds heavy. Introduce slight caloric deficit. Supersets on accessory work.</div>
-          <div style="font-size:11px;color:var(--muted);line-height:1.5;"><span style="color:#4ade80;font-weight:600;">Running (Sat):</span> 5 min warm-up, 20 min at 7/10 effort, 5 min cool-down. Wed extends to 40–45 min steady.</div>
+          <div style="font-size:12px;color:var(--fg);margin-bottom:4px;line-height:1.5;">Shift accessories to supersets and higher rep ranges (12–15). Keep main lifts heavy. Introduce slight caloric deficit. Barbell back squat and pull-ups now primary movements.</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5;"><span style="color:#4ade80;font-weight:600;">Running (Mon):</span> Tempo run — 5 min warm-up, 20 min at 7/10 effort (short phrases only), 5 min cool-down.</div>
           <div style="font-size:11px;color:var(--muted);margin-top:2px;"><span style="color:#4ade80;font-weight:600;">Sauna:</span> Full 2-round protocol.</div>
         </div>
       </div>
@@ -802,12 +797,12 @@
       <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">WEEKLY SCHEDULE</div>
       <div style="font-size:12px;margin-bottom:14px;">
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;">
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">MON</div><div style="font-size:10px;color:var(--muted);">Push</div></div>
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">TUE</div><div style="font-size:10px;color:var(--muted);">Pull</div></div>
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(251,191,36,0.08);"><div style="font-size:9px;font-weight:700;color:var(--amber);">WED</div><div style="font-size:10px;color:var(--muted);">Run</div></div>
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">THU</div><div style="font-size:10px;color:var(--muted);">Legs</div></div>
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(74,222,128,0.08);"><div style="font-size:9px;font-weight:700;color:var(--green);">FRI</div><div style="font-size:10px;color:var(--muted);">Swim</div></div>
-          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(251,191,36,0.08);"><div style="font-size:9px;font-weight:700;color:var(--amber);">SAT</div><div style="font-size:10px;color:var(--muted);">Run</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(251,191,36,0.08);"><div style="font-size:9px;font-weight:700;color:var(--amber);">MON</div><div style="font-size:10px;color:var(--muted);">Run</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">TUE</div><div style="font-size:10px;color:var(--muted);">Upper A</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">WED</div><div style="font-size:10px;color:var(--muted);">Lower A</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">THU</div><div style="font-size:10px;color:var(--muted);">Upper B</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(96,165,250,0.1);"><div style="font-size:9px;font-weight:700;color:var(--blue);">FRI</div><div style="font-size:10px;color:var(--muted);">Lower B</div></div>
+          <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(74,222,128,0.08);"><div style="font-size:9px;font-weight:700;color:var(--green);">SAT</div><div style="font-size:10px;color:var(--muted);">Swim</div></div>
           <div style="padding:6px 2px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.04);"><div style="font-size:9px;font-weight:700;color:var(--muted);">SUN</div><div style="font-size:10px;color:var(--muted);">Rest</div></div>
         </div>
       </div>
@@ -840,15 +835,15 @@
       <div style="font-size:13px;margin-bottom:16px;">
         <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
           <span style="font-size:9px;font-weight:700;background:rgba(96,165,250,0.1);color:#60a5fa;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 1–4</span>
-          <span style="color:var(--muted);">Both runs (Wed + Sat) at easy Zone 2 only — conversational pace. 30 min building to 35 min by week 4. ~118–136 bpm.</span>
+          <span style="color:var(--muted);">Monday run at easy Zone 2 only — conversational pace. 30 min building to 35 min by week 4. ~118–136 bpm.</span>
         </div>
         <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
           <span style="font-size:9px;font-weight:700;background:rgba(251,191,36,0.1);color:#fbbf24;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 5–9</span>
-          <span style="color:var(--muted);">Sat = intervals: 5 min warm-up jog, 6× (90s hard / 90s easy), 5 min cool-down. Wed stays Zone 2, building to 35–40 min.</span>
+          <span style="color:var(--muted);">Monday = intervals: 5 min warm-up jog, 6× (90s hard / 90s easy), 5 min cool-down.</span>
         </div>
         <div style="display:flex;gap:10px;padding:8px 0;align-items:flex-start;">
           <span style="font-size:9px;font-weight:700;background:rgba(74,222,128,0.1);color:#4ade80;padding:3px 7px;border-radius:4px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;">WK 10–14</span>
-          <span style="color:var(--muted);">Sat = tempo run: 5 min warm-up, 20 min at 7/10 effort (short phrases only), 5 min cool-down. Wed extends to 40–45 min steady.</span>
+          <span style="color:var(--muted);">Monday = tempo run: 5 min warm-up, 20 min at 7/10 effort (can speak but only short phrases), 5 min cool-down.</span>
         </div>
       </div>
       <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;">RUN FORM TIPS</div>
@@ -1146,47 +1141,55 @@
 
 const WORKOUTS = {
 
-  Push: { icon:'💪', focus:'Chest · Shoulders · Triceps', exercises:[
-    {name:'Barbell bench press',sets:4,reps:'6–8',rest:90,note:'Primary chest and strength builder. Control the descent.'},
-    {name:'Incline dumbbell press',sets:3,reps:'10–12',rest:90,note:'Hits upper chest which flat bench underserves. 30–45 degree incline.'},
-    {name:'Seated dumbbell overhead press',sets:3,reps:'10–12',rest:90,note:'Shoulder mass and strength. Keep core braced, do not arch lower back.'},
-    {name:'Lateral raises',sets:3,reps:'15',rest:45,note:'Shoulder width and definition. Slight forward lean, lead with elbows.'},
-    {name:'Tricep pushdowns',sets:3,reps:'12–15',rest:45,note:'Use rope or bar attachment. Keep elbows pinned to sides.'},
-    {name:'Cable flyes',sets:2,reps:'15',rest:45,note:'Full stretch at the bottom, squeeze at the top. Light weight.'},
+  UpperA: { icon:'💪', focus:'Chest · Shoulders · Triceps · Back (balance)', exercises:[
+    {name:'Dumbbell bench press',sets:4,reps:'8–10',rest:90,note:'Lie flat, lower DBs to chest level, press explosively up. Dumbbells allow more natural wrist and shoulder movement than barbell.'},
+    {name:'Incline dumbbell press',sets:3,reps:'10–12',rest:90,note:'Set bench to 30–45 degrees. Targets upper chest which flat press underserves.'},
+    {name:'Dumbbell overhead press',sets:3,reps:'10–12',rest:90,note:'Seated or standing. Core braced, do not arch lower back. Dumbbells allow natural arc of movement.'},
+    {name:'Dumbbell bent-over row',sets:3,reps:'10–12 each',rest:60,note:'Balancing pull movement on push day — never skip this. Brace one knee and hand on bench. Pull DB to hip, not armpit. Full stretch at the bottom.'},
+    {name:'Lateral raises',sets:3,reps:'15',rest:45,note:'Slight forward lean, lead with elbows not wrists. Keep a soft bend in the elbow. Light weight — form is everything here.'},
+    {name:'Tricep pushdowns',sets:3,reps:'12–15',rest:45,note:'Rope or bar attachment. Elbows pinned to sides throughout. Full extension at the bottom.'},
   ]},
 
-  Pull: { icon:'🏋️', focus:'Back · Biceps · Rear Delts', exercises:[
-    {name:'Pull-ups / Lat pulldown',sets:4,reps:'6–10',rest:90,note:'If you cannot do full bodyweight pull-ups, use lat pulldown and build toward them. Pull-ups are the goal.'},
-    {name:'Barbell or cable row',sets:3,reps:'10–12',rest:90,note:'Primary back thickness builder. Chest up, pull to lower chest.'},
-    {name:'Single-arm dumbbell row',sets:3,reps:'10–12 each',rest:60,note:'Full range of motion. Corrects left/right imbalances.'},
-    {name:'Face pulls',sets:3,reps:'15',rest:45,note:'Rear delts and rotator cuff health. Non-negotiable for long-term shoulder health. Rope attachment, pull to face.'},
-    {name:'Barbell curl',sets:3,reps:'10–12',rest:45,note:'Do not swing. Full extension at the bottom.'},
-    {name:'Hammer curls',sets:2,reps:'12',rest:45,note:'Neutral grip. Targets brachialis for arm thickness.'},
+  LowerA: { icon:'🦵', focus:'Quads · Hamstrings · Glutes · Core', exercises:[
+    {name:'Goblet squat',sets:4,reps:'10–12',rest:90,note:'Phase 1 only. Hold one heavy DB at chest. Feet shoulder-width, toes slightly out. Squat to depth. Phase 2+: transition to Barbell Back Squat — start with empty bar, go to depth, chest up, knees track over toes.'},
+    {name:'Dumbbell Romanian deadlift',sets:3,reps:'10–12',rest:90,note:'Hinge at hips, soft knee bend, push hips back. Feel the hamstring stretch. DBs stay close to legs. More forgiving than barbell RDL for beginners.'},
+    {name:'Leg press',sets:3,reps:'12–15',rest:75,note:'Extra quad volume without loading the spine again after squats. Full range — do not lock knees at the top. Feet shoulder-width on platform.'},
+    {name:'Dumbbell walking lunges',sets:3,reps:'12 each',rest:60,note:'Unilateral work catches imbalances early. Torso upright, front knee tracks over toe. Back knee lowers toward floor without touching.'},
+    {name:'Leg curl',sets:3,reps:'12–15',rest:45,note:'Control the negative (lowering) phase — 2–3 seconds down. Direct hamstring isolation.'},
+    {name:'Calf raises',sets:4,reps:'20',rest:45,note:'Full range — stretch at bottom, pause and squeeze at top. Calves respond well to high reps.'},
+    {name:'Plank',sets:3,reps:'45–60s',rest:45,note:'Neutral spine. Hips level — do not sag or pike. Progress from 45 sec to 60 sec by week 4.'},
+    {name:'Hanging knee raises',sets:3,reps:'12',rest:45,note:'Control the swing. Bring knees to chest, lower slowly. Progress to straight leg raises in Phase 2.'},
   ]},
 
-  Legs: { icon:'🦵', focus:'Quads · Hamstrings · Glutes · Core', exercises:[
-    {name:'Barbell back squat',sets:4,reps:'6–8',rest:90,note:'The single most effective lower body movement. Go to depth — thighs at minimum parallel. Chest up, knees track over toes.'},
-    {name:'Romanian deadlift',sets:3,reps:'10–12',rest:90,note:'Hamstrings and glutes. Hinge at the hips, slight knee bend, feel the hamstring stretch. Bar stays close to legs.'},
-    {name:'Leg press',sets:3,reps:'12–15',rest:75,note:'Extra quad volume without loading the spine again after squats. Full range — do not lock knees at the top.'},
-    {name:'Walking lunges',sets:3,reps:'12 each',rest:60,note:'Unilateral work catches imbalances early. Keep torso upright. Can hold dumbbells for added load.'},
-    {name:'Leg curl',sets:3,reps:'12–15',rest:45,note:'Direct hamstring isolation. Control the negative (lowering) phase.'},
-    {name:'Calf raises',sets:4,reps:'20',rest:45,note:'Full range — stretch at the bottom, pause at the top. Can use machine or standing with dumbbells.'},
-    {name:'Plank',sets:3,reps:'45–60s',rest:45,note:'Neutral spine. Do not let hips sag or pike. Progress to 60 sec by week 4.'},
-    {name:'Hanging knee raises',sets:3,reps:'12',rest:45,note:'From a pull-up bar. Control the swing. Progress to straight leg raises in Phase 2.'},
+  UpperB: { icon:'🏋️', focus:'Back · Biceps · Rear Delts · Shoulders (balance)', exercises:[
+    {name:'Lat pulldown',sets:4,reps:'8–10',rest:90,note:'Phase 1 primary. Wide overhand grip, pull bar to upper chest, lean back slightly. Phase 2+: attempt bodyweight pull-ups — if only 2–3 reps, do those then finish sets on lat pulldown.'},
+    {name:'Cable row',sets:3,reps:'10–12',rest:90,note:'Seated, neutral grip. Chest up, pull to lower chest. Squeeze shoulder blades together at the top. Primary back thickness builder.'},
+    {name:'Single-arm dumbbell row',sets:3,reps:'10–12 each',rest:60,note:'Brace one hand and knee on bench. Pull DB to hip, not armpit. Full stretch at the bottom. Corrects left/right imbalances.'},
+    {name:'Dumbbell shoulder press',sets:3,reps:'10–12',rest:90,note:'Balancing push movement on pull day. Seated for stability. Core braced.'},
+    {name:'Face pulls',sets:3,reps:'15',rest:45,note:'Rope attachment at face height. Pull to face, elbows flaring out. Non-negotiable for long-term shoulder and rotator cuff health. Light weight, strict form.'},
+    {name:'Dumbbell curl',sets:3,reps:'10–12',rest:45,note:'Alternate arms or simultaneous. Do not swing. Full extension at the bottom of each rep.'},
+    {name:'Hammer curls',sets:2,reps:'12',rest:45,note:'Neutral grip (palms facing each other). Targets brachialis for arm thickness.'},
+  ]},
+
+  LowerB: { icon:'🔥', focus:'Hamstrings · Glutes · Quads · Core', exercises:[
+    {name:'Dumbbell Romanian deadlift',sets:4,reps:'10–12',rest:90,note:'Primary hinge movement. Same posterior chain loading as barbell RDL, far more beginner friendly. Hinge at hips, feel the hamstring stretch, drive hips forward to stand.'},
+    {name:'Bulgarian split squat',sets:3,reps:'8–10 each',rest:90,note:'Rear foot elevated on bench. Start with bodyweight — these are harder than they look. Add light DBs in Phase 2. Highly effective for glutes and quads. Keep torso upright.'},
+    {name:'Hip thrust',sets:3,reps:'12',rest:75,note:'Use machine if available, otherwise bodyweight. Squeeze glutes hard at the top. Covers glute activation that squats and deadlifts alone do not fully provide.'},
+    {name:'Leg extension',sets:3,reps:'15',rest:45,note:'Direct quad isolation to complement the hinge-heavy session. Full extension at the top, controlled lower.'},
+    {name:'Calf raises',sets:4,reps:'20',rest:45,note:'Full range — stretch at bottom, pause and squeeze at top.'},
+    {name:'Dead bug',sets:3,reps:'10 each',rest:45,note:'Lie on back, arms vertical, knees at 90 degrees. Lower opposite arm and leg toward floor without letting lower back arch. Slow and controlled. Excellent for core stability.'},
   ]},
 
 };
 
 const DAY_SCHEDULE = {
-
-  1:{name:'Push',type:'weights',recovery:['Sauna']},
-  2:{name:'Pull',type:'weights',recovery:['Sauna']},
-  3:{name:'Run',type:'run',recovery:['Pool']},
-  4:{name:'Legs',type:'weights',recovery:['Sauna']},
-  5:{name:'Swim',type:'swim',recovery:['Sauna']},
-  6:{name:'Run',type:'run',recovery:['Pool']},
-  0:{name:'Rest',type:'rest',recovery:[]},
-
+  1:{name:'Run',   type:'run',     recovery:['Pool']},
+  2:{name:'UpperA',type:'weights', recovery:['Sauna']},
+  3:{name:'LowerA',type:'weights', recovery:['Sauna']},
+  4:{name:'UpperB',type:'weights', recovery:['Sauna']},
+  5:{name:'LowerB',type:'weights', recovery:['Sauna']},
+  6:{name:'Swim',  type:'swim',    recovery:['Sauna']},
+  0:{name:'Rest',  type:'rest',    recovery:[]},
 };
 
 const MEALS = {
@@ -2351,7 +2354,7 @@ function selectSType(btn) {
 
   document.getElementById('log-form').style.display = 'block';
 
-  const isW = ['Push','Pull','Legs'].includes(curSType);
+  const isW = ['UpperA','LowerA','UpperB','LowerB'].includes(curSType);
 
   document.getElementById('weights-form').style.display = isW ? 'block' : 'none';
 
@@ -2669,7 +2672,7 @@ function renderProgress() {
 
   // PRs
 
-  const mainLifts = ['Barbell bench press','Barbell back squat','Romanian deadlift','Pull-ups / Lat pulldown','Overhead press','Barbell row'];
+  const mainLifts = ['Dumbbell bench press','Goblet squat','Dumbbell Romanian deadlift','Lat pulldown','Dumbbell overhead press','Cable row'];
 
   const prKeys = Object.keys(prs);
 
@@ -2778,9 +2781,10 @@ function renderWorkouts() {
 
 function renderExGuidesList() {
   const groups = {
-    'Push (Chest · Shoulders · Triceps)': WORKOUTS.Push.exercises.map(e => e.name),
-    'Pull (Back · Biceps · Rear Delts)':  WORKOUTS.Pull.exercises.map(e => e.name),
-    'Legs (Quads · Hamstrings · Core)':   WORKOUTS.Legs.exercises.map(e => e.name),
+    'Upper A (Push dominant)':  WORKOUTS.UpperA.exercises.map(e => e.name),
+    'Lower A (Squat dominant)': WORKOUTS.LowerA.exercises.map(e => e.name),
+    'Upper B (Pull dominant)':  WORKOUTS.UpperB.exercises.map(e => e.name),
+    'Lower B (Hinge dominant)': WORKOUTS.LowerB.exercises.map(e => e.name),
   };
   document.getElementById('wo-guides-list').innerHTML = Object.entries(groups).map(([group, exercises]) => {
     const cards = exercises.map(name => {
@@ -3004,6 +3008,25 @@ function saveCustomMealPlan(p) { save('custom-meal-plan', p); }
 
 let _pickerDay = null, _pickerMeal = null, _pickerFilter = 'all';
 
+function getDayMacros(dayPlan) {
+  let cal = 0, protein = 0, carbs = 0, fat = 0;
+  MEAL_SLOTS.forEach(slot => {
+    const name = dayPlan[slot];
+    if (!name) return;
+    const rec = RECIPES[name];
+    if (rec && rec.macros) {
+      cal     += rec.macros.cal     || 0;
+      protein += rec.macros.protein || 0;
+      carbs   += rec.macros.carbs   || 0;
+      fat     += rec.macros.fat     || 0;
+    } else {
+      const snack = [...SNACKS.pre, ...SNACKS.evening].find(s => s.name === name);
+      if (snack) { cal += snack.cal || 0; protein += snack.protein || 0; }
+    }
+  });
+  return { cal, protein, carbs, fat };
+}
+
 function renderFoodMeals() {
   const plan = getCustomMealPlan();
   const typeColors = {weights:'var(--blue)',run:'var(--amber)',swim:'var(--green)',rest:'var(--muted)'};
@@ -3031,12 +3054,22 @@ function renderFoodMeals() {
           </div>
         </div>`;
       }).join('');
+      const macros = getDayMacros(dayPlan);
+      const macroBar = macros.cal > 0
+        ? `<div style="display:flex;gap:10px;padding:5px 0 2px;border-top:1px solid var(--border);margin-top:4px;flex-wrap:wrap;">
+            <span style="font-size:11px;font-weight:700;color:var(--fg);">${macros.cal} kcal</span>
+            <span style="font-size:11px;color:var(--muted);">P <span style="color:var(--green);font-weight:600;">${macros.protein}g</span></span>
+            ${macros.carbs ? `<span style="font-size:11px;color:var(--muted);">C <span style="font-weight:600;">${macros.carbs}g</span></span>` : ''}
+            ${macros.fat   ? `<span style="font-size:11px;color:var(--muted);">F <span style="font-weight:600;">${macros.fat}g</span></span>` : ''}
+          </div>`
+        : '';
       return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
           <div style="font-family:var(--font-cond);font-size:14px;font-weight:700;">${DAY_LABELS[i]}</div>
           <span style="font-size:10px;font-weight:700;color:${typeColors[dayType]};background:${typeColors[dayType]}18;padding:2px 8px;border-radius:100px;">${typeLabels[dayType]}</span>
         </div>
         ${slotsHtml}
+        ${macroBar}
       </div>`;
     }).join('') +
     `<button class="btn" style="margin-top:4px;width:100%;" onclick="syncShopFromPlan();switchTab('shop',document.querySelector('[onclick*=shop]'));showToast('Shopping list updated!')">
