@@ -9,12 +9,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Summer Plan">
-  <meta name="theme-color" content="#0d0d0d">
+  <meta name="apple-mobile-web-app-title" content="Forma">
+  <meta name="theme-color" content="#0d0d12">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="manifest" href="manifest.json">
 
-  <title>Summer Plan Tracker</title>
+  <title>Forma</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 
@@ -26,13 +26,13 @@
 
     :root {
 
-      --bg: #0d0d0d; --surface: #181818; --card: #1f1f1f; --border: #2e2e2e;
+      --bg: #0d0d12; --surface: #14141c; --card: #1c1c28; --border: #2a2a3e;
 
-      --border-strong: #444; --text: #e8e6e0; --muted: #777; --faint: #3d3d3d;
+      --border-strong: #46467a; --text: #f0f0ff; --muted: #7a7a9a; --faint: #26263a;
 
-      --green: #4ade80; --amber: #fbbf24; --blue: #60a5fa; --red: #f87171;
+      --green: #20d9a0; --amber: #fbbf24; --blue: #7c7ded; --red: #f96585;
 
-      --radius: 10px; --radius-sm: 6px;
+      --radius: 12px; --radius-sm: 7px;
 
       --font: 'Barlow', sans-serif; --font-cond: 'Barlow Condensed', sans-serif;
 
@@ -46,7 +46,7 @@
 
     .setup-box { width: 100%; max-width: 360px; text-align: center; }
 
-    .setup-icon { font-size: 52px; margin-bottom: 16px; }
+    .setup-icon { font-size: 48px; margin-bottom: 16px; color: var(--green); line-height: 1; }
 
     .setup-title { font-family: var(--font-cond); font-size: 34px; font-weight: 700; margin-bottom: 8px; }
 
@@ -54,15 +54,15 @@
 
     /* Header */
 
-    .app-header { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--border); padding: calc(13px + env(safe-area-inset-top)) 16px 13px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
+    .app-header { position: sticky; top: 0; background: rgba(13,13,18,0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); padding: calc(13px + env(safe-area-inset-top)) 16px 13px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
 
-    .app-title { font-family: var(--font-cond); font-size: 20px; font-weight: 700; letter-spacing: 0.04em; }
+    .app-title { font-family: var(--font-cond); font-size: 20px; font-weight: 700; letter-spacing: 0.12em; color: var(--text); }
 
     .week-badge { font-family: var(--font-cond); font-size: 11px; font-weight: 700; letter-spacing: 0.09em; padding: 4px 10px; border-radius: 100px; }
 
     /* Bottom nav */
 
-    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 440px; background: var(--surface); border-top: 1px solid var(--border); display: flex; z-index: 10; padding-bottom: env(safe-area-inset-bottom); }
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 440px; background: rgba(20,20,28,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--border); box-shadow: 0 -1px 24px rgba(0,0,0,0.5); display: flex; z-index: 10; padding-bottom: env(safe-area-inset-bottom); }
 
     .nav-btn { flex: 1; background: none; border: none; padding: 11px 0 9px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--faint); transition: color 0.15s; }
 
@@ -80,13 +80,13 @@
 
     /* Cards */
 
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 15px; margin-bottom: 10px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 15px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
 
     .card-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 9px; }
 
     /* Day banner */
 
-    .day-banner { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; }
+    .day-banner { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
 
     .day-icon { width: 54px; height: 54px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
 
@@ -108,7 +108,7 @@
 
     .ex-check.done { background: var(--green); border-color: var(--green); }
 
-    .ex-check.done::after { content: ''; width: 5px; height: 9px; border: 2px solid #0a0a0a; border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); display: block; }
+    .ex-check.done::after { content: ''; width: 5px; height: 9px; border: 2px solid #050e0b; border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); display: block; }
 
     .ex-name { flex: 1; font-size: 13px; font-weight: 500; }
 
@@ -160,7 +160,7 @@
 
     /* Buttons */
 
-    .btn { background: var(--green); color: #080808; border: none; border-radius: var(--radius); padding: 12px 20px; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; transition: opacity 0.15s; }
+    .btn { background: var(--green); color: #050e0b; border: none; border-radius: var(--radius); padding: 12px 20px; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; transition: opacity 0.15s; letter-spacing: 0.01em; }
 
     .btn:hover { opacity: 0.88; }
 
@@ -220,7 +220,7 @@
 
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
 
-    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 13px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 13px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
 
     .stat-lbl { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
 
@@ -276,7 +276,7 @@
 
     /* Toast */
 
-    .toast { position: fixed; bottom: calc(88px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: var(--green); color: #080808; padding: 9px 20px; border-radius: 100px; font-size: 13px; font-weight: 600; z-index: 200; opacity: 0; transition: opacity 0.25s; pointer-events: none; white-space: nowrap; }
+    .toast { position: fixed; bottom: calc(88px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: var(--green); color: #050e0b; padding: 9px 20px; border-radius: 100px; font-size: 13px; font-weight: 700; z-index: 400; opacity: 0; transition: opacity 0.25s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 20px rgba(32,217,160,0.35); }
 
     .toast.show { opacity: 1; }
 
@@ -328,9 +328,9 @@
     .nutri-food-del:hover { color: var(--red); }
     .add-food-row { display: flex; align-items: center; gap: 7px; padding: 10px 15px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: color 0.15s; }
     .add-food-row:hover { color: var(--green); }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: none; align-items: flex-end; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 200; display: none; align-items: flex-end; }
     .modal-overlay.show { display: flex; }
-    .modal-sheet { background: var(--surface); border-radius: 18px 18px 0 0; width: 100%; max-width: 440px; margin: 0 auto; padding-bottom: calc(20px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; }
+    .modal-sheet { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-width: 440px; margin: 0 auto; padding-bottom: calc(20px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; box-shadow: 0 -4px 40px rgba(0,0,0,0.6); }
     .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px 12px; border-bottom: 1px solid var(--border); }
     .modal-title { font-family: var(--font-cond); font-size: 18px; font-weight: 700; letter-spacing: 0.03em; }
     .modal-close { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; padding: 0 2px; }
@@ -412,11 +412,11 @@
 
   <div class="setup-box">
 
-    <div class="setup-icon">🌱</div>
+    <div class="setup-icon">◈</div>
 
-    <h1 class="setup-title">Summer Plan</h1>
+    <h1 class="setup-title">Forma</h1>
 
-    <p class="setup-sub">Set your start date and the app will track your week, nutrition goals, and daily habits.</p>
+    <p class="setup-sub">Set your start date and Forma will track your nutrition, habits, and daily progress.</p>
 
     <label style="font-size:11px;font-weight:600;letter-spacing:0.09em;color:var(--muted);display:block;text-align:left;margin-bottom:6px;">START DATE</label>
 
@@ -432,7 +432,7 @@
 
 <header class="app-header">
 
-  <span class="app-title">SUMMER PLAN</span>
+  <span class="app-title">FORMA</span>
 
   <div style="display:flex;align-items:center;gap:8px;">
     <span class="week-badge" id="week-badge">WEEK 1 · PHASE 1</span>
@@ -3553,7 +3553,7 @@ function exportData() {
   const a    = document.createElement('a');
   const date = new Date().toISOString().slice(0,10);
   a.href     = url;
-  a.download = `summer-plan-backup-${date}.json`;
+  a.download = `forma-backup-${date}.json`;
   a.click();
   URL.revokeObjectURL(url);
   showToast('Data exported!');
