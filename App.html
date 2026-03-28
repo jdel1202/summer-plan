@@ -722,7 +722,10 @@
         <input type="text" id="recipe-prep-input" placeholder="e.g. 5 min, Night before" style="margin-bottom:12px;">
         <div class="section-row" style="margin-bottom:6px;">
           <span class="mg-lbl" style="margin:0;">INGREDIENTS</span>
-          <button class="btn btn-sm btn-secondary" onclick="addIngredientRow()">+ Row</button>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-sm btn-secondary" onclick="openIngLibModal()">Browse library</button>
+            <button class="btn btn-sm btn-secondary" onclick="addIngredientRow()">+ Row</button>
+          </div>
         </div>
         <div id="recipe-ing-list" style="margin-bottom:12px;"></div>
         <div class="section-row" style="margin-bottom:6px;">
@@ -793,31 +796,45 @@
   </div>
 </div>
 
+<!-- INGREDIENT LIBRARY MODAL -->
+<div class="modal-overlay" id="ing-lib-modal" style="z-index:300;" onclick="if(event.target===this)closeIngLibModal()">
+  <div class="modal-sheet" style="max-height:85vh;overflow-y:auto;">
+    <div class="modal-header">
+      <span class="modal-title">Ingredient Library</span>
+      <button class="modal-close" onclick="closeIngLibModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="search" id="ing-lib-search" placeholder="Search ingredients..." oninput="renderIngLibList(this.value)" style="margin-bottom:10px;">
+      <div id="ing-lib-list" style="max-height:280px;overflow-y:auto;"></div>
+      <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:12px;">
+        <span class="mg-lbl">ADD NEW TO LIBRARY</span>
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:6px;margin-bottom:8px;">
+          <input type="text" id="ing-lib-new-qty" placeholder="default qty" style="margin-bottom:0;">
+          <input type="text" id="ing-lib-new-name" placeholder="ingredient name" style="margin-bottom:0;">
+        </div>
+        <button class="btn" onclick="addIngToLib()">Add to Library</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- SHOP -->
 
 <div class="tab" id="tab-shop">
 
-  <div class="card" style="margin-bottom:8px;">
-    <div class="section-row" style="margin-bottom:6px;">
-      <div class="card-label" style="margin:0;">FROM MEAL PLAN 🛒</div>
-      <button class="btn btn-sm btn-secondary" onclick="syncShopFromPlan()">Sync plan</button>
-    </div>
-    <div id="shop-plan-items" style="font-size:13px;color:var(--muted);">Tap "Sync plan" after setting your weekly meal plan.</div>
-  </div>
-
   <div class="card">
 
-    <div class="section-row">
+    <div class="section-row" style="margin-bottom:6px;">
 
-      <div class="card-label" style="margin:0;">MY LIST</div>
+      <div class="card-label" style="margin:0;">SHOPPING LIST 🛒</div>
 
-      <button class="btn btn-sm btn-secondary" onclick="clearShop()">Clear all</button>
+      <button class="btn btn-sm btn-secondary" onclick="syncShopFromPlan()">Re-sync</button>
 
     </div>
 
     <div id="shop-progress" style="font-size:12px;color:var(--muted);margin-bottom:8px;"></div>
 
-    <div id="shop-list"></div>
+    <div id="shop-plan-items" style="font-size:13px;color:var(--muted);"></div>
 
   </div>
 
@@ -1711,8 +1728,6 @@ function renderToday() {
 
   const dow = new Date().getDay();
 
-  const meals = MEALS[dow];
-
   const tk = todayKey();
 
   const mealLog = getMealLog();
@@ -1720,6 +1735,10 @@ function renderToday() {
   const dayMeals = mealLog[tk] || {};
 
   const week = getCurrentWeek();
+
+  const customPlan = getCustomMealPlan();
+
+  const planForToday = customPlan[dow] || {};
 
   document.getElementById('week-badge').textContent = `WEEK ${week}`;
 
@@ -1746,23 +1765,31 @@ function renderToday() {
   `;
 
   // Meals
+  const mealSlotDefs = [
+    {slot:'breakfast', label:'Breakfast'},
+    {slot:'lunch',     label:'Lunch'},
+    {slot:'dinner',    label:'Dinner'},
+  ];
+  const hasPlan = mealSlotDefs.some(m => planForToday[m.slot]);
 
-  html += `<div class="card"><div class="card-label">MEALS</div>`;
-
-  ['breakfast','lunch','dinner'].forEach(m => {
-
-    const done = !!dayMeals[m];
-
-    html += `<div class="meal-item" onclick="toggleMeal('${tk}','${m}')">
-
-      <div class="meal-time">${m}</div>
-
-      <div class="meal-desc ${done?'done':''}">${meals[m]}</div>
-
-      <div class="ex-check ${done?'done':''}"></div>
-
+  html += `<div class="card">
+    <div class="section-row" style="margin-bottom:6px;">
+      <div class="card-label" style="margin:0;">MEALS TODAY</div>
+      <button class="btn btn-sm btn-secondary" onclick="switchTab('food',document.querySelector('.nav-btn:nth-child(3)'));switchFoodSubtab('meals')">Edit plan</button>
     </div>`;
 
+  if (!hasPlan) {
+    html += `<div style="font-size:13px;color:var(--faint);font-style:italic;padding:8px 0;">No meals planned yet — tap "Edit plan" to set up your week.</div>`;
+  }
+
+  mealSlotDefs.forEach(({slot, label}) => {
+    const mealName = planForToday[slot] || null;
+    const done = !!dayMeals[slot];
+    html += `<div class="meal-item" onclick="toggleMeal('${tk}','${slot}')">
+      <div class="meal-time">${label}</div>
+      <div class="meal-desc ${done?'done':''}">${mealName || '<span style="color:var(--faint);font-style:italic;font-size:12px;">Not set</span>'}</div>
+      <div class="ex-check ${done?'done':''}"></div>
+    </div>`;
   });
 
   html += '</div>';
@@ -2289,6 +2316,7 @@ function submitCustomRecipe() {
   const customs = get('custom-recipes') || {};
   customs[name] = recipe;
   save('custom-recipes', customs);
+  autoSaveIngsToLib(ingredients);
   closeAddRecipeModal();
   renderFoodRecipes();
   showToast(`"${name}" saved!`);
@@ -3359,104 +3387,119 @@ function saveGoals() {
 
 // ============================================================
 
+// INGREDIENT LIBRARY
+
+// ============================================================
+
+function getIngLib() { return get('ing-lib') || []; }
+
+function openIngLibModal() {
+  const el = document.getElementById('ing-lib-search');
+  if (el) el.value = '';
+  renderIngLibList('');
+  document.getElementById('ing-lib-modal').classList.add('show');
+}
+
+function closeIngLibModal() {
+  document.getElementById('ing-lib-modal').classList.remove('show');
+}
+
+function renderIngLibList(query) {
+  const lib = getIngLib();
+  const q   = (query || '').toLowerCase();
+  const filtered = q ? lib.filter(i => i.name.toLowerCase().includes(q)) : lib;
+  const el  = document.getElementById('ing-lib-list');
+  if (!lib.length) {
+    el.innerHTML = '<div class="empty" style="padding:10px 0;font-size:13px;">No ingredients saved yet.<br>Add ingredients when building recipes, or use "Add New" below.</div>';
+    return;
+  }
+  if (!filtered.length) {
+    el.innerHTML = '<div style="text-align:center;padding:10px 0;color:var(--muted);font-size:13px;">No matches</div>';
+    return;
+  }
+  el.innerHTML = filtered.map(i => {
+    const safeName = i.name.replace(/'/g,"\\'");
+    const safeQty  = (i.defaultQty||'').replace(/'/g,"\\'");
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);">
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;">${i.name}</div>
+        ${i.defaultQty ? `<div style="font-size:11px;color:var(--muted);">default qty: ${i.defaultQty}</div>` : ''}
+      </div>
+      <button class="btn btn-sm" onclick="pickIngFromLib('${safeName}','${safeQty}')">Use</button>
+      <button style="background:none;border:none;color:var(--faint);font-size:16px;cursor:pointer;padding:0 4px;" onclick="deleteIngFromLib('${safeName}')">×</button>
+    </div>`;
+  }).join('');
+}
+
+function pickIngFromLib(name, defaultQty) {
+  document.getElementById('recipe-ing-list').insertAdjacentHTML('beforeend', buildIngRow(defaultQty, name));
+  closeIngLibModal();
+  showToast('Added to recipe!');
+}
+
+function addIngToLib() {
+  const name = document.getElementById('ing-lib-new-name').value.trim();
+  if (!name) { showToast('Enter an ingredient name'); return; }
+  const qty = document.getElementById('ing-lib-new-qty').value.trim();
+  const lib = getIngLib();
+  if (lib.some(i => i.name.toLowerCase() === name.toLowerCase())) {
+    showToast('Already in library'); return;
+  }
+  lib.push({ name, defaultQty: qty });
+  save('ing-lib', lib);
+  document.getElementById('ing-lib-new-name').value = '';
+  document.getElementById('ing-lib-new-qty').value  = '';
+  renderIngLibList(document.getElementById('ing-lib-search').value);
+  showToast('Added to library!');
+}
+
+function deleteIngFromLib(name) {
+  save('ing-lib', getIngLib().filter(i => i.name !== name));
+  renderIngLibList(document.getElementById('ing-lib-search').value);
+}
+
+function autoSaveIngsToLib(ingredients) {
+  const lib           = getIngLib();
+  const existingNames = new Set(lib.map(i => i.name.toLowerCase()));
+  let added = 0;
+  ingredients.forEach(ing => {
+    if (ing.item && !existingNames.has(ing.item.toLowerCase())) {
+      lib.push({ name: ing.item, defaultQty: ing.qty || '' });
+      existingNames.add(ing.item.toLowerCase());
+      added++;
+    }
+  });
+  if (added) save('ing-lib', lib);
+}
+
+// ============================================================
+
 // SHOP
 
 // ============================================================
 
-const SHOPPING_LIST = [
-
-  {cat:'Proteins', items:['Chicken breast × 4','Salmon fillets × 2','Lean beef mince × 2 packs','Whole chicken × 1','Raw prawns × 1 pack','Eggs × 18','Protein powder (2 scoops/day)']},
-
-  {cat:'Dairy', items:['Greek yogurt × 7','Milk (for oats)','Feta or cheddar (for egg muffins)']},
-
-  {cat:'Produce', items:['Mixed stir-fry veg','Broccoli / green beans','Onion × 2','Garlic × 1 bulb']},
-
-  {cat:'Grains & Pantry', items:['Oats × 1 bag','Basmati rice × 1 bag','Taco shells × 1 pack','Kidney beans × 1 can','Tinned tomatoes × 2 cans']},
-
-  {cat:'Sauces', items:['Teriyaki sauce','Soy sauce','Chipotle paste','Stir-fry sauce','Taco salsa']},
-
-];
-
-function shopWeekKey() {
-
-  const d = new Date();
-
-  const day = d.getDay();
-
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-
-  const mon = new Date(d); mon.setDate(diff);
-
-  return `shop-${mon.getFullYear()}-${String(mon.getMonth()+1).padStart(2,'0')}-${String(mon.getDate()).padStart(2,'0')}`;
-
-}
-
-function getShopChecked() { return get(shopWeekKey()) || {}; }
-
-function toggleShopItem(key) {
-
-  const c = getShopChecked(); c[key] = !c[key];
-
-  save(shopWeekKey(), c); renderShop();
-
-}
-
-function clearShop() { save(shopWeekKey(), {}); renderShop(); }
-
 function renderShop() {
+  const planItems    = get('shop-plan-items')   || [];
+  const planChecked  = get('shop-plan-checked') || {};
+  const planEl       = document.getElementById('shop-plan-items');
+  const progressEl   = document.getElementById('shop-progress');
 
-  const checked = getShopChecked();
-
-  const total = SHOPPING_LIST.reduce((s,c) => s + c.items.length, 0);
-
-  const done = Object.values(checked).filter(Boolean).length;
-
-  document.getElementById('shop-progress').textContent = `${done} of ${total} items ticked off`;
-
-  document.getElementById('shop-list').innerHTML = SHOPPING_LIST.map(cat => `
-
-    <div>
-
-      <div style="font-size:10px;font-weight:700;letter-spacing:0.09em;color:var(--muted);padding:10px 0 2px;text-transform:uppercase;">${cat.cat}</div>
-
-      ${cat.items.map((item,i) => {
-
-        const key = `${cat.cat}-${i}`;
-
-        const isDone = !!checked[key];
-
-        return `<div class="shop-item" onclick="toggleShopItem('${key}')">
-
-          <div class="ex-check ${isDone?'done':''}"></div>
-
-          <div class="shop-name ${isDone?'checked':''}">${item}</div>
-
-        </div>`;
-
-      }).join('')}
-
-    </div>
-
-  `).join('');
-
-  // Meal plan generated items
-  const planItems = get('shop-plan-items') || [];
-  const planChecked = get('shop-plan-checked') || {};
-  const planEl = document.getElementById('shop-plan-items');
   if (planItems.length === 0) {
-    planEl.innerHTML = `<div style="font-size:13px;color:var(--faint);font-style:italic;">Set your meal plan in Food → Meal Plan, then tap "Generate Shopping List".</div>`;
-  } else {
-    const planDone = planItems.filter((_,i) => planChecked[i]).length;
-    planEl.innerHTML =
-      `<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">${planDone} of ${planItems.length} ticked off</div>` +
-      planItems.map((item, i) => {
-        const done = !!planChecked[i];
-        return `<div class="shop-item" onclick="togglePlanShopItem(${i})">
-          <div class="ex-check ${done?'done':''}"></div>
-          <div class="shop-name ${done?'checked':''}">${item}</div>
-        </div>`;
-      }).join('');
+    progressEl.textContent = '';
+    planEl.innerHTML = `<div style="font-size:13px;color:var(--faint);font-style:italic;padding:4px 0;">Set your meal plan in Food → Meal Plan, then tap "Re-sync" to generate your list.</div>`;
+    return;
   }
+
+  const done = planItems.filter((_, i) => planChecked[i]).length;
+  progressEl.textContent = `${done} of ${planItems.length} items ticked off`;
+
+  planEl.innerHTML = planItems.map((item, i) => {
+    const isDone = !!planChecked[i];
+    return `<div class="shop-item" onclick="togglePlanShopItem(${i})">
+      <div class="ex-check ${isDone?'done':''}"></div>
+      <div class="shop-name ${isDone?'checked':''}">${item}</div>
+    </div>`;
+  }).join('');
 
 }
 
