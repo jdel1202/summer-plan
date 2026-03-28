@@ -1794,11 +1794,12 @@ function renderToday() {
 
   html += '</div>';
 
-  // Protein
-
-  const total = ['breakfast','lunch','dinner'].reduce((s,m) => s + (dayMeals[m] ? MEAL_P[m] : 0), 0) + (dayMeals.snack ? 18 : 0);
-
-  const pct = Math.min((total/160)*100, 100);
+  // Protein — pulled from food diary
+  const nutriDay   = getNutriDay(tk);
+  const allDiaryItems = [...nutriDay.breakfast, ...nutriDay.lunch, ...nutriDay.dinner, ...nutriDay.snacks];
+  const proteinGoal = getNutriGoals().protein;
+  const total       = Math.round(allDiaryItems.reduce((s, f) => s + (f.protein || 0), 0));
+  const pct = Math.min((total / proteinGoal) * 100, 100);
 
   html += `<div class="card">
 
@@ -1806,7 +1807,7 @@ function renderToday() {
 
       <div class="card-label" style="margin:0;">PROTEIN TRACKER</div>
 
-      <span style="font-size:11px;color:var(--muted);">target: 160g</span>
+      <span style="font-size:11px;color:var(--muted);">target: ${proteinGoal}g</span>
 
     </div>
 
@@ -1814,58 +1815,39 @@ function renderToday() {
 
       <div class="protein-big">${total}</div>
 
-      <div style="font-size:14px;color:var(--muted);">/ 160g</div>
+      <div style="font-size:14px;color:var(--muted);">/ ${proteinGoal}g</div>
 
     </div>
 
     <div class="pbar-bg"><div class="pbar-fill" style="width:${pct}%"></div></div>
 
-    <div class="pbar-nums"><span>${total}g logged</span><span>${Math.max(160-total,0)}g to go</span></div>
+    <div class="pbar-nums"><span>${total}g logged</span><span>${Math.max(proteinGoal - total, 0)}g to go</span></div>
 
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;margin-top:4px;border-top:1px solid var(--border);cursor:pointer;" onclick="toggleMeal('${tk}','snack')">
-
-      <span style="font-size:13px;color:var(--muted);">Greek yogurt snack <span style="color:var(--green);">+18g</span></span>
-
-      <div class="ex-check ${dayMeals.snack?'done':''}"></div>
-
-    </div>
+    <div style="font-size:11px;color:var(--faint);margin-top:8px;">Updates as you log food in the diary →</div>
 
   </div>`;
 
-  // Water tracker
-  const water = getWater(tk);
-  const waterGoal = 8;
-  const waterPct = Math.min((water/waterGoal)*100, 100);
+  // Water tracker (ml, 3L goal)
+  const water     = getWater(tk);
+  const waterGoal = 3000;
+  const waterPct  = Math.min((water / waterGoal) * 100, 100);
+  const waterDisp = water >= 1000 ? (Math.round(water / 100) / 10) + ' L' : water + ' ml';
   html += `<div class="card">
-
     <div class="section-row">
-
       <div class="card-label" style="margin:0;">WATER INTAKE 💧</div>
-
-      <span style="font-size:11px;color:var(--muted);">goal: ${waterGoal} cups</span>
-
+      <span style="font-size:11px;color:var(--muted);">goal: 3 L</span>
     </div>
-
     <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px;">
-
-      <div style="font-family:var(--font-cond);font-size:32px;font-weight:700;color:var(--blue);line-height:1;">${water}</div>
-
-      <div style="font-size:14px;color:var(--muted);">/ ${waterGoal} cups</div>
-
+      <div style="font-family:var(--font-cond);font-size:32px;font-weight:700;color:var(--blue);line-height:1;">${waterDisp}</div>
+      <div style="font-size:14px;color:var(--muted);">/ 3 L</div>
     </div>
-
     <div class="pbar-bg"><div class="pbar-fill" style="width:${waterPct}%;background:var(--blue);"></div></div>
-
-    <div style="display:flex;gap:8px;margin-top:10px;">
-
-      <button style="flex:1;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.2);color:var(--blue);font-size:13px;font-weight:600;padding:8px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',1)">+ Cup</button>
-
-      <button style="flex:1;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.2);color:var(--blue);font-size:13px;font-weight:600;padding:8px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',2)">+ 2 Cups</button>
-
-      ${water > 0 ? `<button style="background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:600;padding:8px 12px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',-1)">–</button>` : ''}
-
+    <div style="display:flex;gap:6px;margin-top:10px;">
+      <button style="flex:1;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.2);color:var(--blue);font-size:12px;font-weight:600;padding:8px 4px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',100)">+100 ml</button>
+      <button style="flex:1;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.2);color:var(--blue);font-size:12px;font-weight:600;padding:8px 4px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',250)">+250 ml</button>
+      <button style="flex:1;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.2);color:var(--blue);font-size:12px;font-weight:600;padding:8px 4px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',500)">+500 ml</button>
+      ${water > 0 ? `<button style="background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:600;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;" onclick="logWater('${tk}',-100)">–</button>` : ''}
     </div>
-
   </div>`;
 
   // Habits card
@@ -1936,18 +1918,41 @@ function logWater(tk, delta) {
   renderToday();
 }
 
-function toggleMeal(key, meal) {
-
+function toggleMeal(dateKey, slot) {
   const ml = getMealLog();
-
-  if (!ml[key]) ml[key] = {};
-
-  ml[key][meal] = !ml[key][meal];
-
+  if (!ml[dateKey]) ml[dateKey] = {};
+  const nowDone = !ml[dateKey][slot];
+  ml[dateKey][slot] = nowDone;
   save('meal-log', ml);
 
-  renderToday();
+  // Sync to food diary when ticking/unticking a planned meal
+  const dow = new Date(dateKey).getDay();
+  const planForDay = (getCustomMealPlan()[dow]) || {};
+  const mealName = planForDay[slot];
+  if (mealName && ['breakfast','lunch','dinner'].includes(slot)) {
+    const day = getNutriDay(dateKey);
+    if (nowDone) {
+      // Add to diary if not already there
+      if (!day[slot].some(f => f.name === mealName)) {
+        const rec    = getAllRecipes()[mealName];
+        const macros = rec && rec.macros ? rec.macros : {};
+        day[slot].push({
+          name:    mealName,
+          cal:     macros.cal     || 0,
+          protein: macros.protein || 0,
+          carbs:   macros.carbs   || 0,
+          fat:     macros.fat     || 0,
+        });
+        save('nutri-' + dateKey, day);
+      }
+    } else {
+      // Remove from diary
+      day[slot] = day[slot].filter(f => f.name !== mealName);
+      save('nutri-' + dateKey, day);
+    }
+  }
 
+  renderToday();
 }
 
 // ============================================================
@@ -1960,7 +1965,7 @@ let wtChart = null, nutriChart = null;
 
 function getWeeklySummary() {
   const goals = getNutriGoals();
-  const waterGoal = 8;
+  const waterGoal = 3000;
   const habits = getHabits();
   const habitLog = getHabitLog();
   const days = [];
@@ -2018,7 +2023,7 @@ function renderWeeklySummary() {
       <div style="background:var(--card);border-radius:var(--radius-sm);padding:10px;">
         <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.07em;">WATER GOAL HITS</div>
         <div style="font-family:var(--font-cond);font-size:22px;font-weight:700;color:var(--blue);margin:2px 0;">${s.waterHits} / ${s.days}</div>
-        <div style="font-size:10px;color:var(--faint);">days hitting ${s.waterGoal} cups</div>
+        <div style="font-size:10px;color:var(--faint);">days hitting ${s.waterGoal / 1000}L</div>
       </div>
       <div style="background:var(--card);border-radius:var(--radius-sm);padding:10px;">
         <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.07em;">${s.habitTotal ? 'PERFECT HABIT DAYS' : 'HABITS'}</div>
