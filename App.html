@@ -385,6 +385,15 @@
     .subtab-pane { display: none; }
     .subtab-pane.active { display: block; }
 
+    /* Recipe builder dynamic rows */
+    .recipe-input-row { display:grid; grid-template-columns:80px 1fr 28px; gap:6px; align-items:center; margin-bottom:6px; }
+    .recipe-input-row.step-row { grid-template-columns:1fr 28px; }
+    .recipe-input-row input[type="text"] { margin-bottom:0; }
+    .recipe-del-row { background:none; border:none; color:var(--faint); cursor:pointer; font-size:18px; padding:4px; line-height:1; transition:color 0.15s; width:28px; text-align:center; }
+    .recipe-del-row:hover { color:var(--red); }
+    /* Habit streak badge */
+    .habit-streak { font-family:var(--font-cond); font-size:11px; font-weight:700; color:var(--amber); background:rgba(251,191,36,0.12); padding:2px 8px; border-radius:100px; white-space:nowrap; }
+
     /* Exercise guide card */
     .guide-ex-card { background: var(--card); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; cursor: pointer; border: 1px solid var(--border); transition: border-color 0.15s; }
     .guide-ex-card:active { border-color: var(--blue); }
@@ -446,6 +455,8 @@
 
 <div class="tab" id="tab-progress">
 
+  <div class="card" id="weekly-summary-card" style="display:none;"></div>
+
   <div class="stat-grid">
 
     <div class="stat-card">
@@ -487,6 +498,18 @@
     <div class="chart-wrap" id="chart-wrap">
 
       <canvas id="wt-chart"></canvas>
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="card-label">14-DAY NUTRITION</div>
+
+    <div class="chart-wrap" id="nutri-chart-wrap" style="height:200px;">
+
+      <canvas id="nutri-chart"></canvas>
 
     </div>
 
@@ -542,6 +565,7 @@
     <!-- DIARY sub-tab -->
     <div class="subtab-pane active" id="fsp-diary">
       <div id="nutri-summary-card"></div>
+      <div id="use-meal-plan-btn-wrap"></div>
       <div id="nutri-meals"></div>
     </div>
 
@@ -662,6 +686,110 @@
       <button class="picker-filter-btn"        id="pf-snack"     onclick="setPickerFilter('snack')">Snacks</button>
     </div>
     <div id="meal-picker-list" style="overflow-y:auto;flex:1;padding:0 16px 8px;"></div>
+  </div>
+</div>
+
+<!-- ADD RECIPE MODAL -->
+<div class="modal-overlay" id="add-recipe-modal" onclick="if(event.target===this)closeAddRecipeModal()">
+  <div class="modal-sheet" style="max-height:90vh;overflow-y:auto;">
+    <div class="modal-header">
+      <span class="modal-title">Add Recipe</span>
+      <button class="modal-close" onclick="closeAddRecipeModal()">✕</button>
+    </div>
+    <div class="modal-tabs-row">
+      <button class="modal-tab-btn active" id="art-build" onclick="switchAddRecipeTab('build')">Build</button>
+      <button class="modal-tab-btn"        id="art-paste" onclick="switchAddRecipeTab('paste')">Paste Text</button>
+    </div>
+    <div class="modal-body">
+      <div id="art-pane-build">
+        <span class="mg-lbl">RECIPE NAME</span>
+        <input type="text" id="recipe-name-input" placeholder="e.g. Protein Pancakes" style="margin-bottom:10px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div>
+            <span class="mg-lbl">CATEGORY</span>
+            <select id="recipe-cat-input">
+              <option value="breakfast">Breakfast</option>
+              <option value="main">Main</option>
+              <option value="snack">Snack</option>
+            </select>
+          </div>
+          <div>
+            <span class="mg-lbl">TOTAL TIME</span>
+            <input type="text" id="recipe-time-input" placeholder="20 min">
+          </div>
+        </div>
+        <span class="mg-lbl">PREP NOTE</span>
+        <input type="text" id="recipe-prep-input" placeholder="e.g. 5 min, Night before" style="margin-bottom:12px;">
+        <div class="section-row" style="margin-bottom:6px;">
+          <span class="mg-lbl" style="margin:0;">INGREDIENTS</span>
+          <button class="btn btn-sm btn-secondary" onclick="addIngredientRow()">+ Row</button>
+        </div>
+        <div id="recipe-ing-list" style="margin-bottom:12px;"></div>
+        <div class="section-row" style="margin-bottom:6px;">
+          <span class="mg-lbl" style="margin:0;">STEPS</span>
+          <button class="btn btn-sm btn-secondary" onclick="addStepRow()">+ Step</button>
+        </div>
+        <div id="recipe-steps-list" style="margin-bottom:12px;"></div>
+        <span class="mg-lbl">MACROS (per full recipe / serving)</span>
+        <div class="macro-input-grid" style="margin-bottom:10px;">
+          <div><span class="mg-lbl">KCAL</span><input type="number" id="recipe-cal" placeholder="0" min="0"></div>
+          <div><span class="mg-lbl">PROTEIN g</span><input type="number" id="recipe-prot" placeholder="0" min="0"></div>
+          <div><span class="mg-lbl">CARBS g</span><input type="number" id="recipe-carbs" placeholder="0" min="0"></div>
+          <div><span class="mg-lbl">FAT g</span><input type="number" id="recipe-fat" placeholder="0" min="0"></div>
+        </div>
+        <span class="mg-lbl">MEAL-PREP NOTE (optional)</span>
+        <input type="text" id="recipe-note-input" placeholder="e.g. Batch cook Sunday, keeps 4 days" style="margin-bottom:14px;">
+        <button class="btn" onclick="submitCustomRecipe()">Save Recipe</button>
+      </div>
+      <div id="art-pane-paste" style="display:none;">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">Paste the full text of a recipe (from a website, notes, or anywhere). The parser will extract the title, ingredients, and steps — then review before saving.</p>
+        <textarea id="recipe-paste-input" placeholder="Paste recipe text here..." style="width:100%;min-height:200px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;color:var(--text);font-family:var(--font);font-size:13px;resize:vertical;line-height:1.5;margin-bottom:12px;"></textarea>
+        <button class="btn" onclick="parseRecipeText()">Parse &amp; Fill Form →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HABITS MODAL -->
+<div class="modal-overlay" id="habits-modal" onclick="if(event.target===this)closeHabitsModal()">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <span class="modal-title">Manage Habits</span>
+      <button class="modal-close" onclick="closeHabitsModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="habits-list" style="margin-bottom:16px;"></div>
+      <hr>
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--muted);margin:12px 0 8px;">ADD NEW HABIT</div>
+      <div style="display:grid;grid-template-columns:52px 1fr;gap:8px;margin-bottom:10px;">
+        <div><span class="mg-lbl">ICON</span><input type="text" id="habit-icon-input" placeholder="💊" maxlength="2" style="text-align:center;"></div>
+        <div><span class="mg-lbl">HABIT NAME</span><input type="text" id="habit-name-input" placeholder="e.g. Creatine, 10k steps"></div>
+      </div>
+      <button class="btn" onclick="addHabit()">Add Habit</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPLEMENTS MODAL -->
+<div class="modal-overlay" id="supps-modal" onclick="if(event.target===this)closeSuppsModal()">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <span class="modal-title">Supplements &amp; Meds</span>
+      <button class="modal-close" onclick="closeSuppsModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="supps-list" style="margin-bottom:16px;"></div>
+      <hr>
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--muted);margin:12px 0 8px;">ADD NEW</div>
+      <input type="text" id="supp-name-input" placeholder="Supplement name" style="margin-bottom:8px;">
+      <input type="text" id="supp-dose-input" placeholder="Dose note (e.g. 2 capsules)" style="margin-bottom:8px;">
+      <select id="supp-time-select" style="margin-bottom:12px;">
+        <option value="morning">Morning</option>
+        <option value="evening">Evening</option>
+        <option value="anytime">Anytime</option>
+      </select>
+      <button class="btn" onclick="addSupplement()">Add</button>
+    </div>
   </div>
 </div>
 
@@ -1713,6 +1841,61 @@ function renderToday() {
 
   </div>`;
 
+  // Habits card
+  const habits = getHabits();
+  if (habits.length) {
+    const habitLogToday = (getHabitLog())[tk] || {};
+    const doneCount = habits.filter(h => habitLogToday['habit-' + h.id]).length;
+    html += `<div class="card">
+      <div class="section-row" style="margin-bottom:10px;">
+        <div class="card-label" style="margin:0;">HABITS</div>
+        <button class="btn btn-sm btn-secondary" onclick="openHabitsModal()">Manage</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">${doneCount} / ${habits.length} done today</div>`;
+    habits.forEach(h => {
+      const done = !!habitLogToday['habit-' + h.id];
+      const streak = computeHabitStreak(h.id);
+      html += `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="toggleHabit('${h.id}')">
+        <div class="ex-check ${done ? 'done' : ''}"></div>
+        <span style="font-size:18px;min-width:24px;">${h.icon || '✓'}</span>
+        <span style="flex:1;font-size:13px;font-weight:${done?'600':'500'};color:${done?'var(--text)':'var(--muted)'};">${h.name}</span>
+        ${streak > 0 ? `<span class="habit-streak">🔥 ${streak}d</span>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+  } else {
+    html += `<div class="card" style="text-align:center;padding:16px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">No habits set up yet</div>
+      <button class="btn btn-sm" onclick="openHabitsModal()">+ Add Habits</button>
+    </div>`;
+  }
+
+  // Supplements card
+  const supps = getSupplements();
+  if (supps.length) {
+    const suppLogToday = (getHabitLog())[tk] || {};
+    const groups = {morning:[], evening:[], anytime:[]};
+    supps.forEach(s => { (groups[s.time] || groups.anytime).push(s); });
+    const grpLabels = {morning:'Morning',evening:'Evening',anytime:'Anytime'};
+    html += `<div class="card">
+      <div class="section-row" style="margin-bottom:6px;">
+        <div class="card-label" style="margin:0;">SUPPLEMENTS</div>
+        <button class="btn btn-sm btn-secondary" onclick="openSuppsModal()">Manage</button>
+      </div>`;
+    Object.entries(groups).forEach(([grp, list]) => {
+      if (!list.length) return;
+      html += `<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--muted);padding:6px 0 4px;">${grpLabels[grp]}</div>`;
+      list.forEach(s => {
+        const done = !!suppLogToday['supp-' + s.id];
+        html += `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="toggleSupp('${s.id}')">
+          <div class="ex-check ${done ? 'done' : ''}"></div>
+          <span style="flex:1;font-size:13px;font-weight:500;color:${done?'var(--text)':'var(--muted)'};">${s.name}${s.dose ? ' <span style="color:var(--faint);font-size:11px;">' + s.dose + '</span>' : ''}</span>
+        </div>`;
+      });
+    });
+    html += '</div>';
+  }
+
   document.getElementById('today-content').innerHTML = html;
 
 }
@@ -1746,9 +1929,145 @@ function toggleMeal(key, meal) {
 
 // ============================================================
 
-let wtChart = null;
+let wtChart = null, nutriChart = null;
+
+function getWeeklySummary() {
+  const goals = getNutriGoals();
+  const waterGoal = 8;
+  const habits = getHabits();
+  const habitLog = getHabitLog();
+  const days = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const dd = new Date(now); dd.setDate(now.getDate() - i);
+    days.push(dd.toISOString().slice(0, 10));
+  }
+  let totalCal = 0, totalProtein = 0, waterHits = 0, habitDays = 0, calCount = 0;
+  const waterLog = get('water-log') || {};
+  days.forEach(key => {
+    const day = getNutriDay(key);
+    const allItems = [...day.breakfast, ...day.lunch, ...day.dinner, ...day.snacks];
+    if (allItems.length) {
+      totalCal     += allItems.reduce((s, f) => s + (f.cal     || 0), 0);
+      totalProtein += allItems.reduce((s, f) => s + (f.protein || 0), 0);
+      calCount++;
+    }
+    if ((waterLog[key] || 0) >= waterGoal) waterHits++;
+    if (habits.length) {
+      const dayLog = habitLog[key] || {};
+      if (habits.every(h => dayLog['habit-' + h.id])) habitDays++;
+    }
+  });
+  return {
+    avgCal:      calCount ? Math.round(totalCal / calCount)     : null,
+    avgProtein:  calCount ? Math.round(totalProtein / calCount) : null,
+    waterHits, habitDays,
+    calGoal: goals.calories, proteinGoal: goals.protein, waterGoal,
+    habitTotal: habits.length, days: 7,
+  };
+}
+
+function renderWeeklySummary() {
+  const s = getWeeklySummary();
+  const card = document.getElementById('weekly-summary-card');
+  card.style.display = '';
+  const avgCalStr  = s.avgCal      !== null ? s.avgCal + ' kcal' : '—';
+  const avgProtStr = s.avgProtein  !== null ? s.avgProtein + 'g'  : '—';
+  const calColor  = s.avgCal !== null ? (Math.abs(s.avgCal - s.calGoal) < 200 ? 'var(--green)' : s.avgCal > s.calGoal ? 'var(--red)' : 'var(--amber)') : 'var(--muted)';
+  const protColor = s.avgProtein !== null ? (s.avgProtein >= s.proteinGoal * 0.9 ? 'var(--green)' : 'var(--amber)') : 'var(--muted)';
+  card.innerHTML = `
+    <div class="card-label">LAST 7 DAYS</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+      <div style="background:var(--card);border-radius:var(--radius-sm);padding:10px;">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.07em;">AVG CALORIES</div>
+        <div style="font-family:var(--font-cond);font-size:22px;font-weight:700;color:${calColor};margin:2px 0;">${avgCalStr}</div>
+        <div style="font-size:10px;color:var(--faint);">goal: ${s.calGoal}</div>
+      </div>
+      <div style="background:var(--card);border-radius:var(--radius-sm);padding:10px;">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.07em;">AVG PROTEIN</div>
+        <div style="font-family:var(--font-cond);font-size:22px;font-weight:700;color:${protColor};margin:2px 0;">${avgProtStr}</div>
+        <div style="font-size:10px;color:var(--faint);">goal: ${s.proteinGoal}g</div>
+      </div>
+      <div style="background:var(--card);border-radius:var(--radius-sm);padding:10px;">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.07em;">WATER GOAL HITS</div>
+        <div style="font-family:var(--font-cond);font-size:22px;font-weight:700;color:var(--blue);margin:2px 0;">${s.waterHits} / ${s.days}</div>
+        <div style="font-size:10px;color:var(--faint);">days hitting ${s.waterGoal} cups</div>
+      </div>
+      <div style="background:var(--card);border-radius:var(--radius-sm);padding:10px;">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.07em;">${s.habitTotal ? 'PERFECT HABIT DAYS' : 'HABITS'}</div>
+        <div style="font-family:var(--font-cond);font-size:22px;font-weight:700;color:var(--amber);margin:2px 0;">${s.habitTotal ? s.habitDays + ' / ' + s.days : '—'}</div>
+        <div style="font-size:10px;color:var(--faint);">${s.habitTotal ? 'all habits completed' : 'add habits to track'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function getNutri14Days() {
+  const now = new Date();
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const dd = new Date(now); dd.setDate(now.getDate() - i);
+    const key = dd.toISOString().slice(0, 10);
+    const day = getNutriDay(key);
+    const allItems = [...day.breakfast, ...day.lunch, ...day.dinner, ...day.snacks];
+    const cal     = allItems.reduce((s, f) => s + (f.cal     || 0), 0);
+    const protein = allItems.reduce((s, f) => s + (f.protein || 0), 0);
+    days.push({ label: key.slice(5), cal: cal || null, protein: protein || null });
+  }
+  return days;
+}
+
+function renderNutriChart() {
+  const data  = getNutri14Days();
+  const wrap  = document.getElementById('nutri-chart-wrap');
+  if (!data.some(d => d.cal !== null)) {
+    wrap.innerHTML = '<div class="empty">Log food to see your nutrition trend</div>';
+    return;
+  }
+  wrap.innerHTML = '<canvas id="nutri-chart"></canvas>';
+  if (nutriChart) { try { nutriChart.destroy(); } catch(e){} }
+  const goals = getNutriGoals();
+  nutriChart = new Chart(document.getElementById('nutri-chart'), {
+    type: 'line',
+    data: {
+      labels: data.map(d => d.label),
+      datasets: [
+        {
+          label: 'Calories',
+          data: data.map(d => d.cal),
+          borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.07)',
+          fill: false, tension: 0.35,
+          pointRadius: 3, pointBackgroundColor: '#4ade80', borderWidth: 2,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Protein (g)',
+          data: data.map(d => d.protein),
+          borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.07)',
+          fill: false, tension: 0.35,
+          pointRadius: 3, pointBackgroundColor: '#60a5fa', borderWidth: 2,
+          yAxisID: 'y1',
+        },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, labels: { color: '#888', font: { size: 11 }, boxWidth: 12 } },
+        tooltip: { backgroundColor: '#1f1f1f', titleColor: '#e8e6e0', bodyColor: '#777', borderColor: '#2e2e2e', borderWidth: 1 }
+      },
+      scales: {
+        x:  { ticks: { color: '#666', font: { size: 10 }, maxRotation: 45 }, grid: { color: '#252525' } },
+        y:  { type: 'linear', position: 'left',  ticks: { color: '#4ade80', font: { size: 10 } }, grid: { color: '#252525' }, title: { display: true, text: 'kcal',      color: '#4ade80', font: { size: 10 } } },
+        y1: { type: 'linear', position: 'right', ticks: { color: '#60a5fa', font: { size: 10 } }, grid: { drawOnChartArea: false }, title: { display: true, text: 'protein g', color: '#60a5fa', font: { size: 10 } } },
+      }
+    }
+  });
+}
 
 function renderProgress() {
+
+  renderWeeklySummary();
 
   const wtLog = getWtLog();
 
@@ -1820,6 +2139,8 @@ function renderProgress() {
 
   }
 
+  renderNutriChart();
+
 }
 
 function logWeight() {
@@ -1849,7 +2170,7 @@ function logWeight() {
 // ============================================================
 
 function openRecipe(name) {
-  const rec = RECIPES[name];
+  const rec = getAllRecipes()[name];
   if (!rec) return;
   document.getElementById('recipe-name').textContent = name;
   document.getElementById('recipe-badges').innerHTML =
@@ -1871,7 +2192,295 @@ function closeRecipeModal() {
 }
 
 // ============================================================
+// CUSTOM RECIPE BUILDER
+// ============================================================
 
+function openAddRecipeModal() {
+  // Reset form
+  ['recipe-name-input','recipe-time-input','recipe-prep-input','recipe-note-input'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  ['recipe-cal','recipe-prot','recipe-carbs','recipe-fat'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('recipe-ing-list').innerHTML = '';
+  document.getElementById('recipe-steps-list').innerHTML = '';
+  addIngredientRow(); addIngredientRow();
+  addStepRow(); addStepRow();
+  switchAddRecipeTab('build');
+  document.getElementById('add-recipe-modal').classList.add('show');
+}
+
+function closeAddRecipeModal() {
+  document.getElementById('add-recipe-modal').classList.remove('show');
+}
+
+function switchAddRecipeTab(tab) {
+  document.getElementById('art-build').classList.toggle('active', tab === 'build');
+  document.getElementById('art-paste').classList.toggle('active', tab === 'paste');
+  document.getElementById('art-pane-build').style.display = tab === 'build' ? 'block' : 'none';
+  document.getElementById('art-pane-paste').style.display = tab === 'paste' ? 'block' : 'none';
+}
+
+function buildIngRow(qty, item) {
+  return `<div class="recipe-input-row">
+    <input type="text" placeholder="qty" value="${(qty||'').replace(/"/g,'&quot;')}" style="margin-bottom:0;">
+    <input type="text" placeholder="ingredient" value="${(item||'').replace(/"/g,'&quot;')}" style="margin-bottom:0;">
+    <button class="recipe-del-row" onclick="this.parentElement.remove()">×</button>
+  </div>`;
+}
+
+function buildStepRow(text) {
+  return `<div class="recipe-input-row step-row">
+    <input type="text" placeholder="Step description..." value="${(text||'').replace(/"/g,'&quot;')}" style="margin-bottom:0;">
+    <button class="recipe-del-row" onclick="this.parentElement.remove()">×</button>
+  </div>`;
+}
+
+function addIngredientRow() {
+  document.getElementById('recipe-ing-list').insertAdjacentHTML('beforeend', buildIngRow('',''));
+}
+
+function addStepRow() {
+  document.getElementById('recipe-steps-list').insertAdjacentHTML('beforeend', buildStepRow(''));
+}
+
+function submitCustomRecipe() {
+  const name = document.getElementById('recipe-name-input').value.trim();
+  if (!name) { showToast('Enter a recipe name'); return; }
+
+  // Gather ingredients
+  const ingRows = document.querySelectorAll('#recipe-ing-list .recipe-input-row');
+  const ingredients = [];
+  ingRows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const qty = inputs[0].value.trim();
+    const item = inputs[1].value.trim();
+    if (item) ingredients.push({qty, item});
+  });
+
+  // Gather steps
+  const stepRows = document.querySelectorAll('#recipe-steps-list .recipe-input-row');
+  const steps = [];
+  stepRows.forEach(row => {
+    const val = row.querySelector('input').value.trim();
+    if (val) steps.push(val);
+  });
+
+  if (!ingredients.length) { showToast('Add at least one ingredient'); return; }
+  if (!steps.length) { showToast('Add at least one step'); return; }
+
+  const cal   = parseInt(document.getElementById('recipe-cal').value)   || 0;
+  const prot  = parseInt(document.getElementById('recipe-prot').value)  || 0;
+  const carbs = parseInt(document.getElementById('recipe-carbs').value) || 0;
+  const fat   = parseInt(document.getElementById('recipe-fat').value)   || 0;
+
+  const recipe = {
+    cat:   document.getElementById('recipe-cat-input').value,
+    time:  document.getElementById('recipe-time-input').value.trim() || '—',
+    prep:  document.getElementById('recipe-prep-input').value.trim() || '—',
+    macros: cal || prot ? {cal, protein: prot, carbs, fat} : undefined,
+    ingredients,
+    steps,
+  };
+  const note = document.getElementById('recipe-note-input').value.trim();
+  if (note) recipe.note = note;
+
+  const customs = get('custom-recipes') || {};
+  customs[name] = recipe;
+  save('custom-recipes', customs);
+  closeAddRecipeModal();
+  renderFoodRecipes();
+  showToast(`"${name}" saved!`);
+}
+
+function deleteCustomRecipe(name) {
+  const customs = get('custom-recipes') || {};
+  delete customs[name];
+  save('custom-recipes', customs);
+  renderFoodRecipes();
+  showToast('Recipe deleted');
+}
+
+function parseRecipeText() {
+  const raw = document.getElementById('recipe-paste-input').value.trim();
+  if (!raw) { showToast('Paste some recipe text first'); return; }
+
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const title = lines[0] || '';
+
+  const ingRe    = /^(ingredients?|what you('ll)? need)\b/i;
+  const methodRe = /^(method|steps?|directions?|instructions?|how to make)\b/i;
+  const listRe   = /^[-•*·]|\d+[.)]\s/;
+
+  let mode = 'none';
+  const ingredients = [], steps = [];
+
+  lines.slice(1).forEach(line => {
+    if (ingRe.test(line))    { mode = 'ing';    return; }
+    if (methodRe.test(line)) { mode = 'method'; return; }
+    if (mode === 'ing' && (listRe.test(line) || line.length > 3)) {
+      ingredients.push(line.replace(/^[-•*·]\s*|\d+[.)]\s*/, '').trim());
+    } else if (mode === 'method' && line.length > 4) {
+      steps.push(line.replace(/^\d+[.)]\s*/, '').trim());
+    }
+  });
+
+  // Populate ingredient rows
+  const ingContainer = document.getElementById('recipe-ing-list');
+  ingContainer.innerHTML = '';
+  (ingredients.length ? ingredients : ['']).forEach(ing => {
+    const m = ing.match(/^([\d¼½¾\/\s]+(?:g|kg|ml|l|tbsp|tsp|cups?|cloves?|scoops?|medium|small|large|pinch|handful)?\.?)\s+(.+)/i);
+    ingContainer.insertAdjacentHTML('beforeend', buildIngRow(m ? m[1].trim() : '', m ? m[2].trim() : ing));
+  });
+
+  // Populate step rows
+  const stepsContainer = document.getElementById('recipe-steps-list');
+  stepsContainer.innerHTML = '';
+  (steps.length ? steps : ['']).forEach(s => stepsContainer.insertAdjacentHTML('beforeend', buildStepRow(s)));
+
+  document.getElementById('recipe-name-input').value = title;
+  document.getElementById('recipe-paste-input').value = '';
+  switchAddRecipeTab('build');
+  showToast('Parsed — review and save!');
+}
+
+// ============================================================
+// HABITS
+// ============================================================
+
+function getHabits()   { return get('habits')    || []; }
+function getHabitLog() { return get('habit-log') || {}; }
+
+function computeHabitStreak(id) {
+  const log = getHabitLog();
+  let streak = 0;
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  for (let i = 0; i < 365; i++) {
+    const key = d.toISOString().slice(0,10);
+    if (log[key] && log[key]['habit-' + id]) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+
+function toggleHabit(id) {
+  const log = getHabitLog();
+  const tk  = todayKey();
+  if (!log[tk]) log[tk] = {};
+  log[tk]['habit-' + id] = !log[tk]['habit-' + id];
+  save('habit-log', log);
+  renderToday();
+}
+
+function openHabitsModal() {
+  renderHabitsModal();
+  document.getElementById('habits-modal').classList.add('show');
+}
+function closeHabitsModal() { document.getElementById('habits-modal').classList.remove('show'); }
+
+function renderHabitsModal() {
+  const habits = getHabits();
+  document.getElementById('habits-list').innerHTML = habits.length
+    ? habits.map(h => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:18px;min-width:24px;">${h.icon || '✓'}</span>
+          <span style="flex:1;font-size:13px;font-weight:500;">${h.name}</span>
+          <button style="background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer;padding:0 4px;" onclick="deleteHabit('${h.id}')">×</button>
+        </div>`).join('')
+    : '<div class="empty" style="padding:10px 0;">No habits yet — add one below.</div>';
+}
+
+function addHabit() {
+  const name = document.getElementById('habit-name-input').value.trim();
+  if (!name) { showToast('Enter a habit name'); return; }
+  const icon = document.getElementById('habit-icon-input').value.trim();
+  const habits = getHabits();
+  habits.push({ id: 'h_' + Date.now(), name, icon });
+  save('habits', habits);
+  document.getElementById('habit-name-input').value = '';
+  document.getElementById('habit-icon-input').value = '';
+  renderHabitsModal();
+  renderToday();
+  showToast('Habit added!');
+}
+
+function deleteHabit(id) {
+  let habits = getHabits();
+  habits = habits.filter(h => h.id !== id);
+  save('habits', habits);
+  // clean up log entries
+  const log = getHabitLog();
+  Object.keys(log).forEach(date => { delete log[date]['habit-' + id]; });
+  save('habit-log', log);
+  renderHabitsModal();
+  renderToday();
+}
+
+// ============================================================
+// SUPPLEMENTS
+// ============================================================
+
+function getSupplements() { return get('supplements') || []; }
+
+function toggleSupp(id) {
+  const log = getHabitLog();
+  const tk  = todayKey();
+  if (!log[tk]) log[tk] = {};
+  log[tk]['supp-' + id] = !log[tk]['supp-' + id];
+  save('habit-log', log);
+  renderToday();
+}
+
+function openSuppsModal() {
+  renderSuppsModal();
+  document.getElementById('supps-modal').classList.add('show');
+}
+function closeSuppsModal() { document.getElementById('supps-modal').classList.remove('show'); }
+
+function renderSuppsModal() {
+  const supps = getSupplements();
+  const labels = {morning:'Morning',evening:'Evening',anytime:'Anytime'};
+  document.getElementById('supps-list').innerHTML = supps.length
+    ? supps.map(s => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+          <span style="flex:1;">
+            <div style="font-size:13px;font-weight:500;">${s.name}</div>
+            <div style="font-size:11px;color:var(--muted);">${s.dose ? s.dose + ' · ' : ''}${labels[s.time]||''}</div>
+          </span>
+          <button style="background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer;padding:0 4px;" onclick="deleteSupplement('${s.id}')">×</button>
+        </div>`).join('')
+    : '<div class="empty" style="padding:10px 0;">No supplements yet.</div>';
+}
+
+function addSupplement() {
+  const name = document.getElementById('supp-name-input').value.trim();
+  if (!name) { showToast('Enter a supplement name'); return; }
+  const dose = document.getElementById('supp-dose-input').value.trim();
+  const time = document.getElementById('supp-time-select').value;
+  const supps = getSupplements();
+  supps.push({ id: 's_' + Date.now(), name, dose, time });
+  save('supplements', supps);
+  document.getElementById('supp-name-input').value = '';
+  document.getElementById('supp-dose-input').value = '';
+  renderSuppsModal();
+  renderToday();
+  showToast('Supplement added!');
+}
+
+function deleteSupplement(id) {
+  let supps = getSupplements();
+  supps = supps.filter(s => s.id !== id);
+  save('supplements', supps);
+  const log = getHabitLog();
+  Object.keys(log).forEach(date => { delete log[date]['supp-' + id]; });
+  save('habit-log', log);
+  renderSuppsModal();
+  renderToday();
+}
+
+// ============================================================
 // NUTRITION
 
 // ============================================================
@@ -1883,6 +2492,11 @@ function getNutriGoals() { return get('nutri-goals') || NUTRI_DEFAULTS; }
 function getNutriDay(key) { return get('nutri-' + key) || {breakfast:[], lunch:[], dinner:[], snacks:[]}; }
 
 function getCustomFoods() { return get('custom-foods') || []; }
+
+function getAllRecipes() {
+  const custom = get('custom-recipes') || {};
+  return Object.assign({}, RECIPES, custom);
+}
 
 let foodModalMeal = null, foodModalMealLabel = null, foodModalActiveTab = 'quick', foodModalSelectedFood = null;
 
@@ -1936,10 +2550,11 @@ let _pickerDay = null, _pickerMeal = null, _pickerFilter = 'all';
 
 function getDayMacros(dayPlan) {
   let cal = 0, protein = 0, carbs = 0, fat = 0;
+  const allRec = getAllRecipes();
   MEAL_SLOTS.forEach(slot => {
     const name = dayPlan[slot];
     if (!name) return;
-    const rec = RECIPES[name];
+    const rec = allRec[name];
     if (rec && rec.macros) {
       cal     += rec.macros.cal     || 0;
       protein += rec.macros.protein || 0;
@@ -2028,7 +2643,7 @@ function renderMealPickerList(query) {
   let html = '';
 
   if (_pickerFilter !== 'snack') {
-    const filtered = Object.entries(RECIPES).filter(([name, rec]) => {
+    const filtered = Object.entries(getAllRecipes()).filter(([name, rec]) => {
       const catMatch = _pickerFilter === 'all' || rec.cat === _pickerFilter;
       const qMatch   = !q || name.toLowerCase().includes(q);
       return catMatch && qMatch;
@@ -2124,13 +2739,14 @@ function syncShopFromPlan() {
     }
   };
 
+  const allRecipes = getAllRecipes();
   DAY_ORDER.forEach(d => {
     const dayPlan = plan[d] || {};
     MEAL_SLOTS.forEach(slot => {
       const name = dayPlan[slot];
       if (!name || seen.has(name)) return;
       seen.add(name);
-      const rec = RECIPES[name];
+      const rec = allRecipes[name];
       if (rec && rec.ingredients) {
         rec.ingredients.forEach(ing => addIng(ing.qty, ing.item));
       } else {
@@ -2154,23 +2770,66 @@ function syncShopFromPlan() {
 }
 
 function renderFoodRecipes() {
-  document.getElementById('food-recipes-content').innerHTML = Object.keys(RECIPES).map(r => {
-    const rec = RECIPES[r];
-    return `<div class="guide-ex-card" onclick="openRecipe('${r.replace(/'/g,"\\'")}')">
+  const all = getAllRecipes();
+  const customSet = new Set(Object.keys(get('custom-recipes') || {}));
+  const header = `<div class="section-row" style="margin-bottom:12px;">
+    <div class="card-label" style="margin:0;">ALL RECIPES</div>
+    <button class="btn btn-sm" onclick="openAddRecipeModal()">+ Add Recipe</button>
+  </div>`;
+  const cards = Object.keys(all).map(r => {
+    const rec = all[r];
+    const isCustom = customSet.has(r);
+    const safe = r.replace(/'/g,"\\'");
+    return `<div class="guide-ex-card" onclick="openRecipe('${safe}')">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-        <div>
-          <div class="guide-ex-title">${r}</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <div class="guide-ex-title">${r}</div>
+            ${isCustom ? '<span style="font-size:10px;font-weight:700;color:var(--amber);background:rgba(251,191,36,0.12);padding:2px 7px;border-radius:100px;">CUSTOM</span>' : ''}
+          </div>
           <div class="guide-ex-meta" style="margin-top:4px;">
             <span>⏱ ${rec.time}</span>
             <span>📋 Prep: ${rec.prep}</span>
             <span>🥦 ${rec.ingredients.length} ingredients</span>
           </div>
         </div>
-        <div style="color:var(--muted);font-size:20px;flex-shrink:0;">›</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          ${isCustom ? `<button style="background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1;" onclick="event.stopPropagation();deleteCustomRecipe('${safe}')">×</button>` : ''}
+          <div style="color:var(--muted);font-size:20px;">›</div>
+        </div>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4;">${rec.steps[0]}</div>
     </div>`;
   }).join('');
+  document.getElementById('food-recipes-content').innerHTML = header + cards;
+}
+
+function useTodaysMealPlan() {
+  const dow = new Date().getDay();
+  const meals = MEALS[dow];
+  const tk = todayKey();
+  const allRec = getAllRecipes();
+  const day = getNutriDay(tk);
+  let added = 0;
+  ['breakfast', 'lunch', 'dinner'].forEach(mealKey => {
+    const mealName = meals[mealKey];
+    if (!mealName) return;
+    const rec = allRec[mealName];
+    if (!rec || !rec.macros) return;
+    if (day[mealKey].some(f => f.name === mealName)) return; // already added
+    day[mealKey].push({
+      name: mealName,
+      cal:     rec.macros.cal     || 0,
+      protein: rec.macros.protein || 0,
+      carbs:   rec.macros.carbs   || 0,
+      fat:     rec.macros.fat     || 0,
+    });
+    added++;
+  });
+  if (!added) { showToast('Already logged (or no macros set on meal plan)'); return; }
+  save('nutri-' + tk, day);
+  renderFood();
+  showToast(`Added ${added} meal${added > 1 ? 's' : ''} to diary!`);
 }
 
 function renderFood() {
@@ -2254,6 +2913,9 @@ function renderFood() {
     </div>
 
   `;
+
+  document.getElementById('use-meal-plan-btn-wrap').innerHTML =
+    `<button style="display:block;width:100%;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);color:var(--green);font-size:13px;font-weight:600;padding:10px;border-radius:var(--radius-sm);cursor:pointer;margin-bottom:12px;" onclick="useTodaysMealPlan()">📋 Use today's meal plan</button>`;
 
   const mealDefs = [
 
