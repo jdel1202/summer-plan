@@ -436,7 +436,7 @@
 
   <div style="display:flex;align-items:center;gap:8px;">
     <span class="week-badge" id="week-badge">WEEK 1 · PHASE 1</span>
-    <button onclick="window.location.reload()" style="background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer;padding:2px 4px;line-height:1;" title="Refresh">↻</button>
+    <button onclick="forceUpdate()" style="background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer;padding:2px 4px;line-height:1;" title="Check for update">↻</button>
   </div>
 
 </header>
@@ -3737,11 +3737,10 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').then(reg => {
       reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            showToast('Update ready — reloading…');
-            setTimeout(() => window.location.reload(), 1500);
+        const nw = reg.installing;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            nw.postMessage('SKIP_WAITING');
           }
         });
       });
@@ -3750,6 +3749,24 @@ if ('serviceWorker' in navigator) {
       window.location.reload();
     });
   });
+}
+
+async function forceUpdate() {
+  if (!('serviceWorker' in navigator)) { window.location.reload(); return; }
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) { window.location.reload(); return; }
+    showToast('Checking for update…');
+    await reg.update();
+    if (reg.waiting) {
+      reg.waiting.postMessage('SKIP_WAITING');
+    } else {
+      // No new SW waiting — App.html is network-first so just reload
+      window.location.reload();
+    }
+  } catch(e) {
+    window.location.reload();
+  }
 }
 
 </script>

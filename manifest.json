@@ -1,11 +1,11 @@
 {
-  "name": "Summer Plan",
-  "short_name": "Summer Plan",
-  "description": "Summer fitness and meal plan tracker",
+  "name": "Forma",
+  "short_name": "Forma",
+  "description": "Daily nutrition, habit and life tracker",
   "start_url": "./App.html",
   "display": "standalone",
-  "background_color": "#0d0d0d",
-  "theme_color": "#0d0d0d",
+  "background_color": "#0d0d12",
+  "theme_color": "#0d0d12",
   "orientation": "portrait",
   "icons": [
     {
