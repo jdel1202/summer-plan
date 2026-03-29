@@ -745,9 +745,19 @@
         <button class="btn" onclick="submitCustomRecipe()">Save Recipe</button>
       </div>
       <div id="art-pane-paste" style="display:none;">
-        <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">Paste the full text of a recipe (from a website, notes, or anywhere). The parser will extract the title, ingredients, and steps — then review before saving.</p>
-        <textarea id="recipe-paste-input" placeholder="Paste recipe text here..." style="width:100%;min-height:200px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;color:var(--text);font-family:var(--font);font-size:13px;resize:vertical;line-height:1.5;margin-bottom:12px;"></textarea>
-        <button class="btn" onclick="parseRecipeText()">Parse &amp; Fill Form →</button>
+        <span class="mg-lbl">IMPORT FROM URL</span>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.5;">Works with most recipe sites (BBC Good Food, Allrecipes, Tasty, NYT Cooking, etc.)</p>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <input type="url" id="recipe-url-input" placeholder="https://..." style="margin-bottom:0;flex:1;">
+          <button id="url-fetch-btn" class="btn btn-sm" style="width:auto;white-space:nowrap;flex-shrink:0;" onclick="parseRecipeFromUrl()">Import →</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+          <span style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--faint);">OR PASTE TEXT</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+        <textarea id="recipe-paste-input" placeholder="Paste recipe text here..." style="width:100%;min-height:160px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;color:var(--text);font-family:var(--font);font-size:13px;resize:vertical;line-height:1.5;margin-bottom:12px;"></textarea>
+        <button class="btn btn-secondary" onclick="parseRecipeText()">Parse text →</button>
       </div>
     </div>
   </div>
@@ -2335,44 +2345,149 @@ function deleteCustomRecipe(name) {
   showToast('Recipe deleted');
 }
 
+// Split a raw ingredient string into {qty, item}
+function _splitIngredient(raw) {
+  const s = raw.replace(/\u00bc/g,'1/4').replace(/\u00bd/g,'1/2').replace(/\u00be/g,'3/4').trim();
+  const m = s.match(/^([\d\/\.\s]+(?:g|kg|ml|l|tbsp?|tsp?|cups?|oz|lb|cloves?|scoops?|cans?|medium|large|small|pinch|handful|bunch|sprig|slice|piece|fillet|breast|thigh)?\.?)\s+(.+)/i);
+  if (m) return { qty: m[1].trim(), item: m[2].trim() };
+  return { qty: '', item: s };
+}
+
+function _parseDuration(iso) {
+  if (!iso) return '';
+  const h = (iso.match(/(\d+)H/i) || [])[1];
+  const m = (iso.match(/(\d+)M/i) || [])[1];
+  if (h && m) return `${h}h ${m}min`;
+  if (h) return `${parseInt(h) * 60} min`;
+  if (m) return `${m} min`;
+  return '';
+}
+
+function _populateRecipeForm(parsed) {
+  document.getElementById('recipe-name-input').value  = parsed.name  || '';
+  document.getElementById('recipe-time-input').value  = parsed.time  || '';
+  document.getElementById('recipe-prep-input').value  = parsed.prep  || '';
+  document.getElementById('recipe-cal').value         = parsed.cal   || '';
+  document.getElementById('recipe-prot').value        = parsed.prot  || '';
+  document.getElementById('recipe-carbs').value       = parsed.carbs || '';
+  document.getElementById('recipe-fat').value         = parsed.fat   || '';
+
+  const ingContainer = document.getElementById('recipe-ing-list');
+  ingContainer.innerHTML = '';
+  (parsed.ingredients.length ? parsed.ingredients : [{ qty:'', item:'' }])
+    .forEach(ing => ingContainer.insertAdjacentHTML('beforeend', buildIngRow(ing.qty, ing.item)));
+
+  const stepsContainer = document.getElementById('recipe-steps-list');
+  stepsContainer.innerHTML = '';
+  (parsed.steps.length ? parsed.steps : [''])
+    .forEach(s => stepsContainer.insertAdjacentHTML('beforeend', buildStepRow(s)));
+}
+
+async function parseRecipeFromUrl() {
+  const url = document.getElementById('recipe-url-input').value.trim();
+  if (!url.match(/^https?:\/\//i)) { showToast('Enter a full URL starting with https://'); return; }
+
+  const btn = document.getElementById('url-fetch-btn');
+  btn.textContent = 'Fetching…'; btn.disabled = true;
+
+  try {
+    const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    const res = await fetch(proxy);
+    if (!res.ok) throw new Error('proxy error');
+    const { contents } = await res.json();
+    if (!contents) throw new Error('empty');
+
+    const doc = new DOMParser().parseFromString(contents, 'text/html');
+    const parsed = _extractJsonLd(doc) || _extractMicrodata(doc);
+    if (!parsed) { showToast('No recipe found on that page — try pasting the text instead'); return; }
+
+    _populateRecipeForm(parsed);
+    document.getElementById('recipe-url-input').value = '';
+    switchAddRecipeTab('build');
+    showToast('Recipe imported — review and save!');
+  } catch(e) {
+    showToast('Fetch failed — try pasting the text instead');
+  } finally {
+    btn.textContent = 'Import →'; btn.disabled = false;
+  }
+}
+
+function _extractJsonLd(doc) {
+  for (const script of doc.querySelectorAll('script[type="application/ld+json"]')) {
+    try {
+      let d = JSON.parse(script.textContent);
+      // Unwrap @graph
+      if (d['@graph']) d = d['@graph'];
+      if (Array.isArray(d)) d = d.find(x => [].concat(x['@type']).includes('Recipe'));
+      if (!d || ![].concat(d['@type']).includes('Recipe')) continue;
+
+      const ingredients = (d.recipeIngredient || []).map(s => _splitIngredient(s));
+
+      const steps = [];
+      for (const inst of [].concat(d.recipeInstructions || [])) {
+        if (typeof inst === 'string') { steps.push(inst.trim()); continue; }
+        if (inst['@type'] === 'HowToSection') {
+          for (const s of inst.itemListElement || []) steps.push((s.text || s.name || '').trim());
+        } else {
+          steps.push((inst.text || inst.name || '').trim());
+        }
+      }
+
+      const nutr = d.nutrition || {};
+      return {
+        name: d.name || '',
+        time: _parseDuration(d.totalTime || d.cookTime || ''),
+        prep: _parseDuration(d.prepTime || ''),
+        cal:   parseInt(nutr.calories)            || 0,
+        prot:  parseInt(nutr.proteinContent)      || 0,
+        carbs: parseInt(nutr.carbohydrateContent) || 0,
+        fat:   parseInt(nutr.fatContent)          || 0,
+        ingredients: ingredients.filter(i => i.item),
+        steps: steps.filter(Boolean),
+      };
+    } catch(e) {}
+  }
+  return null;
+}
+
+function _extractMicrodata(doc) {
+  // Fallback: look for common recipe page patterns in plain HTML
+  const h1 = doc.querySelector('h1');
+  const name = h1 ? h1.textContent.trim() : doc.title || '';
+  // ingredient selectors used by many sites
+  const ingEls = doc.querySelectorAll('[class*="ingredient"],[itemprop="recipeIngredient"]');
+  const stepEls = doc.querySelectorAll('[class*="instruction"],[class*="direction"],[class*="step"],[itemprop="recipeInstructions"]');
+  const ingredients = [...ingEls].map(el => _splitIngredient(el.textContent.trim())).filter(i => i.item && i.item.length > 1);
+  const steps = [...stepEls].map(el => el.textContent.trim()).filter(s => s.length > 8);
+  if (!ingredients.length && !steps.length) return null;
+  return { name, time: '', prep: '', cal: 0, prot: 0, carbs: 0, fat: 0, ingredients, steps };
+}
+
 function parseRecipeText() {
   const raw = document.getElementById('recipe-paste-input').value.trim();
   if (!raw) { showToast('Paste some recipe text first'); return; }
 
   const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-  const title = lines[0] || '';
-
   const ingRe    = /^(ingredients?|what you('ll)? need)\b/i;
   const methodRe = /^(method|steps?|directions?|instructions?|how to make)\b/i;
   const listRe   = /^[-•*·]|\d+[.)]\s/;
 
   let mode = 'none';
-  const ingredients = [], steps = [];
-
+  const rawIngs = [], steps = [];
   lines.slice(1).forEach(line => {
     if (ingRe.test(line))    { mode = 'ing';    return; }
     if (methodRe.test(line)) { mode = 'method'; return; }
-    if (mode === 'ing' && (listRe.test(line) || line.length > 3)) {
-      ingredients.push(line.replace(/^[-•*·]\s*|\d+[.)]\s*/, '').trim());
-    } else if (mode === 'method' && line.length > 4) {
+    if (mode === 'ing' && (listRe.test(line) || line.length > 3))
+      rawIngs.push(line.replace(/^[-•*·]\s*|\d+[.)]\s*/, '').trim());
+    else if (mode === 'method' && line.length > 4)
       steps.push(line.replace(/^\d+[.)]\s*/, '').trim());
-    }
   });
 
-  // Populate ingredient rows
-  const ingContainer = document.getElementById('recipe-ing-list');
-  ingContainer.innerHTML = '';
-  (ingredients.length ? ingredients : ['']).forEach(ing => {
-    const m = ing.match(/^([\d¼½¾\/\s]+(?:g|kg|ml|l|tbsp|tsp|cups?|cloves?|scoops?|medium|small|large|pinch|handful)?\.?)\s+(.+)/i);
-    ingContainer.insertAdjacentHTML('beforeend', buildIngRow(m ? m[1].trim() : '', m ? m[2].trim() : ing));
+  _populateRecipeForm({
+    name: lines[0] || '', time: '', prep: '', cal: 0, prot: 0, carbs: 0, fat: 0,
+    ingredients: rawIngs.map(s => _splitIngredient(s)),
+    steps,
   });
-
-  // Populate step rows
-  const stepsContainer = document.getElementById('recipe-steps-list');
-  stepsContainer.innerHTML = '';
-  (steps.length ? steps : ['']).forEach(s => stepsContainer.insertAdjacentHTML('beforeend', buildStepRow(s)));
-
-  document.getElementById('recipe-name-input').value = title;
   document.getElementById('recipe-paste-input').value = '';
   switchAddRecipeTab('build');
   showToast('Parsed — review and save!');
