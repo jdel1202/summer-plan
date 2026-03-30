@@ -386,11 +386,14 @@
     .subtab-pane.active { display: block; }
 
     /* Recipe builder dynamic rows */
-    .recipe-input-row { display:grid; grid-template-columns:80px 1fr 28px; gap:6px; align-items:center; margin-bottom:6px; }
+    .recipe-input-row { display:grid; grid-template-columns:80px 1fr 28px 28px; gap:6px; align-items:center; }
     .recipe-input-row.step-row { grid-template-columns:1fr 28px; }
     .recipe-input-row input[type="text"] { margin-bottom:0; }
     .recipe-del-row { background:none; border:none; color:var(--faint); cursor:pointer; font-size:18px; padding:4px; line-height:1; transition:color 0.15s; width:28px; text-align:center; }
     .recipe-del-row:hover { color:var(--red); }
+    .recipe-ing-row { margin-bottom:6px; }
+    .ing-macros-row { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:4px; margin-top:4px; background:var(--bg); border-radius:var(--radius-sm); padding:6px; }
+    .ing-macro-lbl { font-size:9px; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-align:center; margin-bottom:3px; text-transform:uppercase; }
     /* Habit streak badge */
     .habit-streak { font-family:var(--font-cond); font-size:11px; font-weight:700; color:var(--amber); background:rgba(251,191,36,0.12); padding:2px 8px; border-radius:100px; white-space:nowrap; }
 
@@ -595,8 +598,9 @@
     </div>
 
     <div class="modal-tabs-row" id="food-tabs-row">
-      <button class="modal-tab-btn active" id="ftab-quick" onclick="switchFoodModalTab('quick')">My Foods</button>
-      <button class="modal-tab-btn" id="ftab-new" onclick="switchFoodModalTab('new')">New Food</button>
+      <button class="modal-tab-btn active" id="ftab-quick"   onclick="switchFoodModalTab('quick')">My Foods</button>
+      <button class="modal-tab-btn"        id="ftab-recipes" onclick="switchFoodModalTab('recipes')">Recipes</button>
+      <button class="modal-tab-btn"        id="ftab-new"     onclick="switchFoodModalTab('new')">New Food</button>
     </div>
 
     <div class="modal-body">
@@ -604,6 +608,11 @@
       <div id="food-tab-quick">
         <input type="search" id="food-search" placeholder="Search saved foods..." oninput="renderFoodLib(this.value)" style="margin-bottom:10px;">
         <div id="food-lib-list"></div>
+      </div>
+
+      <div id="food-tab-recipes" style="display:none;">
+        <input type="search" id="recipe-diary-search" placeholder="Search recipes..." oninput="renderDiaryRecipeList(this.value)" style="margin-bottom:10px;">
+        <div id="recipe-diary-list"></div>
       </div>
 
       <div id="food-tab-new" style="display:none;">
@@ -733,7 +742,10 @@
           <button class="btn btn-sm btn-secondary" onclick="addStepRow()">+ Step</button>
         </div>
         <div id="recipe-steps-list" style="margin-bottom:12px;"></div>
-        <span class="mg-lbl">MACROS (per full recipe / serving)</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <span class="mg-lbl" style="margin:0;">MACROS (per full recipe)</span>
+          <button class="btn btn-sm btn-secondary" style="font-size:10px;padding:4px 8px;" onclick="calcMacrosFromIngs()">∑ Sum ingredients</button>
+        </div>
         <div class="macro-input-grid" style="margin-bottom:10px;">
           <div><span class="mg-lbl">KCAL</span><input type="number" id="recipe-cal" placeholder="0" min="0"></div>
           <div><span class="mg-lbl">PROTEIN g</span><input type="number" id="recipe-prot" placeholder="0" min="0"></div>
@@ -2264,12 +2276,52 @@ function switchAddRecipeTab(tab) {
   document.getElementById('art-pane-paste').style.display = tab === 'paste' ? 'block' : 'none';
 }
 
-function buildIngRow(qty, item) {
-  return `<div class="recipe-input-row">
-    <input type="text" placeholder="qty" value="${(qty||'').replace(/"/g,'&quot;')}" style="margin-bottom:0;">
-    <input type="text" placeholder="ingredient" value="${(item||'').replace(/"/g,'&quot;')}" style="margin-bottom:0;">
-    <button class="recipe-del-row" onclick="this.parentElement.remove()">×</button>
+function buildIngRow(qty, item, macros) {
+  const cal  = macros?.cal     || '';
+  const prot = macros?.protein || '';
+  const carb = macros?.carbs   || '';
+  const fat  = macros?.fat     || '';
+  const show = cal || prot || carb || fat;
+  return `<div class="recipe-ing-row">
+    <div class="recipe-input-row">
+      <input type="text" placeholder="qty" value="${(qty||'').replace(/"/g,'&quot;')}" style="margin-bottom:0;">
+      <input type="text" placeholder="ingredient" value="${(item||'').replace(/"/g,'&quot;')}" style="margin-bottom:0;">
+      <button class="ing-m-btn" title="Add macros for this ingredient" onclick="toggleIngMacros(this)" style="background:none;border:1px solid ${show?'var(--green)':'var(--border)'};border-radius:var(--radius-sm);color:${show?'var(--green)':'var(--faint)'};cursor:pointer;font-size:10px;font-weight:700;width:28px;height:28px;line-height:1;transition:all 0.15s;">M</button>
+      <button class="recipe-del-row" onclick="this.closest('.recipe-ing-row').remove()">×</button>
+    </div>
+    <div class="ing-macros-row" style="display:${show?'grid':'none'};">
+      <div><div class="ing-macro-lbl">KCAL</div><input type="number" placeholder="0" min="0" value="${cal}" style="font-size:11px;padding:4px 6px;text-align:center;margin-bottom:0;"></div>
+      <div><div class="ing-macro-lbl">PROT g</div><input type="number" placeholder="0" min="0" value="${prot}" style="font-size:11px;padding:4px 6px;text-align:center;margin-bottom:0;"></div>
+      <div><div class="ing-macro-lbl">CARB g</div><input type="number" placeholder="0" min="0" value="${carb}" style="font-size:11px;padding:4px 6px;text-align:center;margin-bottom:0;"></div>
+      <div><div class="ing-macro-lbl">FAT g</div><input type="number" placeholder="0" min="0" value="${fat}" style="font-size:11px;padding:4px 6px;text-align:center;margin-bottom:0;"></div>
+    </div>
   </div>`;
+}
+
+function toggleIngMacros(btn) {
+  const row = btn.closest('.recipe-ing-row');
+  const macroDiv = row.querySelector('.ing-macros-row');
+  const show = macroDiv.style.display === 'none' || macroDiv.style.display === '';
+  macroDiv.style.display = show ? 'grid' : 'none';
+  btn.style.color       = show ? 'var(--green)' : 'var(--faint)';
+  btn.style.borderColor = show ? 'var(--green)' : 'var(--border)';
+}
+
+function calcMacrosFromIngs() {
+  let cal = 0, prot = 0, carbs = 0, fat = 0;
+  document.querySelectorAll('#recipe-ing-list .recipe-ing-row').forEach(row => {
+    const nums = row.querySelectorAll('.ing-macros-row input[type="number"]');
+    cal   += parseInt(nums[0]?.value) || 0;
+    prot  += parseInt(nums[1]?.value) || 0;
+    carbs += parseInt(nums[2]?.value) || 0;
+    fat   += parseInt(nums[3]?.value) || 0;
+  });
+  if (!cal && !prot && !carbs && !fat) { showToast('No ingredient macros entered yet'); return; }
+  document.getElementById('recipe-cal').value   = cal   || '';
+  document.getElementById('recipe-prot').value  = prot  || '';
+  document.getElementById('recipe-carbs').value = carbs || '';
+  document.getElementById('recipe-fat').value   = fat   || '';
+  showToast('Macros calculated from ingredients!');
 }
 
 function buildStepRow(text) {
@@ -2292,13 +2344,21 @@ function submitCustomRecipe() {
   if (!name) { showToast('Enter a recipe name'); return; }
 
   // Gather ingredients
-  const ingRows = document.querySelectorAll('#recipe-ing-list .recipe-input-row');
+  const ingRows = document.querySelectorAll('#recipe-ing-list .recipe-ing-row');
   const ingredients = [];
   ingRows.forEach(row => {
-    const inputs = row.querySelectorAll('input');
-    const qty = inputs[0].value.trim();
-    const item = inputs[1].value.trim();
-    if (item) ingredients.push({qty, item});
+    const textInputs = row.querySelectorAll('input[type="text"]');
+    const qty  = textInputs[0]?.value.trim() || '';
+    const item = textInputs[1]?.value.trim() || '';
+    if (!item) return;
+    const nums   = row.querySelectorAll('.ing-macros-row input[type="number"]');
+    const ingCal  = parseInt(nums[0]?.value) || 0;
+    const ingProt = parseInt(nums[1]?.value) || 0;
+    const ingCarb = parseInt(nums[2]?.value) || 0;
+    const ingFat  = parseInt(nums[3]?.value) || 0;
+    const entry = {qty, item};
+    if (ingCal || ingProt || ingCarb || ingFat) entry.macros = {cal: ingCal, protein: ingProt, carbs: ingCarb, fat: ingFat};
+    ingredients.push(entry);
   });
 
   // Gather steps
@@ -2375,7 +2435,7 @@ function _populateRecipeForm(parsed) {
   const ingContainer = document.getElementById('recipe-ing-list');
   ingContainer.innerHTML = '';
   (parsed.ingredients.length ? parsed.ingredients : [{ qty:'', item:'' }])
-    .forEach(ing => ingContainer.insertAdjacentHTML('beforeend', buildIngRow(ing.qty, ing.item)));
+    .forEach(ing => ingContainer.insertAdjacentHTML('beforeend', buildIngRow(ing.qty, ing.item, ing.macros)));
 
   const stepsContainer = document.getElementById('recipe-steps-list');
   stepsContainer.innerHTML = '';
@@ -3171,22 +3231,21 @@ function closeFoodModal() {
 
 function showFoodBrowseMode(tab) {
 
-  document.getElementById('food-amount-mode').style.display  = 'none';
-
-  document.getElementById('food-tabs-row').style.display     = 'flex';
-
-  document.getElementById('food-back-btn').style.display     = 'none';
-
-  document.getElementById('food-tab-quick').style.display    = tab === 'quick' ? 'block' : 'none';
-
-  document.getElementById('food-tab-new').style.display      = tab === 'new'   ? 'block' : 'none';
-
-  document.getElementById('ftab-quick').classList.toggle('active', tab === 'quick');
-
-  document.getElementById('ftab-new').classList.toggle('active',   tab === 'new');
-
+  document.getElementById('food-amount-mode').style.display    = 'none';
+  document.getElementById('food-tabs-row').style.display       = 'flex';
+  document.getElementById('food-back-btn').style.display       = 'none';
+  document.getElementById('food-tab-quick').style.display      = tab === 'quick'   ? 'block' : 'none';
+  document.getElementById('food-tab-recipes').style.display    = tab === 'recipes' ? 'block' : 'none';
+  document.getElementById('food-tab-new').style.display        = tab === 'new'     ? 'block' : 'none';
+  document.getElementById('ftab-quick').classList.toggle('active',   tab === 'quick');
+  document.getElementById('ftab-recipes').classList.toggle('active', tab === 'recipes');
+  document.getElementById('ftab-new').classList.toggle('active',     tab === 'new');
+  if (tab === 'recipes') {
+    const s = document.getElementById('recipe-diary-search');
+    if (s) s.value = '';
+    renderDiaryRecipeList('');
+  }
   foodModalActiveTab = tab;
-
 }
 
 function switchFoodModalTab(tab) { showFoodBrowseMode(tab); }
@@ -3199,6 +3258,52 @@ function backToFoodBrowse() {
 
   showFoodBrowseMode(foodModalActiveTab || 'quick');
 
+}
+
+function renderDiaryRecipeList(query) {
+  const all = getAllRecipes();
+  const q   = (query || '').toLowerCase();
+  const entries = Object.entries(all).filter(([name]) => !q || name.toLowerCase().includes(q));
+  const el = document.getElementById('recipe-diary-list');
+
+  if (!entries.length) {
+    el.innerHTML = '<div class="empty" style="padding:16px 0;">No recipes found</div>';
+    return;
+  }
+
+  el.innerHTML = entries.map(([name, rec]) => {
+    const macros = rec.macros;
+    const macroStr = macros
+      ? `${macros.cal} kcal · P:${macros.protein}g · C:${macros.carbs}g · F:${macros.fat}g`
+      : '<span style="color:var(--amber);">No macros — add them in Recipes first</span>';
+    const safe = name.replace(/'/g,"\\'");
+    return `<div class="food-lib-item" style="cursor:${macros?'pointer':'default'};opacity:${macros?1:0.55};" ${macros?`onclick="addRecipeToDiary('${safe}')"`:''}>
+      <div style="flex:1;">
+        <div class="food-lib-name">${name}</div>
+        <div class="food-lib-macro">${macroStr}</div>
+      </div>
+      ${macros ? '<div style="color:var(--muted);font-size:18px;">+</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function addRecipeToDiary(name) {
+  const rec = getAllRecipes()[name];
+  if (!rec || !rec.macros) return;
+  const key = todayKey();
+  const day = getNutriDay(key);
+  const meal = foodModalMeal || 'lunch';
+  day[meal].push({
+    name,
+    cal:     rec.macros.cal     || 0,
+    protein: rec.macros.protein || 0,
+    carbs:   rec.macros.carbs   || 0,
+    fat:     rec.macros.fat     || 0,
+  });
+  save('nutri-' + key, day);
+  closeFoodModal();
+  renderFood();
+  showToast(`${name} added!`);
 }
 
 function renderFoodLib(query) {
@@ -3267,13 +3372,11 @@ function openAmountView(idx) {
 
   document.getElementById('food-modal-title').textContent = food.name;
 
-  document.getElementById('food-tabs-row').style.display  = 'none';
-
-  document.getElementById('food-tab-quick').style.display = 'none';
-
-  document.getElementById('food-tab-new').style.display   = 'none';
-
-  document.getElementById('food-back-btn').style.display  = 'block';
+  document.getElementById('food-tabs-row').style.display      = 'none';
+  document.getElementById('food-tab-quick').style.display     = 'none';
+  document.getElementById('food-tab-recipes').style.display   = 'none';
+  document.getElementById('food-tab-new').style.display       = 'none';
+  document.getElementById('food-back-btn').style.display      = 'block';
 
   const defaultAmt = food.serving_g || 100;
 
