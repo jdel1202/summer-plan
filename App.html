@@ -567,6 +567,7 @@
 
     <!-- DIARY sub-tab -->
     <div class="subtab-pane active" id="fsp-diary">
+      <div id="diary-date-nav" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;background:var(--bg);border-radius:var(--radius-sm);padding:6px 0;"></div>
       <div id="nutri-summary-card"></div>
       <div id="use-meal-plan-btn-wrap"></div>
       <div id="nutri-meals"></div>
@@ -1734,7 +1735,7 @@ function switchTab(name, btn) {
 
   if (name === 'progress') renderProgress();
 
-  if (name === 'food') renderFood();
+  if (name === 'food') { _diaryDateKey = null; renderFood(); }
 
   if (name === 'shop') renderShop();
 
@@ -2742,6 +2743,22 @@ function getAllRecipes() {
 
 let foodModalMeal = null, foodModalMealLabel = null, foodModalActiveTab = 'quick', foodModalSelectedFood = null;
 let _editingRecipeName = null, _editingFoodIdx = null;
+let _diaryDateKey = null; // null = today; set when navigating diary dates
+
+function diaryKey() { return _diaryDateKey || todayKey(); }
+
+function navigateDiaryDate(delta) {
+  const base = _diaryDateKey || todayKey();
+  const d = new Date(base + 'T00:00:00');
+  d.setDate(d.getDate() + delta);
+  _diaryDateKey = d.toISOString().slice(0,10);
+  renderFood();
+}
+
+function jumpDiaryToday() {
+  _diaryDateKey = null;
+  renderFood();
+}
 
 function calcMacros(food, grams) {
 
@@ -3048,15 +3065,15 @@ function renderFoodRecipes() {
   document.getElementById('food-recipes-content').innerHTML = header + cards;
 }
 
-function useTodaysMealPlan() {
-  const dow = new Date().getDay();
-  const meals = MEALS[dow];
-  const tk = todayKey();
+function useTodaysMealPlan(dateKey) {
+  const dk = dateKey || diaryKey();
+  const dow = new Date(dk + 'T00:00:00').getDay();
+  const planForDay = (getCustomMealPlan()[dow]) || {};
   const allRec = getAllRecipes();
-  const day = getNutriDay(tk);
+  const day = getNutriDay(dk);
   let added = 0;
   ['breakfast', 'lunch', 'dinner'].forEach(mealKey => {
-    const mealName = meals[mealKey];
+    const mealName = planForDay[mealKey];
     if (!mealName) return;
     const rec = allRec[mealName];
     if (!rec || !rec.macros) return;
@@ -3071,14 +3088,14 @@ function useTodaysMealPlan() {
     added++;
   });
   if (!added) { showToast('Already logged (or no macros set on meal plan)'); return; }
-  save('nutri-' + tk, day);
+  save('nutri-' + dk, day);
   renderFood();
   showToast(`Added ${added} meal${added > 1 ? 's' : ''} to diary!`);
 }
 
 function renderFood() {
 
-  const key = todayKey();
+  const key = diaryKey();
 
   const day = getNutriDay(key);
 
@@ -3104,11 +3121,26 @@ function renderFood() {
 
   const calColor = over ? 'var(--red)' : 'var(--green)';
 
+  // Date nav bar
+  const tk = todayKey();
+  const isToday = key === tk;
+  const dateObj = new Date(key + 'T00:00:00');
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const dateLbl = isToday ? 'Today' : (key === (() => { const d=new Date(tk+'T00:00:00'); d.setDate(d.getDate()+1); return d.toISOString().slice(0,10); })() ? 'Tomorrow' : dayNames[dateObj.getDay()] + ' ' + dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+  document.getElementById('diary-date-nav').innerHTML = `
+    <button onclick="navigateDiaryDate(-1)" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 10px;line-height:1;">‹</button>
+    <div style="text-align:center;flex:1;">
+      <div style="font-family:var(--font-cond);font-size:17px;font-weight:700;color:${isToday?'var(--green)':'var(--text)'};">${dateLbl}</div>
+      ${!isToday ? `<button onclick="jumpDiaryToday()" style="background:none;border:none;color:var(--blue);font-size:11px;font-weight:600;cursor:pointer;padding:0;margin-top:1px;text-decoration:underline;">Back to today</button>` : ''}
+    </div>
+    <button onclick="navigateDiaryDate(1)" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 10px;line-height:1;">›</button>
+  `;
+
   document.getElementById('nutri-summary-card').innerHTML = `
 
     <div class="section-row" style="margin-bottom:12px;">
 
-      <div class="card-label" style="margin:0;">TODAY'S NUTRITION</div>
+      <div class="card-label" style="margin:0;">${isToday ? "TODAY'S NUTRITION" : dateLbl.toUpperCase() + "'S NUTRITION"}</div>
 
       <button class="btn btn-sm btn-secondary" onclick="openGoalsModal()">Edit targets</button>
 
@@ -3159,7 +3191,7 @@ function renderFood() {
   `;
 
   document.getElementById('use-meal-plan-btn-wrap').innerHTML =
-    `<button style="display:block;width:100%;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);color:var(--green);font-size:13px;font-weight:600;padding:10px;border-radius:var(--radius-sm);cursor:pointer;margin-bottom:12px;" onclick="useTodaysMealPlan()">📋 Use today's meal plan</button>`;
+    `<button style="display:block;width:100%;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);color:var(--green);font-size:13px;font-weight:600;padding:10px;border-radius:var(--radius-sm);cursor:pointer;margin-bottom:12px;" onclick="useTodaysMealPlan('${key}')">📋 Use ${isToday ? "today's" : dateLbl + "'s"} meal plan</button>`;
 
   const mealDefs = [
 
@@ -3331,7 +3363,7 @@ function renderDiaryRecipeList(query) {
 function addRecipeToDiary(name) {
   const rec = getAllRecipes()[name];
   if (!rec || !rec.macros) return;
-  const key = todayKey();
+  const key = diaryKey();
   const day = getNutriDay(key);
   const meal = foodModalMeal || 'lunch';
   day[meal].push({
@@ -3516,7 +3548,7 @@ function addFoodWithAmount() {
 
   const m = calcMacros(foodModalSelectedFood, grams);
 
-  const key = todayKey();
+  const key = diaryKey();
 
   const day = getNutriDay(key);
 
@@ -3627,7 +3659,7 @@ function submitNewFood() {
 
   const m = calcMacros(foodDef, amt);
 
-  const key = todayKey(); const day = getNutriDay(key);
+  const key = diaryKey(); const day = getNutriDay(key);
 
   day[foodModalMeal].push({name, amount_g: amt, ...m});
 
