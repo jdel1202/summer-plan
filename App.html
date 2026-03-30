@@ -702,7 +702,7 @@
 <div class="modal-overlay" id="add-recipe-modal" onclick="if(event.target===this)closeAddRecipeModal()">
   <div class="modal-sheet" style="max-height:90vh;overflow-y:auto;">
     <div class="modal-header">
-      <span class="modal-title">Add Recipe</span>
+      <span class="modal-title" id="add-recipe-modal-title">Add Recipe</span>
       <button class="modal-close" onclick="closeAddRecipeModal()">✕</button>
     </div>
     <div class="modal-tabs-row">
@@ -754,7 +754,7 @@
         </div>
         <span class="mg-lbl">MEAL-PREP NOTE (optional)</span>
         <input type="text" id="recipe-note-input" placeholder="e.g. Batch cook Sunday, keeps 4 days" style="margin-bottom:14px;">
-        <button class="btn" onclick="submitCustomRecipe()">Save Recipe</button>
+        <button class="btn" id="add-recipe-save-btn" onclick="submitCustomRecipe()">Save Recipe</button>
       </div>
       <div id="art-pane-paste" style="display:none;">
         <span class="mg-lbl">IMPORT FROM URL</span>
@@ -2250,7 +2250,7 @@ function closeRecipeModal() {
 // ============================================================
 
 function openAddRecipeModal() {
-  // Reset form
+  _editingRecipeName = null;
   ['recipe-name-input','recipe-time-input','recipe-prep-input','recipe-note-input'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
@@ -2261,6 +2261,37 @@ function openAddRecipeModal() {
   document.getElementById('recipe-steps-list').innerHTML = '';
   addIngredientRow(); addIngredientRow();
   addStepRow(); addStepRow();
+  document.getElementById('add-recipe-modal-title').textContent = 'Add Recipe';
+  document.getElementById('add-recipe-save-btn').textContent = 'Save Recipe';
+  switchAddRecipeTab('build');
+  document.getElementById('add-recipe-modal').classList.add('show');
+}
+
+function openEditRecipeModal(name) {
+  const rec = getAllRecipes()[name];
+  if (!rec) return;
+  _editingRecipeName = name;
+
+  document.getElementById('recipe-name-input').value  = name;
+  document.getElementById('recipe-time-input').value  = rec.time !== '—' ? (rec.time || '') : '';
+  document.getElementById('recipe-prep-input').value  = rec.prep !== '—' ? (rec.prep || '') : '';
+  document.getElementById('recipe-note-input').value  = rec.note || '';
+  const catEl = document.getElementById('recipe-cat-input'); if (catEl) catEl.value = rec.cat || 'main';
+  document.getElementById('recipe-cal').value         = rec.macros?.cal     || '';
+  document.getElementById('recipe-prot').value        = rec.macros?.protein || '';
+  document.getElementById('recipe-carbs').value       = rec.macros?.carbs   || '';
+  document.getElementById('recipe-fat').value         = rec.macros?.fat     || '';
+
+  const ingContainer = document.getElementById('recipe-ing-list');
+  ingContainer.innerHTML = '';
+  rec.ingredients.forEach(ing => ingContainer.insertAdjacentHTML('beforeend', buildIngRow(ing.qty, ing.item, ing.macros)));
+
+  const stepsContainer = document.getElementById('recipe-steps-list');
+  stepsContainer.innerHTML = '';
+  rec.steps.forEach(s => stepsContainer.insertAdjacentHTML('beforeend', buildStepRow(s)));
+
+  document.getElementById('add-recipe-modal-title').textContent = 'Edit Recipe';
+  document.getElementById('add-recipe-save-btn').textContent    = 'Save Changes';
   switchAddRecipeTab('build');
   document.getElementById('add-recipe-modal').classList.add('show');
 }
@@ -2389,6 +2420,9 @@ function submitCustomRecipe() {
   if (note) recipe.note = note;
 
   const customs = get('custom-recipes') || {};
+  // If renaming, remove old key first
+  if (_editingRecipeName && _editingRecipeName !== name) delete customs[_editingRecipeName];
+  _editingRecipeName = null;
   customs[name] = recipe;
   save('custom-recipes', customs);
   autoSaveIngsToLib(ingredients);
@@ -2707,6 +2741,7 @@ function getAllRecipes() {
 }
 
 let foodModalMeal = null, foodModalMealLabel = null, foodModalActiveTab = 'quick', foodModalSelectedFood = null;
+let _editingRecipeName = null, _editingFoodIdx = null;
 
 function calcMacros(food, grams) {
 
@@ -3002,6 +3037,7 @@ function renderFoodRecipes() {
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <button style="background:none;border:none;color:var(--blue);font-size:14px;cursor:pointer;padding:2px 6px;line-height:1;" onclick="event.stopPropagation();openEditRecipeModal('${safe}')">✎</button>
           ${isCustom ? `<button style="background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1;" onclick="event.stopPropagation();deleteCustomRecipe('${safe}')">×</button>` : ''}
           <div style="color:var(--muted);font-size:20px;">›</div>
         </div>
@@ -3218,6 +3254,7 @@ function closeFoodModal() {
   document.getElementById('food-modal').classList.remove('show');
 
   foodModalMeal = null; foodModalMealLabel = null; foodModalSelectedFood = null;
+  _editingFoodIdx = null;
 
   ['f-name','f-cal','f-p','f-c','f-f','f-serving'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 
@@ -3226,6 +3263,10 @@ function closeFoodModal() {
   const cb = document.getElementById('f-save'); if (cb) cb.checked = true;
 
   const prev = document.getElementById('new-food-preview'); if (prev) prev.style.display = 'none';
+
+  // Reset tab label if it was changed for edit mode
+  const newTabBtn = document.getElementById('ftab-new'); if (newTabBtn) newTabBtn.textContent = 'New Food';
+  const saveBtn = document.querySelector('#food-tab-new .btn'); if (saveBtn) saveBtn.textContent = 'Add to meal';
 
 }
 
@@ -3350,7 +3391,10 @@ function renderFoodLib(query) {
 
         </div>
 
-        <div class="food-lib-cal">${f.cal_per100||0} kcal</div>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div class="food-lib-cal">${f.cal_per100||0} kcal</div>
+          <button style="background:none;border:none;color:var(--blue);font-size:14px;cursor:pointer;padding:2px 6px;line-height:1;flex-shrink:0;" onclick="event.stopPropagation();openEditFoodModal(${idx})">✎</button>
+        </div>
 
       </div>
 
@@ -3522,6 +3566,26 @@ function updateNewFoodPreview() {
 
 }
 
+function openEditFoodModal(idx) {
+  const foods = getCustomFoods();
+  const food = foods[idx];
+  if (!food) return;
+  _editingFoodIdx = idx;
+  switchFoodModalTab('new');
+  document.getElementById('f-name').value    = food.name;
+  document.getElementById('f-cal').value     = food.cal_per100 || '';
+  document.getElementById('f-p').value       = food.protein_per100 || '';
+  document.getElementById('f-c').value       = food.carbs_per100 || '';
+  document.getElementById('f-f').value       = food.fat_per100 || '';
+  document.getElementById('f-serving').value = food.serving_g || '';
+  document.getElementById('f-amount').value  = food.serving_g || 100;
+  document.getElementById('f-save').checked  = true;
+  document.getElementById('ftab-new').textContent = 'Edit Food';
+  const saveBtn = document.querySelector('#food-tab-new .btn');
+  if (saveBtn) saveBtn.textContent = 'Save Changes';
+  updateNewFoodPreview();
+}
+
 function submitNewFood() {
 
   const name    = document.getElementById('f-name').value.trim();
@@ -3545,6 +3609,15 @@ function submitNewFood() {
   const foodDef = {name, cal_per100:cal100, protein_per100:p100, carbs_per100:c100, fat_per100:f100};
 
   if (serving) foodDef.serving_g = serving;
+
+  // Edit mode: update existing saved food entry
+  if (_editingFoodIdx !== null) {
+    const foods = getCustomFoods();
+    if (foods[_editingFoodIdx]) { foods[_editingFoodIdx] = foodDef; save('custom-foods', foods); }
+    _editingFoodIdx = null;
+    closeFoodModal(); renderFoodLib(); showToast(name + ' updated!');
+    return;
+  }
 
   if (document.getElementById('f-save').checked) {
 
