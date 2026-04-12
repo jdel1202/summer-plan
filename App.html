@@ -26,11 +26,11 @@
 
     :root {
 
-      --bg: #0d0d12; --surface: #14141c; --card: #1c1c28; --border: #2a2a3e;
+      --bg: #111118; --surface: #1a1a26; --card: #232336; --border: #383858;
 
-      --border-strong: #46467a; --text: #f0f0ff; --muted: #7a7a9a; --faint: #26263a;
+      --border-strong: #6060a0; --text: #f2f2ff; --muted: #9898b8; --faint: #505070;
 
-      --green: #20d9a0; --amber: #fbbf24; --blue: #7c7ded; --red: #f96585;
+      --green: #23e8ac; --amber: #fbbf24; --blue: #8f92f8; --red: #f96585;
 
       --radius: 12px; --radius-sm: 7px;
 
@@ -54,7 +54,7 @@
 
     /* Header */
 
-    .app-header { position: sticky; top: 0; background: rgba(13,13,18,0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); padding: calc(13px + env(safe-area-inset-top)) 16px 13px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
+    .app-header { position: sticky; top: 0; background: rgba(17,17,24,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); padding: calc(13px + env(safe-area-inset-top)) 16px 13px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
 
     .app-title { font-family: var(--font-cond); font-size: 20px; font-weight: 700; letter-spacing: 0.12em; color: var(--text); }
 
@@ -62,7 +62,7 @@
 
     /* Bottom nav */
 
-    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 440px; background: rgba(20,20,28,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--border); box-shadow: 0 -1px 24px rgba(0,0,0,0.5); display: flex; z-index: 10; padding-bottom: env(safe-area-inset-bottom); }
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 440px; background: rgba(26,26,38,0.95); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--border); box-shadow: 0 -1px 28px rgba(0,0,0,0.45); display: flex; z-index: 10; padding-bottom: env(safe-area-inset-bottom); }
 
     .nav-btn { flex: 1; background: none; border: none; padding: 11px 0 9px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--faint); transition: color 0.15s; }
 
@@ -330,7 +330,7 @@
     .add-food-row:hover { color: var(--green); }
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 200; display: none; align-items: flex-end; }
     .modal-overlay.show { display: flex; }
-    .modal-sheet { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-width: 440px; margin: 0 auto; padding-bottom: calc(20px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; box-shadow: 0 -4px 40px rgba(0,0,0,0.6); }
+    .modal-sheet { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-width: 440px; margin: 0 auto; padding-bottom: calc(20px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; box-shadow: 0 -4px 50px rgba(0,0,0,0.55); }
     .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px 12px; border-bottom: 1px solid var(--border); }
     .modal-title { font-family: var(--font-cond); font-size: 18px; font-weight: 700; letter-spacing: 0.03em; }
     .modal-close { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; padding: 0 2px; }
@@ -3032,11 +3032,25 @@ function syncShopFromPlan() {
 function renderFoodRecipes() {
   const all = getAllRecipes();
   const customSet = new Set(Object.keys(get('custom-recipes') || {}));
-  const header = `<div class="section-row" style="margin-bottom:12px;">
+  const header = `<div class="section-row" style="margin-bottom:14px;">
     <div class="card-label" style="margin:0;">ALL RECIPES</div>
     <button class="btn btn-sm" onclick="openAddRecipeModal()">+ Add Recipe</button>
   </div>`;
-  const cards = Object.keys(all).map(r => {
+
+  const CATS = [
+    { key: 'breakfast', label: 'Breakfast',      color: 'var(--amber)',  bg: 'rgba(251,191,36,0.12)' },
+    { key: 'main',      label: 'Lunch & Dinner',  color: 'var(--green)',  bg: 'rgba(35,232,172,0.10)' },
+    { key: 'snack',     label: 'Snacks',          color: 'var(--blue)',   bg: 'rgba(143,146,248,0.12)' },
+  ];
+
+  const grouped = {};
+  Object.keys(all).forEach(r => {
+    const cat = all[r].cat || 'main';
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(r);
+  });
+
+  const buildCard = (r) => {
     const rec = all[r];
     const isCustom = customSet.has(r);
     const safe = r.replace(/'/g,"\\'");
@@ -3049,8 +3063,7 @@ function renderFoodRecipes() {
           </div>
           <div class="guide-ex-meta" style="margin-top:4px;">
             <span>⏱ ${rec.time}</span>
-            <span>📋 Prep: ${rec.prep}</span>
-            <span>🥦 ${rec.ingredients.length} ingredients</span>
+            <span>📋 ${rec.ingredients.length} ingredients</span>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
@@ -3059,10 +3072,23 @@ function renderFoodRecipes() {
           <div style="color:var(--muted);font-size:20px;">›</div>
         </div>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4;">${rec.steps[0]}</div>
     </div>`;
+  };
+
+  const sections = CATS.map(c => {
+    const names = grouped[c.key];
+    if (!names || !names.length) return '';
+    return `
+      <div style="margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${c.color};background:${c.bg};padding:3px 10px;border-radius:100px;">${c.label}</span>
+          <span style="font-size:11px;color:var(--muted);">${names.length}</span>
+        </div>
+        ${names.map(buildCard).join('')}
+      </div>`;
   }).join('');
-  document.getElementById('food-recipes-content').innerHTML = header + cards;
+
+  document.getElementById('food-recipes-content').innerHTML = header + sections;
 }
 
 function useTodaysMealPlan(dateKey) {
