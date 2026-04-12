@@ -330,7 +330,9 @@
     .add-food-row:hover { color: var(--green); }
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 200; display: none; align-items: flex-end; }
     .modal-overlay.show { display: flex; }
+    .modal-overlay.modal-center { align-items: center; justify-content: center; padding: 20px; }
     .modal-sheet { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-width: 440px; margin: 0 auto; padding-bottom: calc(20px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; box-shadow: 0 -4px 40px rgba(0,0,0,0.15); }
+    .modal-card { background: var(--surface); border-radius: var(--radius); width: 100%; max-width: 420px; max-height: 82vh; overflow-y: auto; padding: 20px 18px calc(20px + env(safe-area-inset-bottom)); box-shadow: 0 8px 40px rgba(0,0,0,0.18); }
     .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px 12px; border-bottom: 1px solid var(--border); }
     .modal-title { font-family: var(--font-cond); font-size: 18px; font-weight: 700; letter-spacing: 0.03em; }
     .modal-close { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; padding: 0 2px; }
@@ -538,11 +540,11 @@
 </div>
 
 <!-- RECIPE MODAL -->
-<div class="modal-overlay" id="recipe-modal" onclick="if(event.target===this)closeRecipeModal()">
-  <div class="modal-sheet" style="max-height:85vh;overflow-y:auto;">
+<div class="modal-overlay modal-center" id="recipe-modal" onclick="if(event.target===this)closeRecipeModal()">
+  <div class="modal-card">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
       <div id="recipe-name" style="font-family:var(--font-cond);font-size:22px;font-weight:700;line-height:1.2;"></div>
-      <button style="background:var(--faint);border:none;color:var(--muted);font-size:13px;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;flex-shrink:0;" onclick="closeRecipeModal()">Close</button>
+      <button style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:0 2px;flex-shrink:0;" onclick="closeRecipeModal()">✕</button>
     </div>
     <div id="recipe-badges" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;"></div>
     <div class="card-label">INGREDIENTS</div>
@@ -550,7 +552,7 @@
     <div class="card-label" style="margin-top:14px;">METHOD</div>
     <div id="recipe-steps" style="margin-bottom:4px;"></div>
     <div id="recipe-note"></div>
-    <div style="height:env(safe-area-inset-bottom,0px);"></div>
+    <div id="recipe-modal-actions" style="display:flex;gap:8px;margin-top:16px;"></div>
   </div>
 </div>
 
@@ -2227,10 +2229,12 @@ function logWeight() {
 function openRecipe(name) {
   const rec = getAllRecipes()[name];
   if (!rec) return;
+  const isCustom = !!(get('custom-recipes') || {})[name];
+  const safe = name.replace(/'/g,"\\'");
   document.getElementById('recipe-name').textContent = name;
   document.getElementById('recipe-badges').innerHTML =
-    `<span style="background:rgba(74,222,128,0.1);color:var(--green);font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;">⏱ ${rec.time}</span>` +
-    `<span style="background:rgba(96,165,250,0.1);color:var(--blue);font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;">📋 Prep: ${rec.prep}</span>`;
+    `<span style="background:rgba(0,168,120,0.1);color:var(--green);font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;">⏱ ${rec.time}</span>` +
+    `<span style="background:rgba(85,88,232,0.1);color:var(--blue);font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;">📋 Prep: ${rec.prep}</span>`;
   document.getElementById('recipe-ingredients').innerHTML = rec.ingredients.map(ing =>
     `<div class="recipe-ingredient"><span style="font-weight:600;color:var(--green);min-width:60px;">${ing.qty}</span><span>${ing.item}</span></div>`
   ).join('');
@@ -2239,6 +2243,10 @@ function openRecipe(name) {
   ).join('');
   document.getElementById('recipe-note').innerHTML = rec.note ?
     `<div class="recipe-note-box">💡 ${rec.note}</div>` : '';
+  document.getElementById('recipe-modal-actions').innerHTML = isCustom
+    ? `<button class="btn btn-sm btn-secondary" style="flex:1;" onclick="closeRecipeModal();openEditRecipeModal('${safe}')">✎ Edit</button>
+       <button class="btn btn-sm" style="flex:1;background:var(--red);color:#fff;" onclick="if(confirm('Delete this recipe?')){deleteCustomRecipe('${safe}');closeRecipeModal();}">Delete</button>`
+    : '';
   document.getElementById('recipe-modal').classList.add('show');
 }
 
